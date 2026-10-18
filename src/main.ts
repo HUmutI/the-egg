@@ -2,7 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { initHero } from './hero'
 import { initSky } from './sky'
-import { initReveals, initWho } from './story'
+import { initReveals, initStatement, initWho } from './story'
 import { initDay } from './day'
 import { initFlock } from './flock'
 import { initJoin } from './join'
@@ -13,6 +13,7 @@ gsap.registerPlugin(ScrollTrigger)
 const start = () => {
   initHero()
   initReveals()
+  initStatement()
   initWho()
   initDay()
   initFlock()

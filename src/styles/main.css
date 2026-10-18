@@ -819,17 +819,45 @@ h2 {
 /* ── WHAT ────────────────────────────────────────────────────── */
 
 .what {
-  padding-bottom: clamp(56px, 7vw, 110px);
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 24px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
-.what .label {
-  grid-column: 1 / -1;
+/* scene one: the statement alone on the screen, read in as you scroll */
+.what__stage {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--nav-h) + 24px) 0 clamp(48px, 8vh, 96px);
+}
+.what__stage .label {
+  position: absolute;
+  top: calc(var(--nav-h) + 28px);
+  left: 0;
+}
+.what__cue {
+  position: absolute;
+  left: 0;
+  bottom: clamp(24px, 5vh, 48px);
+  color: var(--ink-2);
+}
+.what__cue::after {
+  content: ' ↓';
+}
+.statement .tok {
+  opacity: 0.14;
+}
+.statement .hl {
+  background-size: var(--p, 100%) 100%;
+  background-repeat: no-repeat;
+}
+.js .statement .hl {
+  --p: 0%;
 }
 .statement {
-  grid-column: 1 / span 11;
-  font-size: clamp(36px, 5.4vw, 94px);
+  max-width: 17em;
+  font-size: clamp(36px, 5.8vw, 104px);
   font-weight: 420;
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -905,11 +933,45 @@ h2 {
 }
 
 /* ── who comes: a guest list set in type ── */
+/* scene two: who comes, on its own screen */
 .who {
-  grid-column: 1 / -1;
-  margin-top: clamp(64px, 9vw, 140px);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--nav-h) + 24px) 0 clamp(48px, 8vh, 96px);
+}
+.who__head {
   padding-top: clamp(20px, 2vw, 28px);
   border-top: 1px solid var(--ink);
+}
+.js .who .who__list li,
+.js .who .who__head > * {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.js .who.is-in .who__list li,
+.js .who.is-in .who__head > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 28ms + 120ms);
+}
+.js .who.is-in .who__head > :first-child {
+  transition-delay: 0ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .statement .tok {
+    opacity: 1;
+  }
+  .js .statement .hl {
+    --p: 100%;
+  }
+  .js .who .who__list li,
+  .js .who .who__head > * {
+    opacity: 1;
+    transform: none;
+  }
 }
 .who__head {
   display: flex;
