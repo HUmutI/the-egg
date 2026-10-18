@@ -1,93 +1,564 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Egg Club</title>
-<style>
-  :root {
-    --bg: #fdf6ec;
-    --shell: #fff8ef;
-    --shell-shadow: #e8d9c3;
-    --yolk: #f4b73f;
-    --ink: #2b241c;
-    --muted: #8a7f6f;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1812;
-      --shell: #f1e6d3;
-      --shell-shadow: #c9b795;
-      --yolk: #f4b73f;
-      --ink: #f3ece0;
-      --muted: #a89d8a;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  .wrap {
-    text-align: center;
-    max-width: 420px;
-  }
-  .egg {
-    width: 120px;
-    height: 150px;
-    margin: 0 auto 28px;
-    position: relative;
-    animation: bob 3.5s ease-in-out infinite;
-  }
-  @keyframes bob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  .egg svg { width: 100%; height: 100%; display: block; }
-  h1 {
-    font-size: 28px;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-    margin: 0 0 10px;
-  }
-  p {
-    font-size: 15px;
-    line-height: 1.55;
-    color: var(--muted);
-    margin: 0;
-  }
-  .dot {
-    display: inline-block;
-    opacity: 0;
-    animation: blink 1.4s infinite;
-  }
-  .dot:nth-child(2) { animation-delay: .2s; }
-  .dot:nth-child(3) { animation-delay: .4s; }
-  @keyframes blink { 0%, 20% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="egg">
-      <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="60" cy="140" rx="46" ry="8" fill="var(--shell-shadow)" opacity="0.5"></ellipse>
-        <path d="M60 4 C94 4 110 62 110 96 C110 126 88 146 60 146 C32 146 10 126 10 96 C10 62 26 4 60 4 Z"
-              fill="var(--shell)" stroke="var(--shell-shadow)" stroke-width="2"></path>
-        <ellipse cx="42" cy="38" rx="10" ry="14" fill="#ffffff" opacity="0.55"></ellipse>
-        <circle cx="60" cy="96" r="18" fill="var(--yolk)" opacity="0.9"></circle>
-      </svg>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Egg Club — Sundays for people who make things</title>
+    <meta
+      name="description"
+      content="A Sunday club in Türkiye for curious people. Doors at noon, pizza at six, demos before midnight."
+    />
+    <meta name="theme-color" content="#FDF3D7" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Reenie+Beanie&family=Instrument+Sans:wght@400..700&family=Silkscreen:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+    <script>document.documentElement.classList.add('js')</script>
+  </head>
+  <body>
+    <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="clipTop">
+          <polygon points="-20,-20 220,-20 220,124 200,124 186,114 166,132 146,112 126,136 104,110 84,134 62,108 40,132 22,112 0,128 -20,128" />
+        </clipPath>
+        <clipPath id="eggShape">
+          <path d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" />
+        </clipPath>
+        <clipPath id="clipBot">
+          <polygon points="-20,128 0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124 220,124 220,300 -20,300" />
+        </clipPath>
+        <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        <pattern id="halftone" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+          <circle cx="3" cy="3" r="1.15" fill="#1f1722" />
+        </pattern>
+        <linearGradient id="shadeGrad" x1="0.15" y1="0.1" x2="0.95" y2="0.95">
+          <stop offset="0.45" stop-color="#000" />
+          <stop offset="1" stop-color="#fff" />
+        </linearGradient>
+        <mask id="shadeMask" maskContentUnits="objectBoundingBox">
+          <rect width="1" height="1" fill="url(#shadeGrad)" />
+        </mask>
+      </defs>
+    </svg>
+    <a class="skip" href="#what">Skip to content</a>
+
+    <!-- ───────────── NAV + CLUB CLOCK ───────────── -->
+    <header class="nav" id="nav">
+      <a class="nav__logo" href="#top" aria-label="The Egg Club, back to top">
+        <svg viewBox="0 0 200 260" aria-hidden="true">
+          <path class="ink-fill" d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" />
+          <circle cx="100" cy="168" r="46" fill="var(--yolk)" />
+        </svg>
+        <span>the egg club</span>
+      </a>
+
+      <div class="nav__clock" aria-hidden="true">
+        <svg class="clock__arc" viewBox="0 0 64 26">
+          <path d="M3 24a29 29 0 0 1 58 0" />
+          <circle class="clock__sun" r="4" cx="3" cy="24" />
+        </svg>
+        <span class="clock__time">09:00</span>
+        <span class="clock__label">doors soon</span>
+      </div>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#day">The day</a>
+        <a href="#who">Who comes</a>
+        <a href="#rules">The rules</a>
+        <a href="#join" class="btn btn--ink btn--sm"><span>Save a seat</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ───────────── 09:00 · HERO ───────────── -->
+      <section class="hero" id="top" data-bg="butter" aria-labelledby="heroTitle">
+        <div class="hero__meta">
+          <p class="mh__issue"><span class="mono">Nº</span><em>001</em><span class="mono mh__season">Autumn ’26</span></p>
+          <p class="mh__title hide-sm"><em>a Sunday club for people who make things</em></p>
+          <p class="mh__place">Ankara<span class="mono">39.93° N · 32.86° E</span></p>
+        </div>
+
+        <h1 class="visually-hidden" id="heroTitle">The Egg Club</h1>
+
+        <figure class="hero__art">
+          <div class="hero__frame">
+          <picture>
+            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
+            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
+            <img
+              id="heroArt"
+              src="/hero/the-egg-club.png"
+              srcset="/hero/the-egg-club-830.png 830w, /hero/the-egg-club.png 1660w"
+              sizes="(max-width: 860px) 100vw, 1400px"
+              width="1660"
+              height="948"
+              fetchpriority="high"
+              decoding="async"
+              alt="“the egg club” in large serif letters. A golden egg has cracked open in the middle, and people tumble out of it with laptops, books, pizza, coffee, a camera, headphones and a disco ball."
+            />
+          </picture>
+            <svg class="doodles" id="doodles" viewBox="0 0 1660 948" aria-hidden="true">
+              <!-- good ideas hatch here → the crack -->
+              <g class="dd dd--a" data-redraw style="--d: 0.15s">
+                <text x="104" y="136" transform="rotate(-5 104 136)" class="ink-red">good ideas hatch here</text>
+                <path class="draw ink-red" pathLength="1" d="M478 126 C 538 98 598 112 636 172" />
+                <path class="draw ink-red" pathLength="1" d="M636 172 L 631 150 M636 172 L 615 166" />
+              </g>
+              <g class="dd dd--am" data-redraw style="--d: 0.15s">
+                <text x="56" y="150" transform="rotate(-5 56 150)" class="ink-red">ideas hatch here</text>
+                <path class="draw ink-red" pathLength="1" d="M520 120 C 566 98 610 120 634 170" />
+                <path class="draw ink-red" pathLength="1" d="M634 170 L 630 146 M634 170 L 612 162" />
+              </g>
+
+              <!-- the egg is still wobbling -->
+              <g class="dd dd--wob" style="--d: 0.5s">
+                <path class="draw ink" pathLength="1" d="M946 104 q 18 10 26 30" />
+                <path class="draw ink" pathLength="1" d="M968 84 q 22 14 30 40" />
+                <path class="draw ink" pathLength="1" d="M700 98 q -16 12 -22 30" />
+              </g>
+
+              <!-- the disco ball, circled -->
+              <g class="dd dd--b" data-redraw style="--d: 0.7s">
+                <path class="draw ink-red" pathLength="1" d="M1340 328 C 1302 296 1234 314 1230 372 C 1226 430 1292 448 1332 420 C 1368 396 1358 336 1318 324 C 1300 318 1282 322 1268 332" />
+                <text x="1188" y="300" transform="rotate(-7 1188 300)" class="ink-red">later.</text>
+              </g>
+
+              <!-- pizza-powered → the slice -->
+              <g class="dd dd--c" data-redraw style="--d: 0.95s">
+                <text x="1388" y="258" transform="rotate(5 1388 258)" class="ink-orange sm">pizza-powered</text>
+                <path class="draw ink-orange" pathLength="1" d="M1470 282 C 1466 356 1416 420 1318 456" />
+                <path class="draw ink-orange" pathLength="1" d="M1318 456 L 1338 440 M1318 456 L 1340 462" />
+              </g>
+
+              <!-- underline the club -->
+              <g class="dd dd--d" style="--d: 1.2s">
+                <path class="draw ink-red" pathLength="1" d="M1200 828 C 1300 818 1440 824 1604 816" />
+                <path class="draw ink-red" pathLength="1" d="M1226 846 C 1340 836 1470 842 1580 836" />
+              </g>
+
+              <!-- crack something. -->
+              <g class="dd dd--e" data-redraw style="--d: 1.4s">
+                <text x="70" y="906" transform="rotate(-2 70 906)" class="ink">crack something.</text>
+                <path class="draw ink-red" pathLength="1" d="M378 872 l 12 16 l 11 -14 l 11 18 l 12 -13 l 9 16" />
+              </g>
+              <g class="dd dd--em" data-redraw style="--d: 1.4s">
+                <text x="40" y="918" transform="rotate(-2 40 918)" class="ink">crack something.</text>
+              </g>
+
+              <!-- an empty egg: this could be you -->
+              <g class="dd dd--f" style="--d: 1.6s">
+                <path class="dash ink" d="M996 820 C 1020 820 1036 856 1036 880 C 1036 902 1018 914 996 914 C 974 914 956 902 956 880 C 956 856 972 820 996 820 Z" />
+                <text x="1050" y="900" transform="rotate(-3 1050 900)" class="ink">this could be you</text>
+              </g>
+
+              <!-- sparks -->
+              <g class="dd dd--s" style="--d: 1.8s">
+                <path class="spark ink-red" d="M742 52 q 2 12 12 14 q -10 2 -12 14 q -2 -12 -12 -14 q 10 -2 12 -14 Z" />
+                <path class="spark ink" d="M1604 140 q 2 9 9 11 q -7 2 -9 11 q -2 -9 -9 -11 q 7 -2 9 -11 Z" />
+                <path class="spark ink-orange" d="M78 470 q 2 10 10 12 q -8 2 -10 12 q -2 -10 -10 -12 q 8 -2 10 -12 Z" />
+              </g>
+            </svg>
+          </div>
+        </figure>
+
+        <div class="hero__built">
+          <p class="built__label">Built with love by people from</p>
+          <div class="built__window">
+            <ul class="built__track" aria-label="Where our people come from">
+              <li class="built__logo built__logo--odtu"><img src="/logos/odtu.svg" alt="ODTÜ — Middle East Technical University" width="396" height="61" loading="eager" decoding="async" /></li><li class="built__logo built__logo--tk"><img src="/logos/odtu-teknokent.svg" alt="ODTÜ Teknokent" width="231" height="20" loading="eager" decoding="async" /></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── 09:40 · WHAT ───────────── -->
+      <section class="what" id="what" data-bg="butter">
+        <p class="label mono"><span>01</span> What is this</p>
+
+        <p class="statement reveal">
+          The Egg Club is a
+          <span class="chip chip--sun" aria-hidden="true"><i></i></span>
+          <mark class="hl hl--yolk">Sunday ritual</mark> for
+          <span class="chip chip--eggs" aria-hidden="true"><i></i><i></i><i></i></span>
+          people who’d rather <mark class="hl hl--lav"><em class="st__make">make</em> something</mark>
+          <span class="st__quiet">than talk about making something.</span>
+        </p>
+
+        <div class="who" id="who">
+          <header class="who__head">
+            <h2 class="who__label">Who <em>comes.</em></h2>
+            <p class="who__deck">No CVs, no titles at the door. <b>Bring whatever you’re good at.</b></p>
+          </header>
+          <ul class="who__list" id="whoList">
+            <li><button type="button" class="who__n" data-note="will redesign the table by 3pm">architects</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it works on my machine">software engineers</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--yolk)" data-note="can we try it in a softer yellow?">designers</button></li>
+            <li><button type="button" class="who__n" data-note="there’s a paper on this">researchers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="it’s not broken, it’s a texture">artists</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--mint)" data-note="on call, still shipping">doctors</button></li>
+            <li><button type="button" class="who__n" data-note="reading the terms so you don’t have to">lawyers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="what if it had a bassline?">musicians</button></li>
+            <li><button type="button" class="who__n" data-note="the README will be beautiful">writers</button></li>
+            <li><button type="button" class="who__n" data-note="documenting the chaos">filmmakers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="one more, the light’s good">photographers</button></li>
+            <li><button type="button" class="who__n" data-note="correlation isn’t causation. still.">data scientists</button></li>
+            <li><button type="button" class="who__n" data-note="no pitch. okay, a tiny one.">founders</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it’s a feature now">game developers</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--lav)" data-note="strictly off duty">civil servants</button></li>
+            <li><button type="button" class="who__n" data-note="here in an unofficial capacity">diplomats</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="quietly judging the pizza">chefs</button></li>
+            <li><button type="button" class="who__n" data-note="the pizza budget is not sustainable">economists</button></li>
+            <li><button type="button" class="who__n" data-note="will explain it twice, kindly">teachers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="hypothesis: more pizza">physicists</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--peach)" data-note="brought a soldering iron, and a spare">hardware people</button></li>
+            <li><button type="button" class="who__n" data-note="what problem are we solving? (fun, mostly)">product people</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="the bus route is wrong">urban planners</button></li>
+            <li><button type="button" class="who__n" data-note="off the record, it’s great">journalists</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--pink)" data-note="ODTÜ, Bilkent, Hacettepe — and whoever skipped class">students</button></li>
+            <li class="who__last">and <button type="button" class="who__n who__n--i who__n--key" data-note="the only requirement">the curious.</button></li>
+          </ul>
+          <p class="who__caption mono" aria-live="polite"><span class="who__k" id="whoK">hover a name</span><span class="who__v" id="whoV">— everyone has a reason to be here</span></p>
+        </div>
+      </section>
+
+      <!-- ───────────── 10:20 · WHY ───────────── -->
+      <section class="why" id="why" data-bg="butter">
+        <p class="label mono"><span>02</span> Why bother</p>
+        <div class="why__grid">
+          <h2 class="why__big reveal">
+            Ankara has almost six million people. Somehow you’re still building
+            alone at <em>2am.</em>
+          </h2>
+          <div class="why__side reveal">
+            <p>
+              The interesting people are out there — the engineer with forty
+              side projects, the designer who can’t stop tinkering, the
+              researcher, the student, the friend who keeps soldering things.
+              They’re just stuck in the wrong rooms:
+            </p>
+            <ul class="strikes" aria-label="Things The Egg Club is not">
+              <li><span>Panels.</span></li>
+              <li><span>Lanyards.</span></li>
+              <li><span>Mixers with name stickers.</span></li>
+              <li><span>“Let’s circle back.”</span></li>
+              <li><span>Pitch-deck karaoke.</span></li>
+            </ul>
+            <p class="hand why__so">so we made a better room ↓</p>
+            <p class="why__answer">
+              One long table. Too much pizza. A deadline at midnight.
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ───────────── 11:00 → 19:00 · THE DAY ───────────── -->
+      <section class="day" id="day" data-bg="lav" aria-labelledby="dayTitle">
+        <div class="day__pin">
+          <header class="day__head">
+            <p class="label mono"><span>03</span> A day at the club</p>
+            <h2 id="dayTitle">Noon to midnight,<br /><em>roughly.</em></h2>
+          </header>
+
+          <div class="day__viewport">
+            <ol class="day__track" id="dayTrack">
+              <li class="step" data-step="0">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">12:00</time>
+                <h3>Doors</h3>
+                <p>Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
+              </li>
+              <li class="step" data-step="1">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">12:30</time>
+                <h3>Crack</h3>
+                <p>Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
+              </li>
+              <li class="step" data-step="2">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">13:15</time>
+                <h3>Nest</h3>
+                <p>Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
+              </li>
+              <li class="step" data-step="3">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">13:30</time>
+                <h3>Incubate</h3>
+                <p>Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
+              </li>
+              <li class="step" data-step="4">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">18:00</time>
+                <h3>Pizza</h3>
+                <p>Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
+              </li>
+              <li class="step step--hatch" data-step="5">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">21:30</time>
+                <h3>Hatch</h3>
+                <p>Five-minute demos, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
+              </li>
+              <li class="step" data-step="6">
+                <span class="step__node" aria-hidden="true"></span>
+                <time class="step__time">23:00</time>
+                <h3>Afterglow</h3>
+                <p>Cold pizza, the last metro home, and a group chat that keeps going all week.</p>
+              </li>
+            </ol>
+          </div>
+
+          <div class="day__ground" aria-hidden="true">
+            <div class="ruler" id="dayRuler"></div>
+            <div class="roller" id="roller">
+              <svg viewBox="-30 -60 260 390" class="roller__svg">
+<g class="roller__chick">
+                  <g class="sun__rays" fill="none" stroke="#1f1722" stroke-width="2.6" stroke-linecap="round"><path d="M100 82 V68" transform="rotate(0 100 130)" /><path d="M100 82 V68" transform="rotate(30 100 130)" /><path d="M100 82 V68" transform="rotate(60 100 130)" /><path d="M100 82 V68" transform="rotate(90 100 130)" /><path d="M100 82 V68" transform="rotate(120 100 130)" /><path d="M100 82 V68" transform="rotate(150 100 130)" /><path d="M100 82 V68" transform="rotate(180 100 130)" /><path d="M100 82 V68" transform="rotate(210 100 130)" /><path d="M100 82 V68" transform="rotate(240 100 130)" /><path d="M100 82 V68" transform="rotate(270 100 130)" /><path d="M100 82 V68" transform="rotate(300 100 130)" /><path d="M100 82 V68" transform="rotate(330 100 130)" /></g>
+                  <circle cx="100" cy="130" r="36" fill="var(--yolk)" stroke="#1f1722" stroke-width="3" />
+                </g>
+                <g class="roller__legs" fill="none" stroke="#1f1722" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path class="leg leg--l" d="M82 246 L74 322 h-14" />
+                  <path class="leg leg--r" d="M118 246 L126 322 h14" />
+                </g>
+                <g class="roller__egg">
+                  <g class="roller__bottom">
+                    <g clip-path="url(#clipBot)"><path d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" fill="var(--cream)" transform="translate(7 6)" /></g>
+                    <g clip-path="url(#clipBot)"><g clip-path="url(#eggShape)"><rect x="-10" y="-10" width="230" height="290" fill="url(#halftone)" mask="url(#shadeMask)" opacity=".24" /></g></g>
+                    <path class="shell-line" clip-path="url(#clipBot)" d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" />
+                    <polyline class="crack crack--edge" points="0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124" />
+                  </g>
+                  <g class="roller__top">
+                    <g clip-path="url(#clipTop)"><path d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" fill="var(--cream)" transform="translate(7 6)" /></g>
+                    <g clip-path="url(#clipTop)"><g clip-path="url(#eggShape)"><rect x="-10" y="-10" width="230" height="290" fill="url(#halftone)" mask="url(#shadeMask)" opacity=".24" /></g></g>
+                    <path class="shell-line" clip-path="url(#clipTop)" d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" />
+                    <polyline class="crack crack--edge" points="0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124" />
+                  </g>
+                  <path class="crack crack--1" d="M60 40l14 18-8 12 16 10" />
+                  <path class="crack crack--2" d="M150 70l-12 16 10 10-14 14" />
+                  <path class="crack crack--3" d="M40 170l20-6 4 14 18-4" />
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── 17:30 · WHO SHOWS UP ───────────── -->
+      <section class="flock" id="flock" data-bg="pink" aria-labelledby="flockTitle">
+        <div class="flock__head">
+          <p class="label mono"><span>04</span> Who shows up</p>
+          <h2 id="flockTitle" class="reveal">A different mix <em>every Sunday.</em></h2>
+          <p class="reveal">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
+        </div>
+        <div class="flock__field" id="flockField"></div>
+      </section>
+
+      <!-- ───────────── 18:30 · RULES ───────────── -->
+      <section class="rules" id="rules" data-bg="pink" aria-labelledby="rulesTitle">
+        <p class="label mono"><span>05</span> House rules</p>
+        <header class="rules__head">
+          <h2 id="rulesTitle" class="rules__title">The rules of <em>Egg Club.</em></h2>
+          <p class="rules__deck mono">Recited at noon, every Sunday, before anyone opens a laptop.</p>
+        </header>
+        <ol class="rules__list">
+          <li class="rule rule--first">
+            <span class="rule__num" aria-hidden="true">1</span>
+            <div class="rule__body">
+              <span class="rule__n mono">The first rule of Egg Club</span>
+              <p>You <span class="rule__fix"><span class="rule__strike">do not</span><span class="hand rule__do" aria-hidden="true">DO</span></span> talk about Egg Club.</p>
+            </div>
+          </li>
+          <li class="rule rule--second">
+            <span class="rule__num" aria-hidden="true">2</span>
+            <div class="rule__body">
+              <span class="rule__n mono">The second rule of Egg Club</span>
+              <p>You <strong>DO</strong> talk about Egg Club.</p>
+            </div>
+          </li>
+          <li class="rule">
+            <span class="rule__num" aria-hidden="true">3</span>
+            <div class="rule__body">
+              <span class="rule__n mono">The third rule of Egg Club</span>
+              <p>If someone yells “it works!”, <em>everyone stops and looks.</em></p>
+            </div>
+          </li>
+          <li class="rule rule--last">
+            <span class="rule__num" aria-hidden="true">4</span>
+            <div class="rule__body">
+              <span class="rule__n mono">And the last rule</span>
+              <p>If this is your first Sunday at Egg Club, <em>you have to build.</em></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ───────────── 19:30 · JOIN ───────────── -->
+      <section class="join" id="join" data-bg="yolk" aria-labelledby="joinTitle">
+        <div class="join__left">
+          <p class="label mono"><span>06</span> Get in the carton</p>
+          <h2 id="joinTitle">Pull up<br />a <em>chair.</em></h2>
+          <p class="join__sub">Free. Every other Sunday. The pizza is on us; the ideas are on you.</p>
+        </div>
+
+        <form class="quiz" id="joinForm" novalidate>
+          <div class="quiz__top">
+            <p class="quiz__step mono" id="quizStep" aria-live="polite">01 / 03</p>
+          </div>
+
+          <fieldset class="q is-active" data-q="0">
+            <legend class="q__title"><label for="fName">What should we call you?</label></legend>
+            <input id="fName" name="name" type="text" autocomplete="given-name" placeholder="Your name" required />
+            <div class="q__row">
+              <button class="btn btn--ink q__next" type="button" data-next><span>Next</span></button>
+              <p class="q__hint mono">or press enter ↵</p>
+            </div>
+          </fieldset>
+
+          <fieldset class="q" data-q="1">
+            <legend class="q__title">Nice to meet you, <span data-name>friend</span>. What do you make?</legend>
+            <div class="chips" role="group" aria-label="What do you make? Choose any">
+              <label><input type="checkbox" name="make" value="code" /><span>code</span></label>
+              <label><input type="checkbox" name="make" value="design" /><span>design</span></label>
+              <label><input type="checkbox" name="make" value="hardware" /><span>hardware</span></label>
+              <label><input type="checkbox" name="make" value="research" /><span>research</span></label>
+              <label><input type="checkbox" name="make" value="words" /><span>words</span></label>
+              <label><input type="checkbox" name="make" value="music" /><span>music</span></label>
+              <label><input type="checkbox" name="make" value="art" /><span>art</span></label>
+              <label><input type="checkbox" name="make" value="chaos" /><span>mostly chaos</span></label>
+            </div>
+            <button class="btn btn--ink q__next" type="button" data-next><span>Next</span></button>
+          </fieldset>
+
+          <fieldset class="q" data-q="2">
+            <legend class="q__title"><label for="fEmail">Where should we send the invite?</label></legend>
+            <input id="fEmail" name="email" type="email" autocomplete="email" placeholder="you@somewhere.com" required />
+            <div class="chips chips--radio" role="radiogroup" aria-label="Closest city">
+              <label><input type="radio" name="city" value="ankara" checked /><span>Ankara</span></label>
+              <label><input type="radio" name="city" value="eskisehir" /><span>Eskişehir</span></label>
+              <label><input type="radio" name="city" value="izmir" /><span>İzmir</span></label>
+              <label><input type="radio" name="city" value="elsewhere" /><span>somewhere else</span></label>
+            </div>
+            <button class="btn btn--ink q__next" type="submit"><span>Count me in</span></button>
+            <p class="q__error mono" id="quizError" role="alert"></p>
+          </fieldset>
+
+          <div class="q q--done" data-q="3" tabindex="-1">
+            <svg class="done__egg" viewBox="-30 -60 260 330" aria-hidden="true">
+<g class="done__chick">
+                <g fill="none" stroke="#1f1722" stroke-width="3.4" stroke-linecap="round"><path d="M100 82 V68" transform="rotate(0 100 130)" /><path d="M100 82 V68" transform="rotate(30 100 130)" /><path d="M100 82 V68" transform="rotate(60 100 130)" /><path d="M100 82 V68" transform="rotate(90 100 130)" /><path d="M100 82 V68" transform="rotate(120 100 130)" /><path d="M100 82 V68" transform="rotate(150 100 130)" /><path d="M100 82 V68" transform="rotate(180 100 130)" /><path d="M100 82 V68" transform="rotate(210 100 130)" /><path d="M100 82 V68" transform="rotate(240 100 130)" /><path d="M100 82 V68" transform="rotate(270 100 130)" /><path d="M100 82 V68" transform="rotate(300 100 130)" /><path d="M100 82 V68" transform="rotate(330 100 130)" /></g>
+                <circle cx="100" cy="130" r="36" fill="var(--yolk)" stroke="#1f1722" stroke-width="3" />
+              </g>
+              <g class="done__bottom">
+                <path class="shell" clip-path="url(#clipBot)" d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" />
+                <polyline class="crack crack--edge" points="0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124" />
+              </g>
+            </svg>
+            <p class="q__title">You’re in the carton, <span data-name>friend</span>.</p>
+            <p class="done__sub">We’ll email you before the next Sunday with the address and the menu. Bring a laptop, an idea, or just an appetite.</p>
+          </div>
+        </form>
+
+        <ul class="others">
+          <li><a href="mailto:hello@theegg.club?subject=We%20have%20a%20space"><span class="hand">got a space?</span><b>Host a Sunday</b></a></li>
+          <li><a href="mailto:hello@theegg.club?subject=We%20want%20to%20feed%20you"><span class="hand">got a pizza budget?</span><b>Feed the club</b></a></li>
+          <li><a href="mailto:hello@theegg.club?subject=New%20chapter"><span class="hand">not in Ankara?</span><b>Start a chapter</b></a></li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- ───────────── 23:00 · FOOTER + EGG RESCUE ───────────── -->
+    <footer class="foot" id="foot" data-bg="night">
+      <div class="foot__scene">
+        <picture>
+          <source type="image/avif" srcset="/footer/rooftop-night-1200.avif 1200w, /footer/rooftop-night-2007.avif 2007w" sizes="100vw" />
+          <source type="image/webp" srcset="/footer/rooftop-night-1200.webp 1200w, /footer/rooftop-night-2007.webp 2007w" sizes="100vw" />
+          <img
+            class="foot__img"
+            id="footArt"
+            src="/footer/rooftop-night.png"
+            width="2007"
+            height="783"
+            loading="lazy"
+            decoding="async"
+            alt="Night on a rooftop: egg-shaped friends with a guitar, a laptop and an open pizza box, a dog asleep on the rug, and the city lights, a tower, a suspension bridge and a crescent moon over the water."
+          />
+        </picture>
+
+        <div class="foot__top">
+          <p class="foot__sign">See you Sunday.<br /><em>Bring an appetite.</em></p>
+          <button class="foot__hint" id="poke" type="button" aria-controls="portal">
+            <span class="hand foot__psst">psst —</span>
+            <span class="hand foot__more">the night isn’t over.<br />keep scrolling</span>
+            <svg class="foot__arrow" viewBox="0 0 40 90" aria-hidden="true"><path d="M20 4 C 12 30 28 50 20 80 M20 80 L 9 64 M20 80 L 31 66" /></svg>
+          </button>
+          <nav class="foot__cols" aria-label="Footer">
+            <ul>
+              <li class="mono">Find us</li>
+              <li><a href="https://instagram.com" rel="noopener">Instagram</a></li>
+              <li><a href="https://x.com" rel="noopener">X / Twitter</a></li>
+              <li><a href="https://luma.com" rel="noopener">Luma</a></li>
+            </ul>
+            <ul>
+              <li class="mono">Say hi</li>
+              <li><a href="mailto:hello@theegg.club">hello@theegg.club</a></li>
+              <li><a href="#join">Join the list</a></li>
+              <li><a href="#top">Back to the top ↑</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <div class="foot__base">
+        <span class="mono">© 2026 The Egg Club</span>
+        <span class="mono hide-sm">Made in Ankara on too much pizza</span>
+      </div>
+    </footer>
+
+    <!-- ───────────── NIGHT SHIFT · the hidden game ───────────── -->
+    <section class="stage" id="portal" aria-labelledby="gameName">
+      <div class="stage__sticky">
+      <div class="portal__sky" aria-hidden="true"></div>
+      <div class="cabinet" id="cabinet">
+        <div class="bezel">
+        <div class="cabinet__plane cabinet__plane--top" aria-hidden="true"></div>
+        <div class="cabinet__plane cabinet__plane--right" aria-hidden="true"></div>
+        <div class="cabinet__plane cabinet__plane--bottom" aria-hidden="true"></div>
+        <div class="cabinet__plane cabinet__plane--left" aria-hidden="true"></div>
+
+        <div class="screen" id="screen">
+          <canvas class="screen__canvas" id="pixelGame" width="320" height="192" aria-hidden="true"></canvas>
+          <div class="screen__hud px" id="ghud" aria-live="polite"></div>
+          <div class="screen__dialog px" id="gdialog" aria-live="polite" hidden>
+            <p class="gd__name" id="gdName"></p>
+            <p class="gd__text" id="gdText"></p>
+            <span class="gd__more" aria-hidden="true">▼</span>
+          </div>
+          <div class="screen__card px" id="gcard"></div>
+          <p class="screen__hint px" id="ghint"></p>
+          <div class="crt crt--scan" aria-hidden="true"></div>
+          <div class="crt crt--glass" aria-hidden="true"></div>
+          <div class="crt crt--vignette" aria-hidden="true"></div>
+        </div>
+        </div>
+
+        <div class="cabinet__deck">
+          <p class="cabinet__name px" id="gameName">The Egg Club · <b>Night Shift</b></p>
+          <p class="cabinet__help px">move: arrows / WASD / tap · talk: E or space · scroll up to leave</p>
+          <div class="cabinet__btns">
+            <button class="arcbtn arcbtn--talk px" id="gTalk" type="button"><span>E</span>talk</button>
+            <button class="arcbtn arcbtn--close px" id="gClose" type="button"><span>↺</span>restart</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <h1>The Egg Club</h1>
-    <p>Something is hatching<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span><br>Check back soon.</p>
-  </div>
-</body>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
