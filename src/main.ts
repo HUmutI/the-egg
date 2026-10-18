@@ -2,7 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { initHero } from './hero'
 import { initSky } from './sky'
-import { initReveals, initStatement, initWho } from './story'
+import { initReveals, initRules, initStatement, initWho } from './story'
 import { initDay } from './day'
 import { initFlock } from './flock'
 import { initJoin } from './join'
@@ -17,6 +17,7 @@ const start = () => {
   initWho()
   initDay()
   initFlock()
+  initRules()
   initJoin()
   initPortal()
   // The sky (background colour + club clock) reads positions set up by the

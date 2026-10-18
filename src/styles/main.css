@@ -1760,24 +1760,16 @@ h2 {
   letter-spacing: -0.01em;
   color: var(--tomato);
 }
-/* the rules arrive one by one, once */
-.js .rule {
-  opacity: 0;
-  transform: translateY(14px);
+/* the rules are read in as you scroll (see initRules) */
+.js .rules .tok,
+.js .rules .rule__num,
+.js .rules .rule__n {
+  opacity: 0.14;
 }
-.js .rules.is-in .rule {
+.rules.is-read .tok,
+.rules.is-read .rule__num,
+.rules.is-read .rule__n {
   opacity: 1;
-  transform: none;
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-}
-.js .rules.is-in .rule:nth-child(2) {
-  transition-delay: 0.12s;
-}
-.js .rules.is-in .rule:nth-child(3) {
-  transition-delay: 0.24s;
-}
-.js .rules.is-in .rule:nth-child(4) {
-  transition-delay: 0.36s;
 }
 @media (max-width: 860px) {
   .rules {
@@ -1796,12 +1788,7 @@ h2 {
     font-size: clamp(26px, 7vw, 34px);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .js .rule {
-    opacity: 1;
-    transform: none;
-  }
-}
+
 .rule__strike {
   position: relative;
   color: var(--ink-2);
@@ -1815,27 +1802,26 @@ h2 {
   height: 0.08em;
   border-radius: 99px;
   background: var(--tomato);
-  transform: scaleX(0) rotate(-3deg);
+  transform: scaleX(var(--s)) rotate(-3deg);
   transform-origin: left;
-  transition: transform 0.5s var(--ease-out) 0.2s;
 }
 .rule__fix {
+  --s: 0;
+  --d: 0;
   position: relative;
   display: inline-block;
+}
+html:not(.js) .rule__fix,
+.rules.is-read .rule__fix {
+  --s: 1;
+  --d: 1;
 }
 .rule__do {
   position: absolute;
   left: 30%;
   top: -0.62em;
   font-size: 0.95em;
-  transform: rotate(-10deg) scale(0);
-  transition: transform 0.6s var(--ease-spring) 0.7s;
-}
-.rule--first.is-in .rule__strike::after {
-  transform: scaleX(1) rotate(-3deg);
-}
-.rule--first.is-in .rule__do {
-  transform: rotate(-10deg) scale(1);
+  transform: rotate(-10deg) scale(var(--d));
 }
 
 /* ── JOIN ────────────────────────────────────────────────────── */
