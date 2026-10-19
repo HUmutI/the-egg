@@ -47,7 +47,7 @@
         </mask>
       </defs>
     </svg>
-    <a class="skip" href="#what">Skip to content</a>
+    <a class="skip" href="#what" data-i18n-tr="İçeriğe geç">Skip to content</a>
 
     <!-- ───────────── NAV + CLUB CLOCK ───────────── -->
     <header class="nav" id="nav">
@@ -69,10 +69,11 @@
       </div>
 
       <nav class="nav__links" aria-label="Primary">
-        <a href="#day">The day</a>
-        <a href="#who">Who comes</a>
-        <a href="#rules">The rules</a>
-        <a href="#join" class="btn btn--ink btn--sm"><span>Save a seat</span></a>
+        <a href="#day" data-i18n-tr="Gün">The day</a>
+        <a href="#who" data-i18n-tr="Kimler geliyor">Who comes</a>
+        <a href="#rules" data-i18n-tr="Kurallar">The rules</a>
+        <button type="button" id="langToggle" class="lang-toggle">TR</button>
+        <a href="#join" class="btn btn--ink btn--sm"><span data-i18n-tr="Yerini ayırt">Save a seat</span></a>
       </nav>
     </header>
 
@@ -80,8 +81,8 @@
       <!-- ───────────── 09:00 · HERO ───────────── -->
       <section class="hero" id="top" data-bg="butter" aria-labelledby="heroTitle">
         <div class="hero__meta">
-          <p class="mh__issue"><span class="mono">Nº</span><em>001</em><span class="mono mh__season">Autumn ’26</span></p>
-          <p class="mh__title hide-sm"><em>a Sunday club for people who make things</em></p>
+          <p class="mh__issue"><span class="mono">Nº</span><em>001</em><span class="mono mh__season" data-i18n-tr="Sonbahar ’26">Autumn ’26</span></p>
+          <p class="mh__title hide-sm"><em data-i18n-tr="yapan insanlar için bir Pazar kulübü">a Sunday club for people who make things</em></p>
           <p class="mh__place">Ankara<span class="mono">39.93° N · 32.86° E</span></p>
         </div>
 
@@ -169,7 +170,7 @@
         </figure>
 
         <div class="hero__built">
-          <p class="built__label">Built with love by people from</p>
+          <p class="built__label" data-i18n-tr="Sevgiyle inşa edenler">Built with love by people from</p>
           <div class="built__window">
             <ul class="built__track" aria-label="Where our people come from">
               <li class="built__logo built__logo--odtu"><img src="/logos/odtu.svg" alt="ODTÜ — Middle East Technical University" width="396" height="61" loading="eager" decoding="async" /></li><li class="built__logo built__logo--tk"><img src="/logos/odtu-teknokent.svg" alt="ODTÜ Teknokent" width="231" height="20" loading="eager" decoding="async" /></li>
@@ -181,9 +182,13 @@
       <!-- ───────────── 09:40 · WHAT ───────────── -->
       <section class="what" id="what" data-bg="butter">
         <div class="what__stage" id="whatStage">
-          <p class="label mono"><span>01</span> What is this</p>
+          <p class="label mono"><span>01</span> <span class="label__txt" data-i18n-tr="Bu ne?">What is this</span></p>
 
-          <p class="statement" id="statement">
+          <p class="statement" id="statement" data-i18n-tr-html="Egg Club,
+          <span class=&quot;chip chip--sun&quot; aria-hidden=&quot;true&quot;><i></i></span>
+          bir şey üretmekten bahsetmek yerine
+          <span class=&quot;chip chip--eggs&quot; aria-hidden=&quot;true&quot;><i></i><i></i><i></i></span>
+          <mark class=&quot;hl hl--lav&quot;><em class=&quot;st__make&quot;>üretmeyi</em> tercih eden</mark> insanlar için bir <mark class=&quot;hl hl--yolk&quot;>Pazar ayini</mark><span class=&quot;st__quiet&quot;>, her hafta.</span>">
           The Egg Club is a
           <span class="chip chip--sun" aria-hidden="true"><i></i></span>
           <mark class="hl hl--yolk">Sunday ritual</mark> for
@@ -191,70 +196,70 @@
           people who’d rather <mark class="hl hl--lav"><em class="st__make">make</em> something</mark>
           <span class="st__quiet">than talk about making something.</span>
           </p>
-          <p class="what__cue mono" aria-hidden="true">keep scrolling</p>
+          <p class="what__cue mono" aria-hidden="true" data-i18n-tr="aşağı kaydır">keep scrolling</p>
         </div>
 
         <div class="who" id="who">
           <header class="who__head">
-            <h2 class="who__label">Who <em>comes.</em></h2>
-            <p class="who__deck">No CVs, no titles at the door. <b>Bring whatever you’re good at.</b></p>
+            <h2 class="who__label" data-i18n-tr-html="Kimler <em>geliyor.</em>">Who <em>comes.</em></h2>
+            <p class="who__deck" data-i18n-tr-html="Kapıda CV yok, unvan yok. <b>Ne konuda iyiysen onu getir.</b>">No CVs, no titles at the door. <b>Bring whatever you’re good at.</b></p>
           </header>
           <ul class="who__list" id="whoList">
-            <li><button type="button" class="who__n" data-note="will redesign the table by 3pm">architects</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it works on my machine">software engineers</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--yolk)" data-note="can we try it in a softer yellow?">designers</button></li>
-            <li><button type="button" class="who__n" data-note="there’s a paper on this">researchers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="it’s not broken, it’s a texture">artists</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--mint)" data-note="on call, still shipping">doctors</button></li>
-            <li><button type="button" class="who__n" data-note="reading the terms so you don’t have to">lawyers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="what if it had a bassline?">musicians</button></li>
-            <li><button type="button" class="who__n" data-note="the README will be beautiful">writers</button></li>
-            <li><button type="button" class="who__n" data-note="documenting the chaos">filmmakers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="one more, the light’s good">photographers</button></li>
-            <li><button type="button" class="who__n" data-note="correlation isn’t causation. still.">data scientists</button></li>
-            <li><button type="button" class="who__n" data-note="no pitch. okay, a tiny one.">founders</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it’s a feature now">game developers</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--lav)" data-note="strictly off duty">civil servants</button></li>
-            <li><button type="button" class="who__n" data-note="here in an unofficial capacity">diplomats</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="quietly judging the pizza">chefs</button></li>
-            <li><button type="button" class="who__n" data-note="the pizza budget is not sustainable">economists</button></li>
-            <li><button type="button" class="who__n" data-note="will explain it twice, kindly">teachers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="hypothesis: more pizza">physicists</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--peach)" data-note="brought a soldering iron, and a spare">hardware people</button></li>
-            <li><button type="button" class="who__n" data-note="what problem are we solving? (fun, mostly)">product people</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="the bus route is wrong">urban planners</button></li>
-            <li><button type="button" class="who__n" data-note="off the record, it’s great">journalists</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--pink)" data-note="ODTÜ, Bilkent, Hacettepe — and whoever skipped class">students</button></li>
-            <li class="who__last">and <button type="button" class="who__n who__n--i who__n--key" data-note="the only requirement">the curious.</button></li>
+            <li><button type="button" class="who__n" data-note="will redesign the table by 3pm" data-i18n-tr="mimarlar" data-i18n-tr-attr-data-note="saat 3’e kalmadan masayı yeniden tasarlar">architects</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it works on my machine" data-i18n-tr="yazılım mühendisleri" data-i18n-tr-attr-data-note="bende çalışıyor">software engineers</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--yolk)" data-note="can we try it in a softer yellow?" data-i18n-tr="tasarımcılar" data-i18n-tr-attr-data-note="daha yumuşak bir sarı deneyebilir miyiz?">designers</button></li>
+            <li><button type="button" class="who__n" data-note="there’s a paper on this" data-i18n-tr="araştırmacılar" data-i18n-tr-attr-data-note="bu konuda bir makale var">researchers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="it’s not broken, it’s a texture" data-i18n-tr="sanatçılar" data-i18n-tr-attr-data-note="bozuk değil, doku bu">artists</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--mint)" data-note="on call, still shipping" data-i18n-tr="doktorlar" data-i18n-tr-attr-data-note="nöbette ama hâlâ üretiyor">doctors</button></li>
+            <li><button type="button" class="who__n" data-note="reading the terms so you don’t have to" data-i18n-tr="avukatlar" data-i18n-tr-attr-data-note="sözleşmeyi senin yerine okuyor">lawyers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="what if it had a bassline?" data-i18n-tr="müzisyenler" data-i18n-tr-attr-data-note="bir bas hattı olsa ne olur?">musicians</button></li>
+            <li><button type="button" class="who__n" data-note="the README will be beautiful" data-i18n-tr="yazarlar" data-i18n-tr-attr-data-note="README muhteşem olacak">writers</button></li>
+            <li><button type="button" class="who__n" data-note="documenting the chaos" data-i18n-tr="yönetmenler" data-i18n-tr-attr-data-note="kaosu belgeliyor">filmmakers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="one more, the light’s good" data-i18n-tr="fotoğrafçılar" data-i18n-tr-attr-data-note="bir tane daha, ışık güzel">photographers</button></li>
+            <li><button type="button" class="who__n" data-note="correlation isn’t causation. still." data-i18n-tr="veri bilimciler" data-i18n-tr-attr-data-note="korelasyon nedensellik değil. yine de.">data scientists</button></li>
+            <li><button type="button" class="who__n" data-note="no pitch. okay, a tiny one." data-i18n-tr="girişimciler" data-i18n-tr-attr-data-note="sunum yok. tamam, ufak bir tane.">founders</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it’s a feature now" data-i18n-tr="oyun geliştiricileri" data-i18n-tr-attr-data-note="artık bir özellik">game developers</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--lav)" data-note="strictly off duty" data-i18n-tr="memurlar" data-i18n-tr-attr-data-note="kesinlikle mesai dışı">civil servants</button></li>
+            <li><button type="button" class="who__n" data-note="here in an unofficial capacity" data-i18n-tr="diplomatlar" data-i18n-tr-attr-data-note="gayriresmi olarak burada">diplomats</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="quietly judging the pizza" data-i18n-tr="şefler" data-i18n-tr-attr-data-note="sessizce pizzayı yargılıyor">chefs</button></li>
+            <li><button type="button" class="who__n" data-note="the pizza budget is not sustainable" data-i18n-tr="ekonomistler" data-i18n-tr-attr-data-note="pizza bütçesi sürdürülebilir değil">economists</button></li>
+            <li><button type="button" class="who__n" data-note="will explain it twice, kindly" data-i18n-tr="öğretmenler" data-i18n-tr-attr-data-note="nazikçe iki kere anlatır">teachers</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="hypothesis: more pizza" data-i18n-tr="fizikçiler" data-i18n-tr-attr-data-note="hipotez: daha çok pizza">physicists</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--peach)" data-note="brought a soldering iron, and a spare" data-i18n-tr="donanımcılar" data-i18n-tr-attr-data-note="lehim havyası getirdi, bir de yedek">hardware people</button></li>
+            <li><button type="button" class="who__n" data-note="what problem are we solving? (fun, mostly)" data-i18n-tr="ürün insanları" data-i18n-tr-attr-data-note="hangi sorunu çözüyoruz? (çoğunlukla keyif)">product people</button></li>
+            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="the bus route is wrong" data-i18n-tr="şehir plancıları" data-i18n-tr-attr-data-note="otobüs hattı yanlış">urban planners</button></li>
+            <li><button type="button" class="who__n" data-note="off the record, it’s great" data-i18n-tr="gazeteciler" data-i18n-tr-attr-data-note="kayıt dışı, çok iyi">journalists</button></li>
+            <li><button type="button" class="who__n who__n--mark" style="--m: var(--pink)" data-note="ODTÜ, Bilkent, Hacettepe — and whoever skipped class" data-i18n-tr="öğrenciler" data-i18n-tr-attr-data-note="ODTÜ, Bilkent, Hacettepe — ve dersi asan herkes">students</button></li>
+            <li class="who__last"><span data-i18n-tr="ve">and</span> <button type="button" class="who__n who__n--i who__n--key" data-note="the only requirement" data-i18n-tr="meraklılar." data-i18n-tr-attr-data-note="tek şart bu">the curious.</button></li>
           </ul>
-          <p class="who__caption mono" aria-live="polite"><span class="who__k" id="whoK">hover a name</span><span class="who__v" id="whoV">— everyone has a reason to be here</span></p>
+          <p class="who__caption mono" aria-live="polite"><span class="who__k" id="whoK" data-i18n-tr="bir isme dokun">hover a name</span><span class="who__v" id="whoV" data-i18n-tr="— herkesin burada olmak için bir sebebi var">— everyone has a reason to be here</span></p>
         </div>
       </section>
 
       <!-- ───────────── 10:20 · WHY ───────────── -->
       <section class="why" id="why" data-bg="butter">
-        <p class="label mono"><span>02</span> Why bother</p>
+        <p class="label mono"><span>02</span> <span class="label__txt" data-i18n-tr="Neden?">Why bother</span></p>
         <div class="why__grid">
-          <h2 class="why__big reveal">
+          <h2 class="why__big reveal" data-i18n-tr-html="Ankara’nın nüfusu altı milyona yakın. Yine de gece <em>2’de</em> yapayalnız bir şey inşa ediyorsun.">
             Ankara has almost six million people. Somehow you’re still building
             alone at <em>2am.</em>
           </h2>
           <div class="why__side reveal">
-            <p>
+            <p data-i18n-tr="İlginç insanlar bir yerde var — kırk yan projesi olan mühendis, elini üretmekten çekemeyen tasarımcı, araştırmacı, öğrenci, hep bir şey lehimleyen arkadaş. Sadece yanlış odalarda sıkışıp kalmışlar:">
               The interesting people are out there — the engineer with forty
               side projects, the designer who can’t stop tinkering, the
               researcher, the student, the friend who keeps soldering things.
               They’re just stuck in the wrong rooms:
             </p>
             <ul class="strikes" aria-label="Things The Egg Club is not">
-              <li><span>Panels.</span></li>
-              <li><span>Lanyards.</span></li>
-              <li><span>Mixers with name stickers.</span></li>
-              <li><span>“Let’s circle back.”</span></li>
-              <li><span>Pitch-deck karaoke.</span></li>
+              <li><span data-i18n-tr="Paneller.">Panels.</span></li>
+              <li><span data-i18n-tr="Yaka kartları.">Lanyards.</span></li>
+              <li><span data-i18n-tr="İsim etiketli kokteyller.">Mixers with name stickers.</span></li>
+              <li><span data-i18n-tr="“Sonra devam edelim.”">“Let’s circle back.”</span></li>
+              <li><span data-i18n-tr="Sunum karaokesi.">Pitch-deck karaoke.</span></li>
             </ul>
-            <p class="hand why__so">so we made a better room ↓</p>
-            <p class="why__answer">
+            <p class="hand why__so" data-i18n-tr="biz de daha iyi bir oda yaptık ↓">so we made a better room ↓</p>
+            <p class="why__answer" data-i18n-tr="Uzun bir masa. Bol pizza. Gece yarısı bir teslim tarihi.">
               One long table. Too much pizza. A deadline at midnight.
             </p>
           </div>
@@ -266,8 +271,8 @@
       <section class="day" id="day" data-bg="lav" aria-labelledby="dayTitle">
         <div class="day__pin">
           <header class="day__head">
-            <p class="label mono"><span>03</span> A day at the club</p>
-            <h2 id="dayTitle">Noon to midnight,<br /><em>roughly.</em></h2>
+            <p class="label mono"><span>03</span> <span class="label__txt" data-i18n-tr="Kulüpte bir gün">A day at the club</span></p>
+            <h2 id="dayTitle" data-i18n-tr-html="Öğlenden gece yarısına,<br /><em>kabaca.</em>">Noon to midnight,<br /><em>roughly.</em></h2>
           </header>
 
           <div class="day__viewport">
@@ -275,44 +280,44 @@
               <li class="step" data-step="0">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">12:00</time>
-                <h3>Doors</h3>
-                <p>Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
+                <h3 data-i18n-tr="Kapılar">Doors</h3>
+                <p data-i18n-tr="Kahve, tanışmalar, yapışkan notlardan bir duvar. İsim kartı opsiyonel. Fikir beyan etmek zorunlu.">Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
               </li>
               <li class="step" data-step="1">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">12:30</time>
-                <h3>Crack</h3>
-                <p>Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
+                <h3 data-i18n-tr="Çatlak">Crack</h3>
+                <p data-i18n-tr="Herkes altmış saniyede bir fikir sunabilir. Yarım pişmiş olmak burada tarz sayılır.">Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
               </li>
               <li class="step" data-step="2">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">13:15</time>
-                <h3>Nest</h3>
-                <p>Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
+                <h3 data-i18n-tr="Yuva">Nest</h3>
+                <p data-i18n-tr="Takımlar en keyifli gelen fikrin etrafında kuruluyor. Yabancılar, çok saçma bir şeyin kurucu ortağı oluyor.">Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
               </li>
               <li class="step" data-step="3">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">13:30</time>
-                <h3>Incubate</h3>
-                <p>Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
+                <h3 data-i18n-tr="Kuluçka">Incubate</h3>
+                <p data-i18n-tr="Kafalar eğik. Yap, bozulsun, tekrar yap. Mentorlar elinde atıştırmalık ve fikirlerle dolanıyor.">Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
               </li>
               <li class="step" data-step="4">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">18:00</time>
-                <h3>Pizza</h3>
-                <p>Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
+                <h3 data-i18n-tr="Pizza">Pizza</h3>
+                <p data-i18n-tr="Pazarlık konusu değil. Laptoplar kapalı, on iki kutu açık, ananas hakkında süregelen bir tartışma. İkinci, daha iyi fikir genelde burada çıkar.">Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
               </li>
               <li class="step step--hatch" data-step="5">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">21:30</time>
-                <h3>Hatch</h3>
-                <p>Five-minute demos, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
+                <h3 data-i18n-tr="Doğuş">Hatch</h3>
+                <p data-i18n-tr="Beş dakikalık demolar, herkes alkışlar. Çalışıyor olması teşvik edilir. Ambisiyöz ve bozuk olması da sayılır.">Five-minute demos, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
               </li>
               <li class="step" data-step="6">
                 <span class="step__node" aria-hidden="true"></span>
                 <time class="step__time">23:00</time>
-                <h3>Afterglow</h3>
-                <p>Cold pizza, the last metro home, and a group chat that keeps going all week.</p>
+                <h3 data-i18n-tr="Son parıltı">Afterglow</h3>
+                <p data-i18n-tr="Soğuk pizza, eve son metro ve bütün hafta devam eden bir grup sohbeti.">Cold pizza, the last metro home, and a group chat that keeps going all week.</p>
               </li>
             </ol>
           </div>
@@ -355,47 +360,47 @@
       <!-- ───────────── 17:30 · WHO SHOWS UP ───────────── -->
       <section class="flock" id="flock" data-bg="pink" aria-labelledby="flockTitle">
         <div class="flock__head">
-          <p class="label mono"><span>04</span> Who shows up</p>
-          <h2 id="flockTitle" class="reveal">A different mix <em>every Sunday.</em></h2>
-          <p class="reveal">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
+          <p class="label mono"><span>04</span> <span class="label__txt" data-i18n-tr="Kimler geliyor">Who shows up</span></p>
+          <h2 id="flockTitle" class="reveal" data-i18n-tr-html="Her Pazar <em>farklı bir karışım.</em>">A different mix <em>every Sunday.</em></h2>
+          <p class="reveal" data-i18n-tr="Kurucu, mühendis olmana ya da ne yapmak istediğinden bile emin olmana gerek yok. Sadece meraklı ve biraz sabırsız olman yeterli.">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
         </div>
         <div class="flock__field" id="flockField"></div>
       </section>
 
       <!-- ───────────── 18:30 · RULES ───────────── -->
       <section class="rules" id="rules" data-bg="pink" aria-labelledby="rulesTitle">
-        <p class="label mono"><span>05</span> House rules</p>
+        <p class="label mono"><span>05</span> <span class="label__txt" data-i18n-tr="Kulüp kuralları">House rules</span></p>
         <header class="rules__head">
-          <h2 id="rulesTitle" class="rules__title">The rules of <em>Egg Club.</em></h2>
-          <p class="rules__deck mono">Recited at noon, every Sunday, before anyone opens a laptop.</p>
+          <h2 id="rulesTitle" class="rules__title" data-i18n-tr-html="Egg Club’ın <em>kuralları.</em>">The rules of <em>Egg Club.</em></h2>
+          <p class="rules__deck mono" data-i18n-tr="Her Pazar, öğlen, kimse laptopunu açmadan önce okunur.">Recited at noon, every Sunday, before anyone opens a laptop.</p>
         </header>
         <ol class="rules__list">
           <li class="rule rule--first">
             <span class="rule__num" aria-hidden="true">1</span>
             <div class="rule__body">
-              <span class="rule__n mono">The first rule of Egg Club</span>
-              <p>You <span class="rule__fix"><span class="rule__strike">do not</span><span class="hand rule__do" aria-hidden="true">DO</span></span> talk about Egg Club.</p>
+              <span class="rule__n mono" data-i18n-tr="Egg Club’ın ilk kuralı">The first rule of Egg Club</span>
+              <p data-i18n-tr-html="Egg Club hakkında <span class=&quot;rule__fix&quot;><span class=&quot;rule__strike&quot;>konuşmazsın</span><span class=&quot;hand rule__do&quot; aria-hidden=&quot;true&quot;>KONUŞ</span></span>.">You <span class="rule__fix"><span class="rule__strike">do not</span><span class="hand rule__do" aria-hidden="true">DO</span></span> talk about Egg Club.</p>
             </div>
           </li>
           <li class="rule rule--second">
             <span class="rule__num" aria-hidden="true">2</span>
             <div class="rule__body">
-              <span class="rule__n mono">The second rule of Egg Club</span>
-              <p>You <strong>DO</strong> talk about Egg Club.</p>
+              <span class="rule__n mono" data-i18n-tr="Egg Club’ın ikinci kuralı">The second rule of Egg Club</span>
+              <p data-i18n-tr-html="Egg Club hakkında <strong>KONUŞURSUN.</strong>">You <strong>DO</strong> talk about Egg Club.</p>
             </div>
           </li>
           <li class="rule">
             <span class="rule__num" aria-hidden="true">3</span>
             <div class="rule__body">
-              <span class="rule__n mono">The third rule of Egg Club</span>
-              <p>If someone yells “it works!”, <em>everyone stops and looks.</em></p>
+              <span class="rule__n mono" data-i18n-tr="Egg Club’ın üçüncü kuralı">The third rule of Egg Club</span>
+              <p data-i18n-tr-html="Biri “çalışıyor!” diye bağırırsa, <em>herkes durur ve bakar.</em>">If someone yells “it works!”, <em>everyone stops and looks.</em></p>
             </div>
           </li>
           <li class="rule rule--last">
             <span class="rule__num" aria-hidden="true">4</span>
             <div class="rule__body">
-              <span class="rule__n mono">And the last rule</span>
-              <p>If this is your first Sunday at Egg Club, <em>you have to build.</em></p>
+              <span class="rule__n mono" data-i18n-tr="Ve son kural">And the last rule</span>
+              <p data-i18n-tr-html="Egg Club’daki ilk Pazarınsa, <em>bir şey inşa etmek zorundasın.</em>">If this is your first Sunday at Egg Club, <em>you have to build.</em></p>
             </div>
           </li>
         </ol>
@@ -404,9 +409,9 @@
       <!-- ───────────── 19:30 · JOIN ───────────── -->
       <section class="join" id="join" data-bg="yolk" aria-labelledby="joinTitle">
         <div class="join__left">
-          <p class="label mono"><span>06</span> Get in the carton</p>
-          <h2 id="joinTitle">Pull up<br />a <em>chair.</em></h2>
-          <p class="join__sub">Free. Every other Sunday. The pizza is on us; the ideas are on you.</p>
+          <p class="label mono"><span>06</span> <span class="label__txt" data-i18n-tr="Kartona katıl">Get in the carton</span></p>
+          <h2 id="joinTitle" data-i18n-tr-html="Bir <br /><em>sandalye</em> çek.">Pull up<br />a <em>chair.</em></h2>
+          <p class="join__sub" data-i18n-tr="Ücretsiz. Her iki haftada bir Pazar. Pizza bizden; fikirler senden.">Free. Every other Sunday. The pizza is on us; the ideas are on you.</p>
         </div>
 
         <form class="quiz" id="joinForm" novalidate>
@@ -415,39 +420,39 @@
           </div>
 
           <fieldset class="q is-active" data-q="0">
-            <legend class="q__title"><label for="fName">What should we call you?</label></legend>
-            <input id="fName" name="name" type="text" autocomplete="given-name" placeholder="Your name" required />
+            <legend class="q__title"><label for="fName" data-i18n-tr="Sana ne diyelim?">What should we call you?</label></legend>
+            <input id="fName" name="name" type="text" autocomplete="given-name" placeholder="Your name" data-i18n-tr-attr-placeholder="Adın" required />
             <div class="q__row">
-              <button class="btn btn--ink q__next" type="button" data-next><span>Next</span></button>
-              <p class="q__hint mono">or press enter ↵</p>
+              <button class="btn btn--ink q__next" type="button" data-next><span data-i18n-tr="İleri">Next</span></button>
+              <p class="q__hint mono" data-i18n-tr="ya da enter’a bas ↵">or press enter ↵</p>
             </div>
           </fieldset>
 
           <fieldset class="q" data-q="1">
-            <legend class="q__title">Nice to meet you, <span data-name>friend</span>. What do you make?</legend>
-            <div class="chips" role="group" aria-label="What do you make? Choose any">
-              <label><input type="checkbox" name="make" value="code" /><span>code</span></label>
-              <label><input type="checkbox" name="make" value="design" /><span>design</span></label>
-              <label><input type="checkbox" name="make" value="hardware" /><span>hardware</span></label>
-              <label><input type="checkbox" name="make" value="research" /><span>research</span></label>
-              <label><input type="checkbox" name="make" value="words" /><span>words</span></label>
-              <label><input type="checkbox" name="make" value="music" /><span>music</span></label>
-              <label><input type="checkbox" name="make" value="art" /><span>art</span></label>
-              <label><input type="checkbox" name="make" value="chaos" /><span>mostly chaos</span></label>
+            <legend class="q__title" data-i18n-tr-html="Tanıştığımıza memnun oldum, <span data-name>arkadaş</span>. Sen ne üretiyorsun?">Nice to meet you, <span data-name>friend</span>. What do you make?</legend>
+            <div class="chips" role="group" aria-label="What do you make? Choose any" data-i18n-tr-attr-aria-label="Ne üretiyorsun? Dilediğini seç">
+              <label><input type="checkbox" name="make" value="code" /><span data-i18n-tr="kod">code</span></label>
+              <label><input type="checkbox" name="make" value="design" /><span data-i18n-tr="tasarım">design</span></label>
+              <label><input type="checkbox" name="make" value="hardware" /><span data-i18n-tr="donanım">hardware</span></label>
+              <label><input type="checkbox" name="make" value="research" /><span data-i18n-tr="araştırma">research</span></label>
+              <label><input type="checkbox" name="make" value="words" /><span data-i18n-tr="kelimeler">words</span></label>
+              <label><input type="checkbox" name="make" value="music" /><span data-i18n-tr="müzik">music</span></label>
+              <label><input type="checkbox" name="make" value="art" /><span data-i18n-tr="sanat">art</span></label>
+              <label><input type="checkbox" name="make" value="chaos" /><span data-i18n-tr="çoğunlukla kaos">mostly chaos</span></label>
             </div>
-            <button class="btn btn--ink q__next" type="button" data-next><span>Next</span></button>
+            <button class="btn btn--ink q__next" type="button" data-next><span data-i18n-tr="İleri">Next</span></button>
           </fieldset>
 
           <fieldset class="q" data-q="2">
-            <legend class="q__title"><label for="fEmail">Where should we send the invite?</label></legend>
+            <legend class="q__title"><label for="fEmail" data-i18n-tr="Davetiyeyi nereye gönderelim?">Where should we send the invite?</label></legend>
             <input id="fEmail" name="email" type="email" autocomplete="email" placeholder="you@somewhere.com" required />
-            <div class="chips chips--radio" role="radiogroup" aria-label="Closest city">
+            <div class="chips chips--radio" role="radiogroup" aria-label="Closest city" data-i18n-tr-attr-aria-label="En yakın şehir">
               <label><input type="radio" name="city" value="ankara" checked /><span>Ankara</span></label>
               <label><input type="radio" name="city" value="eskisehir" /><span>Eskişehir</span></label>
               <label><input type="radio" name="city" value="izmir" /><span>İzmir</span></label>
-              <label><input type="radio" name="city" value="elsewhere" /><span>somewhere else</span></label>
+              <label><input type="radio" name="city" value="elsewhere" /><span data-i18n-tr="başka bir yer">somewhere else</span></label>
             </div>
-            <button class="btn btn--ink q__next" type="submit"><span>Count me in</span></button>
+            <button class="btn btn--ink q__next" type="submit"><span data-i18n-tr="Ben varım">Count me in</span></button>
             <p class="q__error mono" id="quizError" role="alert"></p>
           </fieldset>
 
@@ -462,15 +467,15 @@
                 <polyline class="crack crack--edge" points="0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124" />
               </g>
             </svg>
-            <p class="q__title">You’re in the carton, <span data-name>friend</span>.</p>
-            <p class="done__sub">We’ll email you before the next Sunday with the address and the menu. Bring a laptop, an idea, or just an appetite.</p>
+            <p class="q__title" data-i18n-tr-html="Kartona girdin, <span data-name>arkadaş</span>.">You’re in the carton, <span data-name>friend</span>.</p>
+            <p class="done__sub" data-i18n-tr="Bir sonraki Pazar’dan önce sana adresi ve menüyü mail atacağız. Bir laptop, bir fikir ya da sadece bir iştah getir.">We’ll email you before the next Sunday with the address and the menu. Bring a laptop, an idea, or just an appetite.</p>
           </div>
         </form>
 
         <ul class="others">
-          <li><a href="mailto:hello@theegg.club?subject=We%20have%20a%20space"><span class="hand">got a space?</span><b>Host a Sunday</b></a></li>
-          <li><a href="mailto:hello@theegg.club?subject=We%20want%20to%20feed%20you"><span class="hand">got a pizza budget?</span><b>Feed the club</b></a></li>
-          <li><a href="mailto:hello@theegg.club?subject=New%20chapter"><span class="hand">not in Ankara?</span><b>Start a chapter</b></a></li>
+          <li><a href="mailto:hello@theegg.club?subject=We%20have%20a%20space"><span class="hand" data-i18n-tr="bir mekanın mı var?">got a space?</span><b data-i18n-tr="Bir Pazar’a ev sahipliği yap">Host a Sunday</b></a></li>
+          <li><a href="mailto:hello@theegg.club?subject=We%20want%20to%20feed%20you"><span class="hand" data-i18n-tr="pizza bütçen mi var?">got a pizza budget?</span><b data-i18n-tr="Kulübü besle">Feed the club</b></a></li>
+          <li><a href="mailto:hello@theegg.club?subject=New%20chapter"><span class="hand" data-i18n-tr="Ankara’da değil misin?">not in Ankara?</span><b data-i18n-tr="Bir şube başlat">Start a chapter</b></a></li>
         </ul>
       </section>
     </main>
@@ -494,32 +499,32 @@
         </picture>
 
         <div class="foot__top">
-          <p class="foot__sign">See you Sunday.<br /><em>Bring an appetite.</em></p>
+          <p class="foot__sign" data-i18n-tr-html="Pazar’a kadar.<br /><em>Bir iştah getir.</em>">See you Sunday.<br /><em>Bring an appetite.</em></p>
           <button class="foot__hint" id="poke" type="button" aria-controls="portal">
-            <span class="hand foot__psst">psst —</span>
-            <span class="hand foot__more">the night isn’t over.<br />keep scrolling</span>
+            <span class="hand foot__psst" data-i18n-tr="hişt —">psst —</span>
+            <span class="hand foot__more" data-i18n-tr-html="gece daha bitmedi.<br />aşağı kaydır">the night isn’t over.<br />keep scrolling</span>
             <svg class="foot__arrow" viewBox="0 0 40 90" aria-hidden="true"><path d="M20 4 C 12 30 28 50 20 80 M20 80 L 9 64 M20 80 L 31 66" /></svg>
           </button>
           <nav class="foot__cols" aria-label="Footer">
             <ul>
-              <li class="mono">Find us</li>
+              <li class="mono" data-i18n-tr="Bizi bulun">Find us</li>
               <li><a href="https://instagram.com" rel="noopener">Instagram</a></li>
               <li><a href="https://x.com" rel="noopener">X / Twitter</a></li>
               <li><a href="https://luma.com" rel="noopener">Luma</a></li>
             </ul>
             <ul>
-              <li class="mono">Say hi</li>
+              <li class="mono" data-i18n-tr="Merhaba de">Say hi</li>
               <li><a href="mailto:hello@theegg.club">hello@theegg.club</a></li>
-              <li><a href="#join">Join the list</a></li>
-              <li><a href="#top">Back to the top ↑</a></li>
+              <li><a href="#join" data-i18n-tr="Listeye katıl">Join the list</a></li>
+              <li><a href="#top" data-i18n-tr="Yukarı çık ↑">Back to the top ↑</a></li>
             </ul>
           </nav>
         </div>
       </div>
 
       <div class="foot__base">
-        <span class="mono">© 2026 The Egg Club</span>
-        <span class="mono hide-sm">Made in Ankara on too much pizza</span>
+        <span class="mono" data-i18n-tr="© 2026 The Egg Club">© 2026 The Egg Club</span>
+        <span class="mono hide-sm" data-i18n-tr="Ankara’da, fazla pizzayla yapıldı">Made in Ankara on too much pizza</span>
       </div>
     </footer>
 
@@ -552,10 +557,10 @@
 
         <div class="cabinet__deck">
           <p class="cabinet__name px" id="gameName">The Egg Club · <b>Night Shift</b></p>
-          <p class="cabinet__help px">move: arrows / WASD / tap · talk: E or space · scroll up to leave</p>
+          <p class="cabinet__help px" data-i18n-tr="hareket: oklar / WASD / dokun · konuş: E veya boşluk · çıkmak için yukarı kaydır">move: arrows / WASD / tap · talk: E or space · scroll up to leave</p>
           <div class="cabinet__btns">
-            <button class="arcbtn arcbtn--talk px" id="gTalk" type="button"><span>E</span>talk</button>
-            <button class="arcbtn arcbtn--close px" id="gClose" type="button"><span>↺</span>restart</button>
+            <button class="arcbtn arcbtn--talk px" id="gTalk" type="button"><span>E</span><span class="arcbtn__label" data-i18n-tr="konuş">talk</span></button>
+            <button class="arcbtn arcbtn--close px" id="gClose" type="button"><span>↺</span><span class="arcbtn__label" data-i18n-tr="yeniden">restart</span></button>
           </div>
         </div>
       </div>

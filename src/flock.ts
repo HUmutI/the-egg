@@ -1,6 +1,7 @@
 import { gsap } from 'gsap'
 import { $, PALETTE, clamp, reducedMotion } from './util'
 import { handEgg, inkEgg, installInkDefs, type EggShape } from './ink'
+import { lang } from './i18n'
 
 type Kind = 'owl' | 'designer' | 'battery' | 'founder' | 'footnote' | 'wave' | 'nest' | 'slice'
 
@@ -15,7 +16,7 @@ interface Bird {
   tilt: number
 }
 
-const FLOCK: Bird[] = [
+const FLOCK_EN: Bird[] = [
   { name: 'the night-owl engineer', say: 'it works on my machine.', color: PALETTE.lav, kind: 'owl', shape: { w: 0.92, h: 1.04, lean: -4 }, x: 4, y: 6, tilt: -5 },
   { name: 'the designer', say: 'can we try it in a softer yellow?', color: PALETTE.butter, kind: 'designer', shape: { w: 1.02, h: 0.94, lean: 6, taper: 0.1 }, x: 25, y: 30, tilt: 6 },
   { name: 'the hardware person', say: 'I brought a soldering iron. And a spare.', color: PALETTE.mint, kind: 'battery', shape: { w: 0.86, h: 1.06, lean: -2, taper: 0.08 }, x: 47, y: 4, tilt: -4 },
@@ -25,6 +26,19 @@ const FLOCK: Bird[] = [
   { name: 'the first-timer', say: 'first hackathon. third slice.', color: PALETTE.cream, kind: 'nest', shape: { w: 0.84, h: 0.92, lean: -3 }, x: 59, y: 56, tilt: 5 },
   { name: 'here for the pizza', say: 'honestly? the pizza.', color: PALETTE.peach, kind: 'slice', shape: { w: 1, h: 1, lean: 2 }, x: 81, y: 50, tilt: -4 },
 ]
+
+const FLOCK_TR: Bird[] = [
+  { name: 'gece kuşu mühendis', say: 'bende çalışıyor.', color: PALETTE.lav, kind: 'owl', shape: { w: 0.92, h: 1.04, lean: -4 }, x: 4, y: 6, tilt: -5 },
+  { name: 'tasarımcı', say: 'daha yumuşak bir sarı deneyebilir miyiz?', color: PALETTE.butter, kind: 'designer', shape: { w: 1.02, h: 0.94, lean: 6, taper: 0.1 }, x: 25, y: 30, tilt: 6 },
+  { name: 'donanımcı', say: 'bir lehim havyası getirdim. Bir de yedek.', color: PALETTE.mint, kind: 'battery', shape: { w: 0.86, h: 1.06, lean: -2, taper: 0.08 }, x: 47, y: 4, tilt: -4 },
+  { name: 'iyileşen girişimci', say: 'sunum yok, söz. tamam, ufak bir tane.', color: PALETTE.peach, kind: 'founder', shape: { w: 0.98, h: 1, lean: 3 }, x: 70, y: 16, tilt: 5 },
+  { name: 'araştırmacı', say: 'bu konuda bir makale var. Ben yazdım.', color: PALETTE.sky, kind: 'footnote', shape: { w: 0.9, h: 1.02, lean: -7, taper: 0.18 }, x: 10, y: 54, tilt: 4 },
+  { name: 'müzisyen', say: 'uygulamanın… bir bas hattı olsa?', color: PALETTE.yolk, kind: 'wave', shape: { w: 1.06, h: 0.96, lean: 4 }, x: 36, y: 58, tilt: -6 },
+  { name: 'ilk kez gelen', say: 'ilk hackathon. üçüncü dilim.', color: PALETTE.cream, kind: 'nest', shape: { w: 0.84, h: 0.92, lean: -3 }, x: 59, y: 56, tilt: 5 },
+  { name: 'pizza için burada', say: 'açıkçası? pizza.', color: PALETTE.peach, kind: 'slice', shape: { w: 1, h: 1, lean: 2 }, x: 81, y: 50, tilt: -4 },
+]
+
+const FLOCK: Bird[] = lang === 'tr' ? FLOCK_TR : FLOCK_EN
 
 const I = PALETTE.ink
 const T = PALETTE.tomato
@@ -154,22 +168,28 @@ export function initFlock() {
   const you = document.createElement('a')
   you.href = '#join'
   you.className = 'bird bird--you'
-  you.setAttribute('aria-label', 'You? There’s a seat with your name on it — join')
+  you.setAttribute(
+    'aria-label',
+    lang === 'tr' ? 'Sen? Üzerinde adın yazan bir sandalye var — katıl' : 'You? There’s a seat with your name on it — join',
+  )
   you.innerHTML = `
     <span class="bird__fig" aria-hidden="true">fig. 09</span>
-    <span class="bird__say" aria-hidden="true">“there’s a seat with your name on it.”</span>
+    <span class="bird__say" aria-hidden="true">“${lang === 'tr' ? 'üzerinde adın yazan bir sandalye var.' : 'there’s a seat with your name on it.'}”</span>
     <span class="bird__body"><svg viewBox="-30 -60 270 380" aria-hidden="true">
       <path d="${handEgg(99, { w: 0.95, lean: -5 })}" fill="none" stroke="${I}" stroke-width="2.6" stroke-dasharray="2 9" stroke-linecap="round"/>
-      <text x="100" y="160" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="52" fill="${I}">you?</text>
+      <text x="100" y="160" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="52" fill="${I}">${lang === 'tr' ? 'sen?' : 'you?'}</text>
     </svg></span>
-    <span class="bird__name" aria-hidden="true">to be continued</span>`
+    <span class="bird__name" aria-hidden="true">${lang === 'tr' ? 'devamı var' : 'to be continued'}</span>`
   field.append(you)
   cells.push(you)
 
   const note = document.createElement('div')
   note.className = 'flock__note'
   note.setAttribute('aria-hidden', 'true')
-  note.innerHTML = `<p class="hand">pull one.<br/>it bounces back.</p><p class="mono">plate 04 · the regulars</p>`
+  note.innerHTML =
+    lang === 'tr'
+      ? `<p class="hand">birini çek.<br/>geri sıçrar.</p><p class="mono">levha 04 · müdavimler</p>`
+      : `<p class="hand">pull one.<br/>it bounces back.</p><p class="mono">plate 04 · the regulars</p>`
   field.append(note)
 
   // Tap to read the quote on touch.

@@ -1,5 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { applyI18n, initLangToggle } from './i18n'
 import { initHero } from './hero'
 import { initSky } from './sky'
 import { initReveals, initRules, initStatement, initWho } from './story'
@@ -9,6 +10,10 @@ import { initJoin } from './join'
 import { initPortal } from './portal'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// Translate the DOM before anything measures or animates it.
+applyI18n()
+initLangToggle()
 
 const start = () => {
   initHero()

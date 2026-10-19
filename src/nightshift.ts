@@ -1,4 +1,5 @@
 import { PALETTE } from './util'
+import { lang } from './i18n'
 
 /**
  * NIGHT SHIFT — the hidden game behind the footer.
@@ -58,13 +59,22 @@ interface Line {
   color: string
 }
 
-const CHATTER = [
-  'Rule one: you DO talk about Egg Club.',
-  'Next Sunday is in Çankaya. Bring a friend who builds weird things.',
-  'Half-baked is the house style. Finished things are boring.',
-  'I came for the pizza. I stayed because someone fixed my deploy.',
-  'Whoever takes the last slice orders the next pizza. Remember that.',
-]
+const CHATTER =
+  lang === 'tr'
+    ? [
+        'Bir numaralı kural: Egg Club hakkında KONUŞURSUN.',
+        'Bir sonraki Pazar Çankaya’da. Tuhaf şeyler üreten bir arkadaşını getir.',
+        'Yarım pişmiş olmak burada tarz. Bitmiş şeyler sıkıcı.',
+        'Pizza için geldim. Biri deploy’umu düzelttiği için kaldım.',
+        'Son dilimi alan, bir sonraki pizzayı ısmarlar. Unutma.',
+      ]
+    : [
+        'Rule one: you DO talk about Egg Club.',
+        'Next Sunday is in Çankaya. Bring a friend who builds weird things.',
+        'Half-baked is the house style. Finished things are boring.',
+        'I came for the pizza. I stayed because someone fixed my deploy.',
+        'Whoever takes the last slice orders the next pizza. Remember that.',
+      ]
 
 const npcs = (): Npc[] => {
   const mk = (
@@ -81,6 +91,34 @@ const npcs = (): Npc[] => {
     x: seat[0], y: seat[1], facing: 1, moving: false, anim: 0, path: [],
     hungry: true, wanderIn: 4 + Math.random() * 8, bob: Math.random() * 6,
   })
+  if (lang === 'tr') {
+    return [
+      mk('Deniz', 'gece kuşu mühendis', PALETTE.lav, 'glasses', [44, 92], 'Kızılay FM',
+        ['Konuşamam. Derliyorum. …dur, pizza mı kokuyor?', 'Kızılay’daki her otobüs artık bir nota. Bana sadece… kalori gerek.'],
+        'Yakıt sağlandı. Kızılay FM yayında — otobüsler artık bas.'),
+      mk('Ela', 'tasarımcı', PALETTE.pink, 'beret', [76, 92], 'Lost Words',
+        ['Kerning doğru olunca yerim. Yani… hiç. Bir dilim getirmezsen tabii.', 'Pizzayı daha yumuşak bir sarıda deneyebilir miyiz?'],
+        'Mükemmel. Lost Words şimdi muhteşem görünüyor. Jenerikte adın var.'),
+      mk('Kaan', 'donanım cini', PALETTE.mint, 'goggles', [106, 92], 'Pizza Tepsisi',
+        ['Bir pizza tepsisi! Tepsiye ihtiyacım var. Pizzaya da sanırım.', 'Bu anten %90 silikon yapıştırıcı. Diğer %10’u umut.'],
+        'Bir hava uydusundan canlı görüntü çektik. Pizza tepsisiyle.'),
+      mk('Mert', 'iyileşen girişimci', PALETTE.peach, 'cap', [44, 148], 'Apartman Digest',
+        ['Sunum yok, söz. Tamam, ufak bir tane: pizza… bana teslim edilsin.', 'Yatırım almıyoruz. Sadece çok, çok açız.'],
+        'Apartman Digest: 214 mesaj, bir cümle. Henüz yatırım almıyoruz.'),
+      mk('Zeynep', 'araştırmacı', PALETTE.sky, 'bandage', [84, 148], 'Pazar Index',
+        ['Optimal pizza dağılımı üzerine bir makale var. Yanlış yapıyorsun. Yine de bir tane getir.', 'Domatesler öğleden sonra %4 arttı. Veriye ihtiyacım var. Ve hamura.'],
+        'Pazar Index çiziyor. Hakem değerlendirmesi: nefis.'),
+      mk('Arda', 'müzisyen', PALETTE.cream, 'headphones', [212, 148], 'Sound of the City',
+        ['Uygulamanın bir bas hattı olsa? Pizzanın içine ben saklansam?', 'Kızılay kalabalığını kaydettim. Şimdi bir atıştırmalık gerek.'],
+        'Sound of the City artık adımlarını içinde taşıyor. Dikkatlice dinle.'),
+      mk('Selin', 'ilk kez gelen', '#bfe3c9', 'sprout', [244, 148], 'Kedi ID',
+        ['İlk hackathon. Hep bu kadar heyecanlı mı? Ayrıca açlıktan ölüyorum.', '300 kedi üzerinde bir model eğittik. Hiçbirimiz yemek yemedi.'],
+        'Yayına aldık! Kedi ID üç Tekir buldu ve hepsi farklı.'),
+      mk('Bora', 'pizza için burada', PALETTE.lavDeep, 'mustache', [276, 148], 'The Fair Slice',
+        ['Açıkçası? Pizza için buradayım. Sonra inşa için. O sırayla.', 'Uygulamam pizza dilimlerini ölçüyor. Hiç pizzam yok. Sorunu görüyor musun?'],
+        'The Fair Slice bu dilimin seninkinden %2 daha büyük olduğunu söylüyor. Sağ ol.'),
+    ]
+  }
   return [
     mk('Deniz', 'night-owl engineer', PALETTE.lav, 'glasses', [44, 92], 'Kızılay FM',
       ['Can’t talk. Compiling. …wait, is that pizza I smell?', 'Every bus in Kızılay is a note now. I just need… calories.'],
@@ -647,8 +685,14 @@ export function createNightShift(opts: {
       hud.innerHTML = ''
       return
     }
-    const mid = clockOn ? `<b>${fmt(minutes)}</b><i> · demos 00:00</i>` : '<b>move to start</b>'
-    hud.innerHTML = `<span>fed <b>${fed}/8</b></span><span>${mid}</span><span>${carrying ? '<b>● slice</b>' : 'hands free'}${golden ? ' · <b>★</b>' : ''}</span>`
+    const mid =
+      clockOn
+        ? `<b>${fmt(minutes)}</b><i> · ${lang === 'tr' ? 'demolar 00:00' : 'demos 00:00'}</i>`
+        : `<b>${lang === 'tr' ? 'hareket et, başla' : 'move to start'}</b>`
+    const fedLabel = lang === 'tr' ? 'beslenen' : 'fed'
+    const handsFree = lang === 'tr' ? 'eller boş' : 'hands free'
+    const sliceLabel = lang === 'tr' ? '<b>● dilim</b>' : '<b>● slice</b>'
+    hud.innerHTML = `<span>${fedLabel} <b>${fed}/8</b></span><span>${mid}</span><span>${carrying ? sliceLabel : handsFree}${golden ? ' · <b>★</b>' : ''}</span>`
   }
 
   // ── dialog ──
@@ -691,16 +735,28 @@ export function createNightShift(opts: {
       safeSet(BEST_KEY, String(Math.floor(best)))
     }
     const shipped = people.filter((p) => !p.hungry).map((p) => `<li>✓ ${p.project}</li>`).join('')
-    card.innerHTML = won
-      ? `<h3>Demo time</h3>
-         <p>Every team shipped. Everyone fed by ${fmt(minutes)}${golden ? ', and you found the golden egg' : ''}.</p>
-         <ul>${shipped}</ul>
-         <p>This is what a Sunday at The Egg Club feels like. Come build the real thing.</p>
-         <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Save a seat</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Play again</button></div>`
-      : `<h3>Midnight</h3>
-         <p>Demos started with ${8 - fed} hungry builder${8 - fed === 1 ? '' : 's'}. They’ll forgive you. Probably.</p>
-         ${shipped ? `<ul>${shipped}</ul>` : ''}
-         <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Try again</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Save a seat</button></div>`
+    card.innerHTML =
+      lang === 'tr'
+        ? won
+          ? `<h3>Demo zamanı</h3>
+             <p>Tüm takımlar yayına girdi. Herkes ${fmt(minutes)}’e kadar beslendi${golden ? ', ve altın yumurtayı buldun' : ''}.</p>
+             <ul>${shipped}</ul>
+             <p>The Egg Club’da bir Pazar böyle hissettirir. Gelip gerçeğini inşa et.</p>
+             <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Yerini ayır</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Tekrar oyna</button></div>`
+          : `<h3>Gece yarısı</h3>
+             <p>Demolar ${8 - fed} açlıktan bitmiş inşacıyla başladı. Seni affederler. Muhtemelen.</p>
+             ${shipped ? `<ul>${shipped}</ul>` : ''}
+             <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Tekrar dene</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Yerini ayır</button></div>`
+        : won
+          ? `<h3>Demo time</h3>
+             <p>Every team shipped. Everyone fed by ${fmt(minutes)}${golden ? ', and you found the golden egg' : ''}.</p>
+             <ul>${shipped}</ul>
+             <p>This is what a Sunday at The Egg Club feels like. Come build the real thing.</p>
+             <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Save a seat</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Play again</button></div>`
+          : `<h3>Midnight</h3>
+             <p>Demos started with ${8 - fed} hungry builder${8 - fed === 1 ? '' : 's'}. They’ll forgive you. Probably.</p>
+             ${shipped ? `<ul>${shipped}</ul>` : ''}
+             <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Try again</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Save a seat</button></div>`
     renderHud()
     card.querySelector<HTMLButtonElement>('.pxbtn')?.focus({ preventScroll: true })
   }
@@ -723,7 +779,10 @@ export function createNightShift(opts: {
     dialog.hidden = true
     card.innerHTML = ''
     state = 'play'
-    hint.innerHTML = 'It’s 23:00. Demos at midnight. Pizza’s on the counter — <b>feed all 8 builders</b>.'
+    hint.innerHTML =
+      lang === 'tr'
+        ? 'Saat 23:00. Demolar gece yarısı. Pizza tezgahta — <b>8 inşacının hepsini besle</b>.'
+        : 'It’s 23:00. Demos at midnight. Pizza’s on the counter — <b>feed all 8 builders</b>.'
     renderHud()
   }
 
@@ -758,7 +817,10 @@ export function createNightShift(opts: {
   }
 
   const takeSlice = () => {
-    if (carrying) return say([{ name: 'Pizza', text: 'One slice at a time. House rules.', color: PALETTE.peach }])
+    if (carrying)
+      return say([
+        { name: 'Pizza', text: lang === 'tr' ? 'Bir seferde bir dilim. Ev kuralı.' : 'One slice at a time. House rules.', color: PALETTE.peach },
+      ])
     carrying = true
     renderHud()
     floats.push({ x: you.x, y: you.y - 20, t: 0, text: '+slice', color: PALETTE.yolk })
@@ -931,7 +993,16 @@ export function createNightShift(opts: {
     if (!golden && Math.hypot(you.x - GOLDEN.x, you.y - GOLDEN.y) < 12) {
       golden = true
       renderHud()
-      say([{ name: '★', text: 'You found the golden egg behind the plant. You should definitely come on Sunday.', color: PALETTE.yolk }])
+      say([
+        {
+          name: '★',
+          text:
+            lang === 'tr'
+              ? 'Bitkinin arkasındaki altın yumurtayı buldun. Pazar günü kesinlikle gelmelisin.'
+              : 'You found the golden egg behind the plant. You should definitely come on Sunday.',
+          color: PALETTE.yolk,
+        },
+      ])
     }
 
     // npcs wander a little, then go back to their seat

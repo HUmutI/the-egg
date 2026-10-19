@@ -1,5 +1,6 @@
 import { gsap } from 'gsap'
 import { $, $$, reducedMotion } from './util'
+import { lang } from './i18n'
 
 const STORE = 'eggclub:signups'
 
@@ -20,7 +21,7 @@ export function initJoin() {
   const go = (n: number) => {
     step = n
     qs.forEach((q, i) => q.classList.toggle('is-active', i === n))
-    stepLabel.textContent = n < 3 ? `0${n + 1} / 03` : 'done ✓'
+    stepLabel.textContent = n < 3 ? `0${n + 1} / 03` : lang === 'tr' ? 'tamam ✓' : 'done ✓'
     const target = qs[n].querySelector<HTMLElement>('input:not([type=hidden]), button') ?? qs[n]
     target.focus({ preventScroll: true })
   }
@@ -61,7 +62,7 @@ export function initJoin() {
     if (step === 1) return go(2)
     const email = emailInput.value.trim()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      error.textContent = 'Hmm, that email looks a bit scrambled.'
+      error.textContent = lang === 'tr' ? 'Hmm, bu e-posta biraz karışık görünüyor.' : 'Hmm, that email looks a bit scrambled.'
       shake(emailInput)
       emailInput.focus()
       return

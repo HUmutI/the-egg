@@ -190,6 +190,14 @@ body::after {
   border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
   font-size: 11px;
 }
+.label span.label__txt {
+  display: inline;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
 
 .ink-fill {
   fill: var(--ink);
@@ -361,6 +369,7 @@ body::after {
   color: var(--ink-2);
   text-transform: lowercase;
   min-width: 9ch;
+  white-space: nowrap;
 }
 
 .nav__links {
@@ -382,6 +391,26 @@ body::after {
 .nav__links .btn {
   height: 36px;
   border: 0;
+}
+.lang-toggle {
+  appearance: none;
+  height: 36px;
+  padding: 0 12px;
+  margin: 0 2px;
+  border: 1px solid var(--ink-3);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+}
+.lang-toggle:hover {
+  background: var(--butter);
+  border-color: var(--ink-2);
 }
 
 @media (max-width: 860px) {
@@ -2681,6 +2710,16 @@ body.is-arcade .nav > * {
   background: radial-gradient(circle at 35% 30%, #ffd1e0, var(--pink-deep) 55%, #c4507a);
   box-shadow: 0 5px 0 #7d2c4b, 0 8px 16px rgba(0, 0, 0, 0.4);
   font-size: 10px;
+}
+.arcbtn span.arcbtn__label {
+  display: inline;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
 }
 .arcbtn:active span {
   transform: translateY(4px);

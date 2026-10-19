@@ -1,6 +1,7 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { $, $$, PALETTE, clamp, clockState, lerp } from './util'
+import { lang } from './i18n'
 
 /**
  * The whole page is one Sunday. As you scroll, the background drifts through
@@ -18,19 +19,34 @@ const BG: Record<string, string> = {
   night: PALETTE.night,
 }
 
-const LABELS: [number, string][] = [
-  [12 * 60, 'doors soon'],
-  [12 * 60 + 30, 'doors open'],
-  [13 * 60 + 15, 'pitching'],
-  [13 * 60 + 30, 'teaming up'],
-  [18 * 60, 'building'],
-  [19 * 60, 'pizza'],
-  [21 * 60 + 30, 'building'],
-  [23 * 60, 'demos'],
-  [24 * 60, 'afterglow'],
-  [24 * 60 + 40, 'last metro'],
-  [99 * 60, 'night owls'],
-]
+const LABELS: [number, string][] =
+  lang === 'tr'
+    ? [
+        [12 * 60, 'kapılar yakında'],
+        [12 * 60 + 30, 'kapılar açık'],
+        [13 * 60 + 15, 'sunumlar'],
+        [13 * 60 + 30, 'takım kuruluyor'],
+        [18 * 60, 'inşa ediliyor'],
+        [19 * 60, 'pizza'],
+        [21 * 60 + 30, 'inşa ediliyor'],
+        [23 * 60, 'demolar'],
+        [24 * 60, 'son parıltı'],
+        [24 * 60 + 40, 'son metro'],
+        [99 * 60, 'gece kuşları'],
+      ]
+    : [
+        [12 * 60, 'doors soon'],
+        [12 * 60 + 30, 'doors open'],
+        [13 * 60 + 15, 'pitching'],
+        [13 * 60 + 30, 'teaming up'],
+        [18 * 60, 'building'],
+        [19 * 60, 'pizza'],
+        [21 * 60 + 30, 'building'],
+        [23 * 60, 'demos'],
+        [24 * 60, 'afterglow'],
+        [24 * 60 + 40, 'last metro'],
+        [99 * 60, 'night owls'],
+      ]
 
 export function initSky() {
   const body = document.body
