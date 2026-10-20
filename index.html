@@ -131,9 +131,9 @@
                 <text x="1188" y="300" transform="rotate(-7 1188 300)" class="ink-red">later.</text>
               </g>
 
-              <!-- pizza-powered → the slice -->
+              <!-- free pizza → the slice -->
               <g class="dd dd--c" data-redraw style="--d: 0.95s">
-                <text x="1388" y="258" transform="rotate(5 1388 258)" class="ink-orange sm">pizza-powered</text>
+                <text x="1388" y="258" transform="rotate(5 1388 258)" class="ink-orange sm">free pizza</text>
                 <path class="draw ink-orange" pathLength="1" d="M1470 282 C 1466 356 1416 420 1318 456" />
                 <path class="draw ink-orange" pathLength="1" d="M1318 456 L 1338 440 M1318 456 L 1340 462" />
               </g>
@@ -199,65 +199,24 @@
           <p class="what__cue mono" aria-hidden="true" data-i18n-tr="aşağı kaydır">keep scrolling</p>
         </div>
 
-        <div class="who" id="who">
-          <header class="who__head">
-            <h2 class="who__label" data-i18n-tr-html="Kimler <em>geliyor.</em>">Who <em>comes.</em></h2>
-            <p class="who__deck" data-i18n-tr-html="Kapıda CV yok, unvan yok. <b>Ne konuda iyiysen onu getir.</b>">No CVs, no titles at the door. <b>Bring whatever you’re good at.</b></p>
-          </header>
-          <ul class="who__list" id="whoList">
-            <li><button type="button" class="who__n" data-note="will redesign the table by 3pm" data-i18n-tr="mimarlar" data-i18n-tr-attr-data-note="saat 3’e kalmadan masayı yeniden tasarlar">architects</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it works on my machine" data-i18n-tr="yazılım mühendisleri" data-i18n-tr-attr-data-note="bende çalışıyor">software engineers</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--yolk)" data-note="can we try it in a softer yellow?" data-i18n-tr="tasarımcılar" data-i18n-tr-attr-data-note="daha yumuşak bir sarı deneyebilir miyiz?">designers</button></li>
-            <li><button type="button" class="who__n" data-note="there’s a paper on this" data-i18n-tr="araştırmacılar" data-i18n-tr-attr-data-note="bu konuda bir makale var">researchers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="it’s not broken, it’s a texture" data-i18n-tr="sanatçılar" data-i18n-tr-attr-data-note="bozuk değil, doku bu">artists</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--mint)" data-note="on call, still shipping" data-i18n-tr="doktorlar" data-i18n-tr-attr-data-note="nöbette ama hâlâ üretiyor">doctors</button></li>
-            <li><button type="button" class="who__n" data-note="reading the terms so you don’t have to" data-i18n-tr="avukatlar" data-i18n-tr-attr-data-note="sözleşmeyi senin yerine okuyor">lawyers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="what if it had a bassline?" data-i18n-tr="müzisyenler" data-i18n-tr-attr-data-note="bir bas hattı olsa ne olur?">musicians</button></li>
-            <li><button type="button" class="who__n" data-note="the README will be beautiful" data-i18n-tr="yazarlar" data-i18n-tr-attr-data-note="README muhteşem olacak">writers</button></li>
-            <li><button type="button" class="who__n" data-note="documenting the chaos" data-i18n-tr="yönetmenler" data-i18n-tr-attr-data-note="kaosu belgeliyor">filmmakers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="one more, the light’s good" data-i18n-tr="fotoğrafçılar" data-i18n-tr-attr-data-note="bir tane daha, ışık güzel">photographers</button></li>
-            <li><button type="button" class="who__n" data-note="correlation isn’t causation. still." data-i18n-tr="veri bilimciler" data-i18n-tr-attr-data-note="korelasyon nedensellik değil. yine de.">data scientists</button></li>
-            <li><button type="button" class="who__n" data-note="no pitch. okay, a tiny one." data-i18n-tr="girişimciler" data-i18n-tr-attr-data-note="sunum yok. tamam, ufak bir tane.">founders</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--lav-deep)" data-note="it’s a feature now" data-i18n-tr="oyun geliştiricileri" data-i18n-tr-attr-data-note="artık bir özellik">game developers</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--lav)" data-note="strictly off duty" data-i18n-tr="memurlar" data-i18n-tr-attr-data-note="kesinlikle mesai dışı">civil servants</button></li>
-            <li><button type="button" class="who__n" data-note="here in an unofficial capacity" data-i18n-tr="diplomatlar" data-i18n-tr-attr-data-note="gayriresmi olarak burada">diplomats</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--mint-deep)" data-note="quietly judging the pizza" data-i18n-tr="şefler" data-i18n-tr-attr-data-note="sessizce pizzayı yargılıyor">chefs</button></li>
-            <li><button type="button" class="who__n" data-note="the pizza budget is not sustainable" data-i18n-tr="ekonomistler" data-i18n-tr-attr-data-note="pizza bütçesi sürdürülebilir değil">economists</button></li>
-            <li><button type="button" class="who__n" data-note="will explain it twice, kindly" data-i18n-tr="öğretmenler" data-i18n-tr-attr-data-note="nazikçe iki kere anlatır">teachers</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--peach-deep)" data-note="hypothesis: more pizza" data-i18n-tr="fizikçiler" data-i18n-tr-attr-data-note="hipotez: daha çok pizza">physicists</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--peach)" data-note="brought a soldering iron, and a spare" data-i18n-tr="donanımcılar" data-i18n-tr-attr-data-note="lehim havyası getirdi, bir de yedek">hardware people</button></li>
-            <li><button type="button" class="who__n" data-note="what problem are we solving? (fun, mostly)" data-i18n-tr="ürün insanları" data-i18n-tr-attr-data-note="hangi sorunu çözüyoruz? (çoğunlukla keyif)">product people</button></li>
-            <li><button type="button" class="who__n who__n--i" style="--c: var(--pink-deep)" data-note="the bus route is wrong" data-i18n-tr="şehir plancıları" data-i18n-tr-attr-data-note="otobüs hattı yanlış">urban planners</button></li>
-            <li><button type="button" class="who__n" data-note="off the record, it’s great" data-i18n-tr="gazeteciler" data-i18n-tr-attr-data-note="kayıt dışı, çok iyi">journalists</button></li>
-            <li><button type="button" class="who__n who__n--mark" style="--m: var(--pink)" data-note="ODTÜ, Bilkent, Hacettepe — and whoever skipped class" data-i18n-tr="öğrenciler" data-i18n-tr-attr-data-note="ODTÜ, Bilkent, Hacettepe — ve dersi asan herkes">students</button></li>
-            <li class="who__last"><span data-i18n-tr="ve">and</span> <button type="button" class="who__n who__n--i who__n--key" data-note="the only requirement" data-i18n-tr="meraklılar." data-i18n-tr-attr-data-note="tek şart bu">the curious.</button></li>
-          </ul>
-          <p class="who__caption mono" aria-live="polite"><span class="who__k" id="whoK" data-i18n-tr="bir isme dokun">hover a name</span><span class="who__v" id="whoV" data-i18n-tr="— herkesin burada olmak için bir sebebi var">— everyone has a reason to be here</span></p>
+      </section>
+
+      <!-- ───────────── 09:50 · WHO COMES ───────────── -->
+      <section class="flock" id="who" data-bg="pink" aria-labelledby="flockTitle">
+        <div class="flock__head">
+          <p class="label mono"><span>02</span> <span class="label__txt" data-i18n-tr="Kimler geliyor">Who comes</span></p>
+          <h2 id="flockTitle" class="reveal" data-i18n-tr-html="Her Pazar <em>farklı bir karışım.</em>">A different mix <em>every Sunday.</em></h2>
+          <p class="reveal" data-i18n-tr="Kurucu, mühendis olmana ya da ne yapmak istediğinden bile emin olmana gerek yok. Sadece meraklı ve biraz sabırsız olman yeterli.">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
         </div>
+        <p class="who__v flock__everyone reveal" data-i18n-tr="— herkesin burada olmak için bir sebebi var">— everyone has a reason to be here</p>
+        <div class="flock__field" id="flockField"></div>
       </section>
 
       <!-- ───────────── 10:20 · WHY ───────────── -->
-      <section class="why" id="why" data-bg="butter">
-        <p class="label mono"><span>02</span> <span class="label__txt" data-i18n-tr="Neden?">Why bother</span></p>
-        <div class="why__grid">
-          <h2 class="why__big reveal" data-i18n-tr-html="Ankara’nın nüfusu altı milyona yakın. Yine de gece <em>2’de</em> yapayalnız bir şey inşa ediyorsun.">
-            Ankara has almost six million people. Somehow you’re still building
-            alone at <em>2am.</em>
-          </h2>
-          <div class="why__side reveal">
-            <ul class="strikes" aria-label="Things The Egg Club is not">
-              <li><span data-i18n-tr="Paneller.">Panels.</span></li>
-              <li><span data-i18n-tr="Yaka kartları.">Lanyards.</span></li>
-              <li><span data-i18n-tr="İsim etiketli kokteyller.">Mixers with name stickers.</span></li>
-              <li><span data-i18n-tr="“Sonra devam edelim.”">“Let’s circle back.”</span></li>
-              <li><span data-i18n-tr="Sunum karaokesi.">Pitch-deck karaoke.</span></li>
-            </ul>
-            <p class="hand why__so" data-i18n-tr="biz de daha iyi bir oda yaptık ↓">so we made a better room ↓</p>
-            <p class="why__answer" data-i18n-tr="Uzun bir masa. Bol pizza. Gece yarısı bir teslim tarihi.">
-              One long table. Too much pizza. A deadline at midnight.
-            </p>
-          </div>
-        </div>
+      <section class="why why--mini" id="why" data-bg="butter">
+        <p class="why__mini reveal" data-i18n-tr-html="Ankara’nın nüfusu altı milyona yakın. Yine de gece <em>2’de</em> yapayalnız bir şey inşa ediyorsun.">
+          Ankara has almost six million people. Somehow you’re still building alone at <em>2am.</em>
+        </p>
       </section>
 
 
@@ -351,19 +310,9 @@
         </div>
       </section>
 
-      <!-- ───────────── 17:30 · WHO SHOWS UP ───────────── -->
-      <section class="flock" id="flock" data-bg="pink" aria-labelledby="flockTitle">
-        <div class="flock__head">
-          <p class="label mono"><span>04</span> <span class="label__txt" data-i18n-tr="Kimler geliyor">Who shows up</span></p>
-          <h2 id="flockTitle" class="reveal" data-i18n-tr-html="Her Pazar <em>farklı bir karışım.</em>">A different mix <em>every Sunday.</em></h2>
-          <p class="reveal" data-i18n-tr="Kurucu, mühendis olmana ya da ne yapmak istediğinden bile emin olmana gerek yok. Sadece meraklı ve biraz sabırsız olman yeterli.">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
-        </div>
-        <div class="flock__field" id="flockField"></div>
-      </section>
-
       <!-- ───────────── 18:30 · RULES ───────────── -->
       <section class="rules" id="rules" data-bg="pink" aria-labelledby="rulesTitle">
-        <p class="label mono"><span>05</span> <span class="label__txt" data-i18n-tr="Kulüp kuralları">House rules</span></p>
+        <p class="label mono"><span>04</span> <span class="label__txt" data-i18n-tr="Kulüp kuralları">House rules</span></p>
         <header class="rules__head">
           <h2 id="rulesTitle" class="rules__title" data-i18n-tr-html="Egg Club’ın <em>kuralları.</em>">The rules of <em>Egg Club.</em></h2>
           <p class="rules__deck mono" data-i18n-tr="Her Pazar, öğlen, kimse laptopunu açmadan önce okunur.">Recited at noon, every Sunday, before anyone opens a laptop.</p>
@@ -403,7 +352,7 @@
       <!-- ───────────── 19:30 · JOIN ───────────── -->
       <section class="join" id="join" data-bg="yolk" aria-labelledby="joinTitle">
         <div class="join__left">
-          <p class="label mono"><span>06</span> <span class="label__txt" data-i18n-tr="Kartona katıl">Get in the carton</span></p>
+          <p class="label mono"><span>05</span> <span class="label__txt" data-i18n-tr="Kartona katıl">Get in the carton</span></p>
           <h2 id="joinTitle" data-i18n-tr-html="Bir <br /><em>sandalye</em> çek.">Pull up<br />a <em>chair.</em></h2>
           <p class="join__sub" data-i18n-tr="Ücretsiz. Her iki haftada bir Pazar. Pizza bizden; fikirler senden.">Free. Every other Sunday. The pizza is on us; the ideas are on you.</p>
         </div>

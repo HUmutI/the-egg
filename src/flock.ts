@@ -188,8 +188,8 @@ export function initFlock() {
   note.setAttribute('aria-hidden', 'true')
   note.innerHTML =
     lang === 'tr'
-      ? `<p class="hand">birini çek.<br/>geri sıçrar.</p><p class="mono">levha 04 · müdavimler</p>`
-      : `<p class="hand">pull one.<br/>it bounces back.</p><p class="mono">plate 04 · the regulars</p>`
+      ? `<p class="hand">birini çek.<br/>geri sıçrar.</p><p class="mono">levha 02 · müdavimler</p>`
+      : `<p class="hand">pull one.<br/>it bounces back.</p><p class="mono">plate 02 · the regulars</p>`
   field.append(note)
 
   // Tap to read the quote on touch.

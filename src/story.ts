@@ -85,38 +85,6 @@ export function initStatement() {
     })
 }
 
-/** Who comes: hover (or tap) a name and the caption line explains them. */
-export function initWho() {
-  const list = $('#whoList')
-  if (!list) return
-  const who = $('#who')
-  $$<HTMLLIElement>('li', list).forEach((li, i) => li.style.setProperty('--i', String(i)))
-  new IntersectionObserver(
-    ([e], io) => {
-      if (!e.isIntersecting) return
-      who.classList.add('is-in')
-      io.disconnect()
-    },
-    { threshold: 0.3 },
-  ).observe(who)
-  const k = $('#whoK')
-  const v = $('#whoV')
-  const names = $$<HTMLButtonElement>('.who__n', list)
-  if (!matchMedia('(hover: hover)').matches) k.textContent = 'tap a name'
-  const def = [k.textContent, v.textContent]
-  const show = (b: HTMLButtonElement | null) => {
-    names.forEach((n) => n.classList.toggle('is-on', n === b))
-    k.textContent = b ? b.textContent!.replace(/\.$/, '') : def[0]
-    v.textContent = b ? `— ${b.dataset.note}` : def[1]
-  }
-  names.forEach((b) => {
-    b.addEventListener('pointerenter', () => show(b))
-    b.addEventListener('focus', () => show(b))
-    b.addEventListener('click', () => show(b))
-  })
-  list.addEventListener('pointerleave', () => show(null))
-}
-
 /**
  * The house rules, read the same way: the scene holds still while each rule
  * darkens word by word. When rule one is finished, "do not" gets struck out

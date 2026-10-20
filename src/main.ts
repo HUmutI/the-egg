@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { applyI18n, initLangToggle } from './i18n'
 import { initHero } from './hero'
 import { initSky } from './sky'
-import { initReveals, initRules, initStatement, initWho } from './story'
+import { initReveals, initRules, initStatement } from './story'
 import { initDay } from './day'
 import { initFlock } from './flock'
 import { initPortal } from './portal'
@@ -18,7 +18,6 @@ const start = () => {
   initHero()
   initReveals()
   initStatement()
-  initWho()
   initDay()
   initFlock()
   initRules()

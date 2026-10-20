@@ -1193,6 +1193,24 @@ h2 {
 .why {
   padding-top: clamp(40px, 6vw, 96px);
 }
+.why--mini {
+  padding-bottom: clamp(24px, 4vw, 56px);
+}
+.why__mini {
+  max-width: 52ch;
+  margin: 0 auto;
+  font-family: var(--f-display);
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-weight: 460;
+  font-size: clamp(22px, 2.4vw, 32px);
+  line-height: 1.25;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+.why__mini em {
+  color: var(--tomato);
+  font-style: italic;
+}
 .why__grid {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
@@ -1540,6 +1558,9 @@ h2 {
 .flock__head > p:last-child {
   max-width: 40ch;
   font-size: clamp(17px, 1.35vw, 21px);
+}
+.flock__everyone {
+  margin-top: clamp(20px, 2.5vw, 32px);
 }
 
 /* a specimen plate: hairline cells, one figure each */
