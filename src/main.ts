@@ -6,7 +6,6 @@ import { initSky } from './sky'
 import { initReveals, initRules, initStatement, initWho } from './story'
 import { initDay } from './day'
 import { initFlock } from './flock'
-import { initJoin } from './join'
 import { initPortal } from './portal'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -23,7 +22,6 @@ const start = () => {
   initDay()
   initFlock()
   initRules()
-  initJoin()
   initPortal()
   // The sky (background colour + club clock) reads positions set up by the
   // sections above, so it goes last.
