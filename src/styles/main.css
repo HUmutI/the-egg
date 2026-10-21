@@ -2628,3 +2628,102 @@ body.is-arcade .nav > * {
     animation: none;
   }
 }
+
+/* ── LIVE BADGE: a small floating tell that the site rebuilds itself ── */
+.live-badge {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 8px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  text-decoration: none;
+  transform: rotate(-2deg);
+  box-shadow: 0 6px 16px -10px rgba(31, 23, 34, 0.35);
+  transition:
+    transform 0.3s var(--ease-spring),
+    box-shadow 0.3s var(--ease-out);
+}
+.live-badge:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 0 10px 22px -10px rgba(31, 23, 34, 0.4);
+}
+.live-badge__egg {
+  width: 18px;
+  height: 23px;
+  flex: none;
+}
+.live-badge__shell {
+  fill: var(--yolk);
+  stroke: var(--ink);
+  stroke-width: 2.6;
+}
+.live-badge__crack {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: liveBadgeCrack 3.2s ease-in-out infinite;
+}
+.live-badge__text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.live-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mint-deep);
+  animation: liveBadgePulse 1.8s ease-in-out infinite;
+}
+@keyframes liveBadgeCrack {
+  0%, 20% {
+    stroke-dashoffset: 1;
+  }
+  45%, 70% {
+    stroke-dashoffset: 0;
+  }
+  92%, 100% {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes liveBadgePulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+@media (max-width: 640px) {
+  .live-badge__text span:not(.live-badge__dot) {
+    display: none;
+  }
+  .live-badge {
+    padding: 7px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-badge__crack,
+  .live-badge__dot {
+    animation: none;
+  }
+  .live-badge__crack {
+    stroke-dashoffset: 0.4;
+  }
+}
