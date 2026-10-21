@@ -520,7 +520,7 @@ body::after {
 .hero__frame {
   position: relative;
   /* as large as the screen allows, never upscaled past the original */
-  width: min(100%, 1660px, calc((100svh - var(--nav-h) - 200px) * 1.7511));
+  width: min(100%, 1660px, calc((100svh - var(--nav-h) - 264px) * 1.7511));
 }
 .hero__art img {
   display: block;
@@ -712,6 +712,21 @@ html:not(.js) .hero__art img {
 }
 
 /* "built with love by people from…" — a slow logo strip */
+.hero__cta {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+  margin-top: clamp(4px, 1vh, 12px);
+}
+.hero__next {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+}
 .hero__built {
   position: relative;
   z-index: 3;

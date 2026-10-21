@@ -49,6 +49,12 @@ export async function initNextSunday() {
   if (issue) issue.textContent = String(event.number).padStart(3, '0')
   if (season) season.textContent = date
 
+  const heroNext = document.getElementById('heroNext')
+  if (heroNext) {
+    heroNext.textContent =
+      lang === 'tr' ? `Sıradaki: ${date}, ${time} · ODTÜ, Ankara` : `Next: ${date}, ${time} · METU, Ankara`
+  }
+
   const link = document.getElementById('nextSunday') as HTMLAnchorElement | null
   if (!link) return
   const live = age > 0
