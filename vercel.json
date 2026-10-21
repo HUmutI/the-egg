@@ -3,18 +3,5 @@
   "framework": "vite",
   "installCommand": "npm install",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "the-egg-club.vercel.app"
-        }
-      ],
-      "destination": "https://the-egg.club/:path*",
-      "permanent": true
-    }
-  ]
+  "outputDirectory": "dist"
 }
