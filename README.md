@@ -25,7 +25,7 @@ colours as you scroll, and the club clock in the nav goes from noon to past midn
 | The day | Pinned horizontal timeline; an egg waddles along a ruler and hatches at 21:30 demos | `src/day.ts` |
 | Who shows up | A specimen plate of egg figures; pull one and it springs back, hover/tap for its quote | `src/flock.ts` |
 | Join | Links out to app.the-egg.club, where applications live; the next Sunday's date comes from the app's `/api/next-event` | `src/next.ts` |
-| Footer → game | Past the end of the footer the page glides: one nudge down (or a 1.6s pause at the bottom of the footer) carries you into the arcade cabinet running **Night Shift**; one nudge up carries you back | `src/portal.ts`, `src/nightshift.ts` |
+| Footer → game | Keep scrolling past the footer and the night opens into the arcade cabinet running **Night Shift** (scroll-driven, no scroll-jacking); the footer's "keep scrolling" note glides you there | `src/portal.ts`, `src/nightshift.ts` |
 
 Everything respects `prefers-reduced-motion`.
 

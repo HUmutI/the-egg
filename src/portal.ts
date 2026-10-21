@@ -64,25 +64,19 @@ export function initPortal() {
     trigger: stage,
     start: 'top 85%',
     end: 'bottom bottom',
-    scrub: reduce ? true : 0.6,
+    scrub: reduce ? true : 0.25,
     animation: reveal,
     onUpdate: (self) => setMode(self.progress > 0.85 ? 'live' : self.progress > 0.2 ? 'preview' : 'off'),
     onLeaveBack: () => setMode('off'),
   })
 
-  // ── getting there: nobody should miss the game ──
-  // Past the end of the footer the page doesn't scroll, it *glides*:
-  // one nudge down and you're carried all the way into the cabinet; one
-  // nudge up and you're carried back to the footer. If you simply stop at
-  // the bottom of the footer, it takes you down on its own.
-  const foot = $('#foot')
-  const footEnd = () => Math.max(foot.offsetTop, foot.offsetTop + foot.offsetHeight - innerHeight)
+  // ── getting there ──
+  // Scrolling past the footer simply scrolls into the cabinet; the reveal
+  // above is scroll-driven, so nothing has to take the scroll away from
+  // you. The footer's "keep scrolling" note glides you down in one go.
   let gliding = false
-  let autoTimer = 0
-  let autoUsed = false
-
   const glide = (to: number) => {
-    clearTimeout(autoTimer)
+    if (gliding) return
     const from = scrollY
     if (Math.abs(to - from) < 2) return
     if (reduce) {
@@ -93,46 +87,23 @@ export function initPortal() {
     const dur = Math.min(1100, 520 + Math.abs(to - from) * 0.35)
     const t0 = performance.now()
     const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+    // any wheel/touch from the reader cancels the glide instead of fighting it
+    const cancel = () => (gliding = false)
+    addEventListener('wheel', cancel, { once: true, passive: true })
+    addEventListener('touchstart', cancel, { once: true, passive: true })
     const step = (now: number) => {
+      if (!gliding) return
       const t = Math.min(1, (now - t0) / dur)
       window.scrollTo({ top: from + (to - from) * ease(t), behavior: 'instant' as ScrollBehavior })
       if (t < 1) requestAnimationFrame(step)
-      else setTimeout(() => ((gliding = false), (lastY = scrollY)), 80)
+      else {
+        gliding = false
+        removeEventListener('wheel', cancel)
+        removeEventListener('touchstart', cancel)
+      }
     }
     requestAnimationFrame(step)
   }
-
-  // while gliding, swallow the wheel/touch so the motion can't be fought
-  const block = (e: Event) => gliding && e.cancelable && e.preventDefault()
-  addEventListener('wheel', block, { passive: false })
-  addEventListener('touchmove', block, { passive: false })
-
-  let lastY = scrollY
-  addEventListener(
-    'scroll',
-    () => {
-      const y = scrollY
-      const dir = y - lastY
-      lastY = y
-      if (gliding || !dir) return
-      const end = footEnd()
-      if (dir > 0 && y > end + 2 && y < st.end - 2) glide(st.end)
-      else if (dir < 0 && y < st.end - 2 && y > end + 2) glide(end)
-
-      // linger at the bottom of the footer and the night carries you down
-      clearTimeout(autoTimer)
-      if (y < end - 400) autoUsed = false
-      if (!autoUsed && dir > 0 && y >= end - 24 && y <= end + 2) {
-        autoTimer = window.setTimeout(() => {
-          if (Math.abs(scrollY - footEnd()) < 30) {
-            autoUsed = true
-            glide(st.end)
-          }
-        }, 1600)
-      }
-    },
-    { passive: true },
-  )
 
   // The footer's note just takes you there.
   poke.addEventListener('click', () => glide(st.end))
