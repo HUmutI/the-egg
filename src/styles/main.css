@@ -189,7 +189,7 @@ body::after {
   height: 30px;
   border: 1.5px solid currentColor;
   border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
-  font-size: 11px;
+  font-size: 12px;
 }
 .label span.label__txt {
   display: inline;
@@ -489,7 +489,7 @@ body::after {
   gap: 8px;
 }
 .hero__meta .mono {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   color: var(--ink-2);
 }
@@ -1619,7 +1619,7 @@ h2 {
 }
 .bird__fig {
   font-family: var(--f-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-2);
