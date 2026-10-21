@@ -33,6 +33,7 @@ export function initDay() {
     current = i
     steps.forEach((s, k) => s.classList.toggle('is-now', k === i))
     roller.dataset.stage = String(STAGE[i] ?? 0)
+    roller.dataset.doors = String(i === 0)
   }
 
   const mm = gsap.matchMedia()
@@ -62,11 +63,16 @@ export function initDay() {
         legR.style.transform = `rotate(${-Math.sin(phase * 2) * 18}deg)`
       }
 
-      // find the step whose column is passing over the egg
+      // find the step whose column is passing over the egg — but before any
+      // scrubbing has happened (tx >= 0, the resting frame), the untransformed
+      // track's gutter padding can put a later column under the egg's rest
+      // position, so pin it to "Doors" until the track actually starts moving.
       const x = eggX()
       let i = 0
-      for (let k = 0; k < steps.length; k++) {
-        if (steps[k].getBoundingClientRect().left <= x) i = k
+      if (tx < 0) {
+        for (let k = 0; k < steps.length; k++) {
+          if (steps[k].getBoundingClientRect().left <= x) i = k
+        }
       }
       setStep(i)
       const a = steps[i].getBoundingClientRect().left

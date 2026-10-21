@@ -1460,6 +1460,18 @@ h2 {
   transform-box: view-box;
   transform-origin: 100px 130px;
 }
+/* the egg's at the door for "Doors" only — gone the moment it walks in */
+.roller__door {
+  transform-box: view-box;
+  transform-origin: 100px 130px;
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-spring);
+}
+.roller[data-doors='true'] .roller__door {
+  opacity: 1;
+  transform: scale(1);
+}
 .roller__top {
   transition: transform 0.7s var(--ease-spring), opacity 0.4s;
 }
