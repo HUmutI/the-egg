@@ -75,10 +75,13 @@ export function initStatement() {
     if (t.classList.contains('hl')) tl.to(t, { '--p': '100%', duration: 1.4 }, i * 0.55 + 0.3)
   })
   tl.to('.what__cue', { opacity: 0, duration: 1 }, '>-1')
+  // Hold the finished sentence for the last quarter of the pin, so the
+  // final words have landed before the scene scrolls away.
+  tl.to({}, { duration: tl.duration() / 3 })
 
   gsap.matchMedia()
     .add('(min-width: 861px)', () => {
-      ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=50%', scrub: 0.2, animation: tl })
+      ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=70%', scrub: 0.2, animation: tl })
     })
     .add('(max-width: 860px)', () => {
       ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })
