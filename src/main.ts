@@ -15,9 +15,11 @@ gsap.registerPlugin(ScrollTrigger)
 applyI18n()
 initLangToggle()
 initNextSunday()
+// The hero is a picture, not measured text: show it as soon as it decodes
+// instead of waiting on the fonts below.
+initHero()
 
 const start = () => {
-  initHero()
   initReveals()
   initStatement()
   initDay()
