@@ -12,7 +12,12 @@ export function initHero() {
 
   const show = () => {
     img.classList.add('is-in')
-    if (doodles) setTimeout(() => doodles.classList.add('is-drawn'), reducedMotion() ? 0 : 350)
+    if (!doodles) return
+    // The notes are handwriting: wait for that font so they don't redraw
+    // in a fallback face, but never hold them back for long.
+    const fonts = Promise.race([document.fonts.load('40px "Reenie Beanie"'), new Promise((r) => setTimeout(r, 1200))])
+    const delay = new Promise((r) => setTimeout(r, reducedMotion() ? 0 : 350))
+    Promise.all([fonts, delay]).then(() => doodles.classList.add('is-drawn'))
   }
   if (img.complete && img.naturalWidth) show()
   else {
