@@ -78,10 +78,10 @@ export function initStatement() {
 
   gsap.matchMedia()
     .add('(min-width: 861px)', () => {
-      ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=110%', scrub: 0.6, animation: tl })
+      ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=50%', scrub: 0.2, animation: tl })
     })
     .add('(max-width: 860px)', () => {
-      ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.6, animation: tl })
+      ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })
     })
 }
 
@@ -120,9 +120,9 @@ export function initRules() {
 
   gsap.matchMedia()
     .add('(min-width: 861px)', () => {
-      ScrollTrigger.create({ trigger: section, pin: true, start: 'top top', end: '+=170%', scrub: 0.6, animation: tl })
+      ScrollTrigger.create({ trigger: section, pin: true, start: 'top top', end: '+=80%', scrub: 0.2, animation: tl })
     })
     .add('(max-width: 860px)', () => {
-      ScrollTrigger.create({ trigger: section, start: 'top 80%', end: 'bottom 95%', scrub: 0.6, animation: tl })
+      ScrollTrigger.create({ trigger: section, start: 'top 80%', end: 'bottom 95%', scrub: 0.2, animation: tl })
     })
 }
