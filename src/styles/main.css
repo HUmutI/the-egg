@@ -1902,6 +1902,18 @@ html:not(.js) .rule__fix,
   max-width: 32ch;
   font-size: clamp(17px, 1.35vw, 21px);
 }
+.join__next {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.join__next[hidden] {
+  display: none;
+}
 
 .quiz {
   grid-area: form;

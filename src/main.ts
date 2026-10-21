@@ -7,12 +7,14 @@ import { initReveals, initRules, initStatement } from './story'
 import { initDay } from './day'
 import { initFlock } from './flock'
 import { initPortal } from './portal'
+import { initNextSunday } from './next'
 
 gsap.registerPlugin(ScrollTrigger)
 
 // Translate the DOM before anything measures or animates it.
 applyI18n()
 initLangToggle()
+initNextSunday()
 
 const start = () => {
   initHero()
