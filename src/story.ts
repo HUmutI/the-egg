@@ -89,9 +89,9 @@ export function initStatement() {
 }
 
 /**
- * The house rules, read the same way: the scene holds still while each rule
- * darkens word by word. When rule one is finished, "do not" gets struck out
- * and the hand-written DO appears above it.
+ * The house rules: when the list comes into view the four rules fade in one
+ * after another, then "do not" gets struck out and the hand-written DO
+ * appears above it. Played once, not scrubbed to the scroll.
  */
 export function initRules() {
   const section = $('#rules')
@@ -102,30 +102,15 @@ export function initRules() {
     return
   }
 
-  const tl = gsap.timeline({ defaults: { ease: 'none' } })
-  let t = 0
-  rules.forEach((rule) => {
-    const p = rule.querySelector('p')!
-    const tokens = tokenize(p)
-    const meta = rule.querySelectorAll('.rule__num, .rule__n')
-    tl.to(meta, { opacity: 1, duration: 0.8 }, t)
-    t += 0.4
-    tokens.forEach((tok, i) => tl.to(tok, { opacity: 1, duration: 1 }, t + i * 0.45))
-    t += tokens.length * 0.45 + 0.6
-    const fix = rule.querySelector('.rule__fix')
-    if (fix) {
-      tl.to(fix, { '--s': 1, duration: 1.2, ease: 'power2.out' }, t)
-      tl.to(fix, { '--d': 1, duration: 1, ease: 'back.out(2.4)' }, t + 0.9)
-      t += 2
-    }
-    t += 0.4
-  })
+  const lines = rules.map((rule) => rule.querySelectorAll('.rule__num, .rule__n, p'))
+  lines.forEach((l) => gsap.set(l, { opacity: 0.14 }))
+  const tl = gsap.timeline({ paused: true })
+  lines.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.5, ease: 'power2.out' }, i * 0.22))
+  const fix = section.querySelector('.rule__fix')
+  if (fix) {
+    tl.to(fix, { '--s': 1, duration: 0.6, ease: 'power2.out' }, 0.35)
+    tl.to(fix, { '--d': 1, duration: 0.5, ease: 'back.out(2.4)' }, 0.8)
+  }
 
-  gsap.matchMedia()
-    .add('(min-width: 861px)', () => {
-      ScrollTrigger.create({ trigger: section, pin: true, start: 'top top', end: '+=80%', scrub: 0.2, animation: tl })
-    })
-    .add('(max-width: 860px)', () => {
-      ScrollTrigger.create({ trigger: section, start: 'top 80%', end: 'bottom 95%', scrub: 0.2, animation: tl })
-    })
+  ScrollTrigger.create({ trigger: section, start: 'top 65%', once: true, onEnter: () => tl.play() })
 }
