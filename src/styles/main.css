@@ -1308,7 +1308,10 @@ h2 {
   min-height: 100svh;
   padding: calc(var(--nav-h) + 40px) 0 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* heading, programme and egg sit together, centred in the screen,
+     instead of the programme being pushed down to the floor */
+  grid-template-rows: auto auto auto;
+  align-content: center;
   grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
 }
