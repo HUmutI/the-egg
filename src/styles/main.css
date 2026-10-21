@@ -1912,6 +1912,10 @@ html:not(.js) .rule__fix,
   padding-top: clamp(56px, 7vw, 110px);
   padding-bottom: clamp(56px, 7vw, 110px);
 }
+/* the faded --ink-2 is only 4.1:1 on yolk; full ink passes */
+.join .label {
+  color: var(--ink);
+}
 .join__sub {
   margin-top: 18px;
   max-width: 30ch;
