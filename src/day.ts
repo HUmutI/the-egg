@@ -82,8 +82,8 @@ export function initDay() {
       trigger: section,
       pin: true,
       start: 'top top',
-      end: () => '+=' + distance() * 1.05,
-      scrub: reducedMotion() ? true : 0.7,
+      end: () => '+=' + distance() * 0.7,
+      scrub: reducedMotion() ? true : 0.25,
       invalidateOnRefresh: true,
       animation: gsap.to(track, { x: () => -distance(), ease: 'none', onUpdate: sync }),
       onRefresh: (self) => {
