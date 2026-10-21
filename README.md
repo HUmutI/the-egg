@@ -24,7 +24,7 @@ colours as you scroll, and the club clock in the nav goes from noon to past midn
 | What / Who comes / Why | "Who comes": a typeset guest list of disciplines, each with a one-line caption on hover/tap; hand-drawn strikethroughs | `src/story.ts` |
 | The day | Pinned horizontal timeline; an egg waddles along a ruler and hatches at 21:30 demos | `src/day.ts` |
 | Who shows up | A specimen plate of egg figures; pull one and it springs back, hover/tap for its quote | `src/flock.ts` |
-| Join | One-question-at-a-time form | `src/join.ts` |
+| Join | Links out to app.the-egg.club, where applications live; the next Sunday's date comes from the app's `/api/next-event` | `src/next.ts` |
 | Footer → game | Past the end of the footer the page glides: one nudge down (or a 1.6s pause at the bottom of the footer) carries you into the arcade cabinet running **Night Shift**; one nudge up carries you back | `src/portal.ts`, `src/nightshift.ts` |
 
 Everything respects `prefers-reduced-motion`.
@@ -40,11 +40,7 @@ anyone off-screen. There's a golden egg hidden somewhere.
 
 ## Before launch
 
-- **Signups** are only saved to `localStorage` (`eggclub:signups`). Wire up
-  the `submit` handler in `src/join.ts` to a real endpoint (Luma, a form
-  service, Supabase, …).
-- **Placeholder content**: event dates and venues, `hello@theegg.club`, and the
-  social links in the footer.
+- **Placeholder content**: the social links in the footer.
 
 ## Logos in the hero strip
 
