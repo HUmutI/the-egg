@@ -1429,11 +1429,14 @@ h2 {
   position: relative;
   height: clamp(150px, 22vh, 210px);
 }
+.day__pin {
+  --ruler-y: clamp(72px, 10vh, 112px);
+}
 .ruler {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 38px;
+  bottom: var(--ruler-y);
   height: 10px;
   border-top: 1px solid var(--ink);
   background-image: repeating-linear-gradient(90deg, var(--ink-3) 0 1px, transparent 1px 16px),
@@ -1444,8 +1447,9 @@ h2 {
 .roller {
   --w: clamp(64px, 6.4vw, 96px);
   position: absolute;
-  left: 34%;
-  bottom: calc(38px + 2px);
+  /* rests inside the first column so the day starts at Doors */
+  left: calc(var(--gut) + 28px);
+  bottom: calc(var(--ruler-y) + 2px);
   width: var(--w);
   height: calc(var(--w) * 1.5);
 }
