@@ -1574,7 +1574,7 @@ h2 {
    Phones, and reduced motion, read it as a picture book. */
 .day {
   padding: 0;
-  --scene-w: clamp(300px, min(40vw, calc((100svh - 340px) * 1.333)), 720px);
+  --scene-w: clamp(300px, min(46vw, calc((100svh - 350px) * 1.333)), 760px);
 }
 .day__pin {
   position: relative;
@@ -1715,6 +1715,39 @@ h2 {
 .day__edge--out .edge__art {
   left: 0;
 }
+/* the way home ends on the way in: apply for the next one */
+.edge__note {
+  position: absolute;
+  inset: 0;
+}
+.day__apply {
+  position: absolute;
+  left: calc(var(--scene-w) * 0.26);
+  bottom: calc(var(--scene-w) * 0.13);
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 12px;
+  transition:
+    opacity 0.4s var(--ease-out),
+    translate 0.5s var(--ease-spring),
+    visibility 0s 0.4s;
+}
+.day[data-end='true'] .day__apply {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition-delay: 0.9s, 0.9s, 0s;
+}
+/* lights out at 20:00: as the three walk off, the windows go dark one by one */
+.step[data-step='1'] { --k: 1; }
+.step[data-step='2'] { --k: 2; }
+.step[data-step='3'] { --k: 3; }
+.step[data-step='4'] { --k: 4; }
+.step[data-step='5'] { --k: 5; }
+.step[data-step='6'] { --k: 6; }
+.day .step__scene svg {
+  filter: brightness(calc(1 - 0.42 * clamp(0, calc(var(--out, 0) * 7 - var(--k, 0)), 1)));
+}
 
 /* ── the cast: our egg and, from Nest on, its team ── */
 .day__cast {
@@ -1730,8 +1763,8 @@ h2 {
 .mate {
   position: absolute;
   bottom: 0;
-  /* the svg's floor (y 316 of -150…330) sits on the line */
-  translate: -50% 2.92%;
+  /* centred on its spot with its floor (y 316 of -150…330) on the line:
+     xPercent/yPercent, set by day.ts, so GSAP owns the whole transform */
 }
 .walker {
   left: 50%;
@@ -1778,7 +1811,7 @@ h2 {
 .sface,
 .gface,
 .wprop,
-.wbub,
+.walker .wbub,
 .mface,
 .mprop,
 .mhands--up {
@@ -1798,7 +1831,8 @@ h2 {
 .walker[data-state='6']:is([data-beat='3'], [data-beat='4']) .wbub--3 {
   display: inline;
 }
-.walker[data-state='6'][data-beat='4'] .gface--calm {
+.walker[data-state='6'][data-beat='4'] .gface--calm,
+.walker[data-state='1'] .whand--r {
   display: none;
 }
 .walker[data-state='6'][data-beat='4'] .gface--wink {
@@ -1979,11 +2013,11 @@ h2 {
   transition: stroke-dashoffset 0.8s 0.5s var(--ease-out);
 }
 .step:is(.is-now, .is-past) .note text,
-.step[data-step='6'].is-now ~ .day__edge--out .note text {
+.day[data-end='true'] .day__edge--out .note text {
   opacity: 1;
 }
 .step:is(.is-now, .is-past) .note__arrow,
-.step[data-step='6'].is-now ~ .day__edge--out .note__arrow {
+.day[data-end='true'] .day__edge--out .note__arrow {
   stroke-dashoffset: 0;
 }
 
@@ -1994,9 +2028,6 @@ h2 {
 }
 .scene .door__glow {
   opacity: clamp(0, calc(var(--d) * 2.4 * 0.85), 0.85);
-}
-.scene .door__light {
-  opacity: clamp(0, calc(var(--d) * 2.4 * 0.38), 0.38);
 }
 
 /* 11:00 crack: sixty seconds on the clock, the idea switches on at the end */
@@ -2176,6 +2207,8 @@ h2 {
     flex-direction: column;
     gap: clamp(34px, 9vw, 56px);
     width: auto;
+    max-width: 1040px;
+    margin-inline: auto;
     padding: 0 var(--gut);
     will-change: auto;
   }
