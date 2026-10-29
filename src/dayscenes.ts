@@ -867,13 +867,18 @@ function afterglow() {
     const late = i % 2 === 1
     return `<rect class="win${late ? ' win--late' : ''}" style="--i:${i};--j:${(i * 3) % 11}" x="${x}" y="${y}" width="4" height="5" fill="${P.yolk}"/>`
   }).join('')
-  const kocatepe = `
+  // Anıtkabir on its hill: a hall of square pillars on a podium, lit between the pillars
+  const anitkabir = `
     <g transform="translate(286 236) scale(1.6)" fill="#1a1220">
-      <path d="M-26 0V-14h52V0z"/>
-      <path d="M-15 -14a15 15 0 0 1 30 0z"/>
-      <path d="M-24 -14a6 6 0 0 1 12 0zM12 -14a6 6 0 0 1 12 0z"/>
-      ${[-32, -24, 24, 32].map((x) => `<rect x="${x - 1.4}" y="-46" width="2.8" height="46"/><path d="M${x - 1.4} -46l1.4 -6l1.4 6z"/><rect class="win" style="--i:${x + 40}" x="${x - 1.4}" y="-38" width="2.8" height="2" fill="${P.yolk}"/>`).join('')}
-      <rect class="win" style="--i:2" x="-6" y="-8" width="12" height="3" fill="${P.yolk}"/>
+      <path d="M-34 0q34 -10 68 0z"/>
+      <path d="M-30 -2V-6h60v4z"/>
+      <path d="M-20 -6V-10h40v4z"/>
+      <path d="M-16 -10V-21h32v11z"/>
+      ${Array.from({ length: 7 }, (_, k) => `<rect x="${-13.6 + k * 4.4}" y="-19.6" width="1.6" height="8.6" fill="${P.yolk}" opacity=".85"/>`).join('')}
+      <path d="M-17.5 -21V-24h35v3z"/>
+      <path d="M-13 -24V-26.5h26v2.5z"/>
+      ${[-27, 27].map((x) => `<path d="M${x - 2.6} -2V-11h5.2v9z"/><path d="M${x - 3.2} -11l3.2 -2.6l3.2 2.6z"/>`).join('')}
+      <rect class="win" style="--i:2" x="-6" y="-9" width="12" height="2" fill="${P.yolk}"/>
     </g>`
   const atakule = `
     <g transform="translate(346 236) scale(1.45)" fill="#1a1220">
@@ -909,7 +914,7 @@ function afterglow() {
       ])}
       <g class="moon"><circle cx="262" cy="70" r="17" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}"/><circle cx="271" cy="64" r="15" fill="${P.night}"/></g>
       <path d="M34 234q40 -18 80 -8t70 -6t66 4t60 -12t56 8V270H34Z" fill="#2d1d33"/>
-      ${kocatepe}${atakule}
+      ${anitkabir}${atakule}
       ${lit}`,
     set: `
       <g class="metro">${metroSign(330, 206, 0.85)}</g>
