@@ -334,12 +334,40 @@ body::after {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
-  height: var(--nav-h);
-  padding: 0 var(--gut);
+  height: var(--nav-top);
+  padding: var(--safe-t) var(--gut) 0;
   pointer-events: none;
 }
 .nav > * {
   pointer-events: auto;
+}
+/* once the page moves, a band of the current sky slides in behind the
+   pills so headings never scroll straight into them */
+.nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--page) 84%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 1px 0 var(--ink-3);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out);
+  pointer-events: none;
+}
+.nav.is-scrolled::before {
+  opacity: 1;
+  transform: none;
+}
+body.is-night .nav::before {
+  box-shadow: 0 1px 0 rgba(253, 248, 239, 0.14);
+}
+@supports not (background: color-mix(in srgb, red 50%, transparent)) {
+  .nav::before {
+    background: var(--page);
+  }
 }
 
 .nav__logo,
@@ -415,9 +443,23 @@ body::after {
   padding: 8px 10px;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
   text-decoration: none;
   border-radius: 999px;
   transition: background 0.25s;
+}
+/* small laptops and tablets in landscape: the links need more than a
+   third of the bar, so the clock centres in what's left */
+@media (min-width: 861px) and (max-width: 1180px) {
+  .nav {
+    grid-template-columns: auto 1fr auto;
+  }
+  .nav__clock {
+    justify-self: center;
+  }
+  .nav__links a:not(.btn) {
+    padding: 8px 8px;
+  }
 }
 .nav__links a:not(.btn):hover {
   background: var(--butter);
@@ -447,32 +489,93 @@ body::after {
   border-color: var(--ink-2);
 }
 
+/* phones: one compact bar — egg, clock, language, seat — every target 44px */
 @media (max-width: 860px) {
+  :root {
+    --nav-h: 60px;
+  }
   .nav {
     grid-template-columns: auto 1fr auto;
+    gap: 8px;
+  }
+  .nav__logo,
+  .nav__clock,
+  .nav__links {
+    height: 44px;
   }
   .nav__clock {
     justify-self: center;
+    gap: 8px;
+    padding: 0 14px 0 10px;
+  }
+  .clock__arc {
+    width: 28px;
   }
   .nav__links a:not(.btn) {
     display: none;
   }
   .nav__links {
-    padding: 4px;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
   }
   .nav__logo span {
     display: none;
   }
   .nav__logo {
-    padding: 0 12px;
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+  }
+  .lang-toggle {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border-color: var(--ink);
+    background: var(--cream);
+  }
+  .nav__links .btn {
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--ink);
+  }
+  /* the ink button would vanish into the night band: it turns yolk */
+  body.is-night .nav__links .btn {
+    --b-bg: var(--yolk);
+    --b-fg: var(--ink);
+  }
+  body.is-night .nav__links .btn::before {
+    background: var(--cream);
   }
   .clock__label {
     min-width: 0;
   }
 }
-@media (max-width: 420px) {
+@media (max-width: 440px) {
   .clock__label {
     display: none;
+  }
+}
+@media (max-width: 374px) {
+  .nav {
+    gap: 6px;
+  }
+  .nav__clock {
+    padding: 0 10px 0 8px;
+  }
+  .clock__arc {
+    width: 22px;
+  }
+  .nav__links .btn {
+    padding: 0 12px;
+  }
+}
+/* landscape phones: the screen is short, so the bar is too */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --nav-h: 56px;
   }
 }
 

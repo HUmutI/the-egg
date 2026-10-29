@@ -49,9 +49,14 @@ const LABELS: [number, string][] =
       ]
 
 export function initSky() {
+  const root = document.documentElement
   const body = document.body
+  const nav = $('#nav')
   const meta = $<HTMLMetaElement>('meta[name="theme-color"]')
 
+  // The sky is one custom property, --page: the body paints it and the
+  // nav's backdrop band tints itself with it, so both drift together.
+  gsap.set(root, { '--page': PALETTE.butter })
   $$('[data-bg]').forEach((el) => {
     const color = BG[el.dataset.bg ?? 'butter']
     // Night only falls once the footer has really arrived.
@@ -62,7 +67,8 @@ export function initSky() {
       end: `bottom ${at}`,
       onToggle: (self) => {
         if (!self.isActive) return
-        gsap.to(body, { backgroundColor: color, duration: 0.9, ease: 'power2.out', overwrite: true })
+        gsap.to(root, { '--page': color, duration: 0.9, ease: 'power2.out', overwrite: true })
+        body.classList.toggle('is-night', el.dataset.bg === 'night')
         meta?.setAttribute('content', color)
       },
     })
@@ -98,7 +104,10 @@ export function initSky() {
   }
 
   let last = ''
+  let scrolled: boolean | null = null
   const render = () => {
+    const s = scrollY > 8
+    if (s !== scrolled) nav?.classList.toggle('is-scrolled', (scrolled = s))
     const m = Math.round(minutesAt(scrollY))
     const hh = String(Math.floor(m / 60) % 24).padStart(2, '0')
     const mm = String(m % 60).padStart(2, '0')
