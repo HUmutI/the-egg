@@ -1546,7 +1546,7 @@ h2 {
 .day__pin {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--nav-h) + 40px) 0 0;
+  padding: calc(var(--nav-top) + 40px) 0 0;
   display: grid;
   /* heading, programme and egg sit together, centred in the screen,
      instead of the programme being pushed down to the floor */
@@ -1590,32 +1590,45 @@ h2 {
   width: max-content;
   will-change: transform;
 }
-/* a quiet programme: a hairline, a small time, an italic title */
+/* a quiet programme: a hairline, a small time, an italic title.
+   The step under the egg is inked in; the others stay readable, just
+   softer (quiet ink, never faded below AA). */
 .step {
   position: relative;
   width: clamp(260px, 23vw, 360px);
   padding: 26px clamp(28px, 3vw, 56px) 0 0;
   border-top: 1px solid var(--ink-3);
-  opacity: 0.36;
-  transition: opacity 0.5s var(--ease-out);
 }
-.step.is-now {
-  opacity: 1;
+.step::after {
+  /* the stretch of the line you're in, drawn in ink */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1.5px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+.step.is-now::after {
+  transform: scaleX(1);
 }
 .step__node {
   position: absolute;
   left: 0;
-  top: -7px;
-  width: 10px;
-  height: 13px;
-  border: 1px solid var(--ink);
+  top: -9px;
+  width: 13px;
+  height: 17px;
+  border: 1.5px solid var(--ink);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--lav);
+  background: var(--cream);
   transition: background 0.4s, transform 0.5s var(--ease-spring);
 }
 .step.is-now .step__node {
   background: var(--yolk);
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 .step--hatch.is-now .step__node {
   background: var(--tomato);
@@ -1642,6 +1655,11 @@ h2 {
   letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 14px;
+  color: var(--ink-2);
+  transition: color 0.4s;
+}
+.step.is-now h3 {
+  color: var(--ink);
 }
 .step p {
   max-width: 28ch;
@@ -1766,30 +1784,93 @@ h2 {
   transform-origin: 118px 246px;
 }
 
+/* below 900px the day is a printed programme: a vertical line with an
+   egg on it at every time, read top to bottom (no pin) */
 @media (max-width: 899px) {
   .day__pin {
     min-height: 0;
-    padding: clamp(96px, 13vw, 160px) 0 clamp(64px, 10vw, 120px);
+    padding: var(--sec-y) 0;
     display: block;
   }
   .day__head {
     flex-direction: column-reverse;
     align-items: start;
+    gap: 0;
   }
   .day__head .label {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .day__viewport {
+    padding: clamp(32px, 6vw, 56px) 0 0;
   }
   .day__track {
+    --rail: 6px;
     flex-direction: column;
     width: auto;
+    will-change: auto;
   }
   .step {
     width: auto;
-    padding: 24px 0 30px;
-    opacity: 1;
+    padding: 0 0 clamp(28px, 6vw, 40px) 36px;
+    border-top: 0;
+  }
+  /* the line: each step draws the stretch down to the next one */
+  .step::after {
+    left: var(--rail);
+    right: auto;
+    top: 6px;
+    bottom: -6px;
+    width: 1.5px;
+    height: auto;
+    background: var(--ink-3);
+    transform: none;
+  }
+  .step:last-child::after {
+    display: none;
+  }
+  .step__node {
+    left: calc(var(--rail) - 6px);
+    top: -2px;
+  }
+  .step__time {
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .step h3 {
+    font-size: clamp(32px, 8.6vw, 44px);
+    margin-bottom: 10px;
+  }
+  .step p {
+    max-width: 40ch;
   }
   .day__ground {
     display: none;
+  }
+}
+/* tablets: the time gets its own column, like a printed schedule */
+@media (min-width: 600px) and (max-width: 899px) {
+  .day__track {
+    --rail: 118px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    column-gap: 72px;
+    align-items: start;
+    padding-left: 0;
+  }
+  .step__time {
+    grid-row: 1 / span 2;
+    margin: 0;
+    font-size: 13px;
+    text-align: right;
+  }
+  .step h3 {
+    margin-top: -6px;
+  }
+  .step h3,
+  .step p {
+    grid-column: 2;
   }
 }
 
