@@ -43,8 +43,11 @@ export function initShare() {
         await navigator.share(data)
         say('shared')
       } catch (err) {
-        // closing the sheet isn't an error worth mentioning
-        if ((err as DOMException)?.name !== 'AbortError') say('failed')
+        const name = (err as DOMException)?.name
+        // closing the sheet, or tapping again while it's open, isn't worth mentioning
+        if (name === 'AbortError' || name === 'InvalidStateError') return
+        // the sheet refused: hand over the link instead
+        say((await copyText(SITE)) ? 'copied' : 'failed')
       }
     })
   }
