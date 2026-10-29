@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nothing hatched here · The Egg Club</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#fdf3d7" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same URL as the home page, so it is usually already cached. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=Reenie+Beanie&display=swap"
+    />
+    <style>
+      :root {
+        --butter: #fdf3d7;
+        --cream: #fdf8ef;
+        --yolk: #f4b52a;
+        --tomato: #e2432a;
+        --ink: #1f1722;
+        --ink-2: rgba(31, 23, 34, 0.64);
+        --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+        --f-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+        --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+        --f-hand: 'Reenie Beanie', 'Bradley Hand', cursive;
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 40px clamp(16px, 4vw, 56px);
+        background: var(--butter);
+        color: var(--ink);
+        font-family: var(--f-sans);
+        font-size: clamp(16px, 1.15vw, 18px);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* the site's printed-paper grain */
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.11;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0 0.13 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      main {
+        width: 100%;
+        max-width: 640px;
+        text-align: center;
+      }
+      .mono {
+        margin: 0;
+        font-family: var(--f-mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+      }
+      .egg {
+        display: block;
+        width: min(100%, 420px);
+        height: auto;
+        margin: 8px auto 20px;
+        overflow: visible;
+      }
+      .egg .note {
+        font-family: var(--f-hand);
+        font-size: 34px;
+        fill: var(--tomato);
+      }
+      .lid {
+        transform-box: fill-box;
+        transform-origin: 50% 0%;
+        animation: rock 3.2s var(--ease-out) infinite alternate;
+      }
+      @keyframes rock {
+        from {
+          transform: rotate(-3deg);
+        }
+        to {
+          transform: rotate(4deg);
+        }
+      }
+      h1 {
+        margin: 0;
+        font-family: var(--f-display);
+        font-optical-sizing: auto;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0;
+        font-weight: 480;
+        font-size: clamp(44px, 9vw, 84px);
+        letter-spacing: -0.035em;
+        line-height: 0.98;
+        text-wrap: balance;
+      }
+      em {
+        font-style: italic;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1;
+      }
+      .tr {
+        margin: 12px 0 0;
+        font-family: var(--f-display);
+        font-optical-sizing: auto;
+        font-style: italic;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1;
+        font-weight: 400;
+        font-size: clamp(26px, 4.6vw, 40px);
+        line-height: 1.05;
+        color: var(--ink-2);
+      }
+      .copy {
+        max-width: 31em;
+        margin: 24px auto 0;
+        text-wrap: pretty;
+      }
+      .copy + .copy {
+        margin-top: 4px;
+        color: var(--ink-2);
+      }
+      .btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 32px;
+        padding: 16px 26px;
+        border: 1.5px solid var(--ink);
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--cream);
+        font-family: var(--f-sans);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 1;
+        text-decoration: none;
+        overflow: hidden;
+        isolation: isolate;
+        transition: transform 0.35s var(--ease-spring);
+      }
+      .btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--yolk);
+        border-radius: inherit;
+        transform: translateY(102%);
+        transition: transform 0.45s var(--ease-out);
+      }
+      .btn span {
+        transition: color 0.3s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .btn:hover::before {
+        transform: translateY(0);
+      }
+      .btn:hover span {
+        color: var(--ink);
+      }
+      .btn:focus-visible {
+        outline: 2px solid var(--tomato);
+        outline-offset: 3px;
+      }
+      .btn i {
+        font-style: normal;
+        opacity: 0.6;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .lid {
+          animation: none;
+        }
+        .btn,
+        .btn::before,
+        .btn span {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="mono">404 · empty shell · <span lang="tr">boş kabuk</span></p>
+
+      <svg class="egg" viewBox="-20 -40 470 340" role="img" aria-label="An empty eggshell, cracked open. Its top half lies to one side and tiny footprints lead away.">
+        <defs>
+          <path id="shell" d="M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z" />
+          <clipPath id="clipTop">
+            <polygon points="-20,-20 220,-20 220,124 200,124 186,114 166,132 146,112 126,136 104,110 84,134 62,108 40,132 22,112 0,128 -20,128" />
+          </clipPath>
+          <clipPath id="clipBot">
+            <polygon points="-20,128 0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124 220,124 220,300 -20,300" />
+          </clipPath>
+          <clipPath id="inside">
+            <use href="#shell" />
+          </clipPath>
+        </defs>
+
+        <!-- ground -->
+        <ellipse cx="104" cy="262" rx="92" ry="8" fill="#1f1722" opacity=".1" />
+        <ellipse cx="346" cy="260" rx="56" ry="6" fill="#1f1722" opacity=".08" />
+
+        <!-- the bottom half: the hollow first, then the front wall over it -->
+        <g>
+          <ellipse cx="100" cy="122" rx="90" ry="17" fill="#eadbb4" stroke="#1f1722" stroke-width="5" clip-path="url(#inside)" />
+          <g clip-path="url(#clipBot)">
+            <use href="#shell" fill="#fffbf1" stroke="#1f1722" stroke-width="6" stroke-linejoin="round" />
+          </g>
+          <polyline clip-path="url(#inside)" points="0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124" fill="none" stroke="#1f1722" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M46 196 q 6 30 34 44" fill="none" stroke="#1f1722" stroke-width="3" stroke-linecap="round" opacity=".25" />
+        </g>
+
+        <!-- the top half, knocked off to the side and still rocking -->
+        <g transform="translate(346 257) rotate(163) translate(-100 -4)">
+          <g class="lid">
+            <g clip-path="url(#clipTop)">
+              <use href="#shell" fill="#fffbf1" stroke="#1f1722" stroke-width="6" stroke-linejoin="round" />
+            </g>
+            <polyline clip-path="url(#inside)" points="0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124" fill="none" stroke="#1f1722" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+          </g>
+        </g>
+
+        <!-- shell crumbs -->
+        <g fill="#fffbf1" stroke="#1f1722" stroke-width="3" stroke-linejoin="round">
+          <path d="M216 254 l 9 -7 l 6 8 Z" />
+          <path d="M186 262 l 7 -9 l 9 6 l -5 5 Z" />
+          <path d="M18 254 l 8 -6 l 5 7 Z" />
+        </g>
+
+        <!-- whoever lived here walked off -->
+        <g fill="none" stroke="#1f1722" stroke-width="3" stroke-linecap="round">
+          <g transform="translate(214 282) rotate(80)"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+          <g transform="translate(244 292) rotate(100)" opacity="0.85"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+          <g transform="translate(276 284) rotate(80)" opacity="0.7"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+          <g transform="translate(308 294) rotate(100)" opacity="0.55"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+          <g transform="translate(340 286) rotate(80)" opacity="0.42"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+          <g transform="translate(372 296) rotate(100)" opacity="0.3"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+          <g transform="translate(404 288) rotate(80)" opacity="0.18"><path d="M0 0 l -6 -9 M0 0 l 0 -11 M0 0 l 6 -9 M0 0 l 0 4" /></g>
+        </g>
+
+        <!-- the note -->
+        <text class="note" x="232" y="34" transform="rotate(-6 232 34)">nobody home.</text>
+        <path d="M268 48 C 250 74 214 86 188 92 M188 92 l 16 -12 M188 92 l 18 6" fill="none" stroke="#e2432a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+      <h1>Nothing hatched <em>here.</em></h1>
+      <p class="tr" lang="tr">Bu kabuk boş.</p>
+
+      <p class="copy">Whatever lived at this address got up and left. Probably went to a demo.</p>
+      <p class="copy" lang="tr">Bu adreste ne yaşıyorsa kalkıp gitmiş. Büyük ihtimalle bir demoya.</p>
+
+      <a class="btn" href="/"><span>Back to the club <i>·</i> <span lang="tr">Kulübe dön</span> →</span></a>
+    </main>
+  </body>
+</html>
