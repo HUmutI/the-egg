@@ -1,280 +1,195 @@
 import { PALETTE } from './util'
-import { FIG_VIEWBOX, I, SHELL, W, eggBody, eggClip, eggPath, face, hand, ink, lightOf, mix, nextId, shadeOf } from './ink'
+import { handEgg, inkEgg, type EggShape } from './riso'
 
 /**
- * The regulars, drawn from the egg kit in ink.ts: same body, same line,
- * same face; the accessories tell you who they are.
+ * The regulars, drawn in the house riso style (riso.ts): a hand-drawn egg,
+ * colour printed a little off the line, halftone on one side, a thin wobbly
+ * outline that doesn't quite close. No faces to speak of and no props to
+ * hold; each one is a single idea, carried by a dry annotation.
  */
 
 export type Kind = 'owl' | 'designer' | 'hardware' | 'founder' | 'researcher' | 'musician' | 'firstTimer' | 'pizza'
 type Lang = 'en' | 'tr'
 
 const P = PALETTE
-const WOOD = '#e0a15a'
-const WOOD_DEEP = '#a8643a'
-const METAL = '#cfc8d6'
-const CRUST = '#e7a45f'
-const font = {
-  mono: `font-family="DM Mono, ui-monospace, monospace"`,
-  hand: `font-family="Reenie Beanie, cursive"`,
-  serif: `font-family="Fraunces, Georgia, serif"`,
+const I = P.ink
+const T = P.tomato
+
+/** Every figure is drawn around a 200×260 egg at (100, 140); notes spill into the margins. */
+export const FIG_VIEWBOX = '-40 -50 290 370'
+
+const MONO = `font-family="DM Mono, ui-monospace, monospace"`
+const SERIF = `font-family="Fraunces, Georgia, serif"`
+const HAND = `font-family="Reenie Beanie, cursive"`
+
+/** A pen line: thin, round-capped, slightly wobbly. */
+const pen = (d: string, w = 3, c: string = I, extra = '') =>
+  `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" filter="url(#wobble)" ${extra}/>`
+
+/** A ruled line: construction, dimensions, staves. Straight, so no wobble (it would clip a flat line). */
+const rule = (d: string, w = 1.4, c: string = T, extra = '') =>
+  `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${extra}/>`
+
+const CAST: Record<Kind, { seed: number; fill: string; shape: EggShape }> = {
+  owl: { seed: 11, fill: P.lav, shape: { w: 0.92, h: 1.04, lean: -4 } },
+  designer: { seed: 18, fill: P.butter, shape: { w: 1.02, h: 0.94, lean: 6, taper: 0.1 } },
+  hardware: { seed: 25, fill: P.mint, shape: { w: 0.86, h: 1.06, lean: -2, taper: 0.08 } },
+  founder: { seed: 32, fill: P.peach, shape: { w: 0.98, h: 1, lean: 3 } },
+  researcher: { seed: 39, fill: P.sky, shape: { w: 0.9, h: 1.02, lean: -7, taper: 0.18 } },
+  musician: { seed: 46, fill: P.yolk, shape: { w: 0.8, h: 0.84, lean: 16, cx: 112, cy: 158 } },
+  firstTimer: { seed: 53, fill: P.cream, shape: { w: 0.84, h: 0.92, lean: -3, cy: 150 } },
+  pizza: { seed: 60, fill: P.peach, shape: { w: 1, h: 1, lean: 2 } },
 }
 
-/** A four-point sparkle, like the hero's. */
-const spark = (x: number, y: number, s: number, c: string = I) =>
-  `<path d="M${x} ${y - 10 * s}q${2 * s} ${8 * s} ${10 * s} ${10 * s}q${-8 * s} ${2 * s} ${-10 * s} ${10 * s}q${-2 * s} ${-8 * s} ${-10 * s} ${-10 * s}q${8 * s} ${-2 * s} ${10 * s} ${-10 * s}z" fill="${c}"/>`
+const eggOf = (k: Kind) => handEgg(CAST[k].seed, CAST[k].shape)
 
-/** An eighth note. */
-const note = (x: number, y: number, r = 0) =>
-  `<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="7.5" ry="5.6" transform="rotate(-22 ${x} ${y})" fill="${I}"/>${ink(`M${x + 6} ${y - 2}V${y - 32}q4 9 13 12`, 3.4)}</g>`
+let uid = 0
 
 function owl() {
-  // a hoodie, hood up; glasses lit by a laptop at 2am
-  const hood = mix(P.lav, P.lavDeep, 0.42)
-  const skin = SHELL.white
-  const fc = nextId('fo')
-  const fx = 100
-  const fy = 134
-  const glow = nextId('gl')
+  // an anglepoise leaning in from off the plate, the clock, and the eyes of 2am
+  const shade = 'translate(56 -36) rotate(-35)'
   return `
-    <path d="M206 -6A18 18 0 1 0 222 22A14 14 0 0 1 206 -6Z" fill="${P.yolk}" stroke="${I}" stroke-width="${W.fine}" stroke-linejoin="round"/>
-    ${spark(176, -2, 0.7)}${spark(232, 46, 0.5)}
-    ${eggBody({ fill: hood })}
-    <clipPath id="${fc}"><ellipse cx="${fx}" cy="${fy}" rx="56" ry="51"/></clipPath>
-    <radialGradient id="${glow}" cx=".5" cy="1" r=".75"><stop offset="0" stop-color="${P.sky}" stop-opacity=".95"/><stop offset="1" stop-color="${P.sky}" stop-opacity="0"/></radialGradient>
-    <ellipse cx="${fx}" cy="${fy}" rx="65" ry="60" fill="${mix(hood, '#ffffff', 0.18)}" stroke="${I}" stroke-width="${W.fine}"/>
-    <g clip-path="url(#${fc})">
-      <rect x="30" y="70" width="140" height="130" fill="${shadeOf(skin)}"/>
-      <ellipse cx="${fx}" cy="${fy + 9}" rx="56" ry="51" fill="${skin}"/>
-      <rect x="30" y="120" width="140" height="80" fill="url(#${glow})"/>
+    <polygon points="57,0 90,-23 196,104 18,128" fill="${P.yolk}" opacity=".34"/>
+    ${inkEgg(eggOf('owl'), CAST.owl.fill)}
+    ${pen('M-44 34L-4 -28L54 -36', 3.2)}
+    ${pen('M-34 36L0 -18L50 -26', 1.6)}
+    <circle cx="-4" cy="-28" r="4.5" fill="${P.cream}" stroke="${I}" stroke-width="2.4"/>
+    <path d="M-7 0h14l13 30h-40z" transform="${shade}" fill="${I}"/>
+    <g class="egg__eyes">
+      ${pen('M68 130q11 -3 23 0M110 130q11 -3 23 0', 3.2)}
+      <circle cx="80" cy="134.5" r="3" fill="${I}"/><circle cx="122" cy="134.5" r="3" fill="${I}"/>
     </g>
-    <ellipse cx="${fx}" cy="${fy}" rx="56" ry="51" fill="none" stroke="${I}" stroke-width="${W.prop}"/>
-    ${face({ y: 134, gap: 21, eyes: 'tired', mouth: 'flat', wow: true })}
-    <g fill="${P.sky}" fill-opacity=".38" stroke="${I}" stroke-width="${W.prop}">
-      <rect x="62" y="119" width="34" height="28" rx="10"/><rect x="104" y="119" width="34" height="28" rx="10"/>
-    </g>
-    ${ink('M96 131q4 -4 8 0', W.fine)}
-    ${ink('M70 125l9 -2M112 125l9 -2', 2.6, '#ffffff')}
-    ${ink('M86 186v30M114 186v30', W.fine)}
-    <rect x="81.5" y="212" width="9" height="13" rx="3" fill="${P.cream}" stroke="${I}" stroke-width="2.6"/>
-    <rect x="109.5" y="212" width="9" height="13" rx="3" fill="${P.cream}" stroke="${I}" stroke-width="2.6"/>
-    <g>
-      <rect x="34" y="206" width="132" height="70" rx="9" fill="#e4e0ec" stroke="${I}" stroke-width="${W.prop}"/>
-      <rect x="34" y="206" width="132" height="10" rx="5" fill="${P.sky}" opacity=".9"/>
-      <path d="M100 228c5.5 0 10 8 10 14.5c0 6-4.5 9.5-10 9.5s-10-3.5-10-9.5c0-6.5 4.5-14.5 10-14.5Z" fill="${P.yolk}" stroke="${I}" stroke-width="2.6"/>
-      <rect x="34" y="206" width="132" height="70" rx="9" fill="none" stroke="${I}" stroke-width="${W.prop}"/>
-    </g>
-    ${hand(42, 214, skin, -20)}${hand(158, 214, skin, 20)}`
+    ${pen('M71 145q9 4 18 1M113 145q9 4 18 1', 1.8, I, 'opacity=".45"')}
+    <text x="216" y="-14" text-anchor="end" ${MONO} font-size="22" letter-spacing="1" fill="${I}" opacity=".75">02:47</text>`
 }
 
 function designer() {
-  // a beret, a striped top and an opinionated swatch fan
-  const fill = SHELL.white
-  const c = eggClip()
-  const stripes = [196, 216, 236, 256].map((y) => `<rect x="0" y="${y}" width="200" height="9" fill="${P.lavDeep}"/>`).join('')
-  const cards = [
-    [P.lavDeep, -58],
-    [P.mintDeep, -32],
-    [P.yolk, -6],
-    [P.tomato, 20],
-  ] as const
-  const px = 186
-  const py = 236
+  // construction lines, a ratio, and one opinionated swatch
   return `
-    ${c.def}
-    ${eggBody({ fill })}
-    <g clip-path="${c.url}">
-      <path d="M0 190Q100 214 200 190V280H0Z" fill="#fffdf8"/>
-      ${stripes.replace(/y="(\d+)"/g, (_, y) => `y="${+y}"`)}
-      <path d="M0 190Q100 214 200 190" fill="none" stroke="${I}" stroke-width="${W.fine}"/>
+    ${inkEgg(eggOf('designer'), CAST.designer.fill)}
+    <g opacity=".9">
+      <circle cx="100" cy="104" r="56" fill="none" stroke="${T}" stroke-width="1.4"/>
+      <circle cx="100" cy="104" r="34.6" fill="none" stroke="${T}" stroke-width="1.4"/>
+      ${rule('M100 12V282M-14 104H214')}
+      ${rule('M18 294H182M18 286v16M182 286v16')}
     </g>
-    <path d="${eggPath()}" fill="none" stroke="${I}" stroke-width="${W.body}" stroke-linejoin="round"/>
-    <g transform="rotate(-10 96 42)">
-      <path d="M30 60C22 34 62 14 104 14C150 14 176 34 164 52C148 70 64 76 30 60Z" fill="${P.tomato}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
-      <path d="M36 58C70 68 140 64 160 50" fill="none" stroke="${mix(P.tomato, I, 0.35)}" stroke-width="5" stroke-linecap="round"/>
-      ${ink('M104 14q0 -10 8 -13', W.prop)}
-    </g>
-    ${face({ y: 136, eyes: 'dot', mouth: 'smile', blush: true, look: [5, 0], wow: true })}
-    ${cards
-      .map(
-        ([col, a]) => `<g transform="rotate(${a} ${px} ${py})">
-          <rect x="${px - 13}" y="${py - 82}" width="26" height="78" rx="4" fill="#fffdf8" stroke="${I}" stroke-width="${W.fine}"/>
-          <rect x="${px - 13}" y="${py - 82}" width="26" height="54" rx="4" fill="${col}" stroke="${I}" stroke-width="${W.fine}"/>
-          ${ink(`M${px - 7} ${py - 17}h12`, 2.2)}
-        </g>`,
-      )
-      .join('')}
-    <circle cx="${px}" cy="${py - 8}" r="4.5" fill="${P.cream}" stroke="${I}" stroke-width="2.6"/>
-    ${hand(px - 2, py + 2, fill, -24)}
-    ${hand(12, 226, fill, 18)}`
+    <text x="100" y="322" text-anchor="middle" ${MONO} font-size="21" fill="${T}">1 : 1.618</text>
+    <g transform="rotate(12 200 212)">
+      <rect x="178" y="176" width="44" height="66" fill="${P.cream}" stroke="${I}" stroke-width="2"/>
+      <rect x="182" y="180" width="36" height="28" fill="${P.yolk}"/>
+      <rect x="182" y="212" width="36" height="16" fill="#f8db8e"/>
+      ${rule('M184 235h20', 2, I)}
+    </g>`
 }
 
 function hardware() {
-  // goggles up, soldering iron in hand, a board that may or may not work
-  const fill = SHELL.brown
-  const c = eggClip()
-  const ang = -19
+  // it's an egg. it's also a battery. it is looking for a socket.
   return `
-    ${c.def}
-    ${eggBody({ fill })}
-    <g clip-path="${c.url}">${ink('M0 98Q100 62 200 98', 13, I)}</g>
-    <g stroke="${I}" stroke-width="${W.prop}">
-      <circle cx="76" cy="86" r="20" fill="${P.mintDeep}"/><circle cx="124" cy="86" r="20" fill="${P.mintDeep}"/>
-      <circle cx="76" cy="86" r="12" fill="${P.sky}" stroke-width="${W.fine}"/><circle cx="124" cy="86" r="12" fill="${P.sky}" stroke-width="${W.fine}"/>
+    <rect x="84" y="-2" width="32" height="18" rx="3" fill="${I}"/>
+    ${inkEgg(eggOf('hardware'), CAST.hardware.fill)}
+    <text x="100" y="86" text-anchor="middle" ${SERIF} font-size="44" fill="${I}">+</text>
+    <text x="100" y="238" text-anchor="middle" ${SERIF} font-size="44" fill="${I}">–</text>
+    ${pen('M176 150C216 148 220 204 196 212S162 246 196 260', 3.2)}
+    <g transform="translate(196 260) rotate(22)">
+      <rect x="0" y="-8" width="20" height="16" rx="3" fill="${I}"/>
+      ${rule('M20 -4h9M20 4h9', 3, I)}
     </g>
-    ${ink('M70 80l6 -5M118 80l6 -5', 2.6, '#ffffff')}
-    ${face({ y: 140, eyes: 'dot', mouth: 'tongue', look: [-5, 3], wow: true })}
-    <g transform="rotate(-8 58 224)">
-      <rect x="16" y="196" width="84" height="56" rx="6" fill="${P.mintDeep}" stroke="${I}" stroke-width="${W.prop}"/>
-      ${ink('M26 208h20l8 8h22M26 240h14l8 -8h30M84 206v14', 2.4, P.yolk)}
-      <rect x="44" y="214" width="26" height="20" rx="2" fill="${I}"/>
-      ${ink('M48 210v4M55 210v4M62 210v4M48 234v4M55 234v4M62 234v4', 2, '#c8c2cc')}
-      <circle cx="88" cy="238" r="5" fill="${P.tomato}" stroke="${I}" stroke-width="2.2"/>
-      <circle cx="26" cy="208" r="3" fill="${P.yolk}"/><circle cx="26" cy="240" r="3" fill="${P.yolk}"/>
-    </g>
-    ${hand(14, 236, fill, 14)}
-    ${ink('M98 210q-10 -10 -2 -20q8 -10 -2 -22', 2.8, I, 'opacity=".45"')}
-    <g transform="translate(98 212) rotate(${ang})">
-      <path d="M0 0L12 -3.5V3.5Z" fill="${METAL}" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"/>
-      <rect x="11" y="-4" width="32" height="8" rx="2" fill="${METAL}" stroke="${I}" stroke-width="2.6"/>
-      <rect x="42" y="-10" width="56" height="20" rx="9" fill="${P.tomato}" stroke="${I}" stroke-width="${W.prop}"/>
-      ${ink('M58 -9v18M66 -9v18', 2.4, mix(P.tomato, I, 0.35))}
-      ${ink('M98 0q22 4 36 26', W.fine)}
-    </g>
-    ${hand(166, 192, fill, -10)}`
+    ${pen('M232 252l9 -6M236 268l12 2M228 282l8 8', 2.2, T)}`
 }
 
 function founder(lang: Lang) {
-  // the lanyard says CEO; someone has corrected it. coffee number four.
-  const fill = SHELL.cream
-  const c = eggClip()
-  const human = lang === 'tr' ? 'insan' : 'human'
+  // the lanyard says CEO. someone has proofread it.
   return `
-    ${c.def}
-    ${eggBody({ fill })}
-    <g clip-path="${c.url}">
-      ${ink('M40 92L96 186M160 92L104 186', 10, I)}
-      ${ink('M40 92L96 186M160 92L104 186', 5, P.tomato)}
+    ${inkEgg(eggOf('founder'), CAST.founder.fill)}
+    <g class="egg__eyes"><circle cx="90" cy="98" r="3.2" fill="${I}"/><circle cx="114" cy="98" r="3.2" fill="${I}"/></g>
+    ${pen('M62 110L98 146M138 110L102 146', 2.4)}
+    <g transform="rotate(-4 100 170)">
+      <rect x="95" y="141" width="10" height="9" rx="1.5" fill="${P.cream}" stroke="${I}" stroke-width="1.8"/>
+      <rect x="64" y="149" width="72" height="44" rx="3" fill="${P.cream}" stroke="${I}" stroke-width="2.2"/>
+      <text x="100" y="178" text-anchor="middle" ${MONO} font-size="19" letter-spacing="2.5" fill="${I}">CEO</text>
+      ${rule('M70 173L130 167', 2.8, T)}
     </g>
-    ${face({ y: 130, eyes: 'dot', mouth: 'smirk', brows: 'one', wow: true })}
-    <g transform="rotate(-5 100 214)">
-      <rect x="93" y="180" width="14" height="10" rx="2" fill="${METAL}" stroke="${I}" stroke-width="2.4"/>
-      <rect x="62" y="188" width="76" height="58" rx="6" fill="#fffdf8" stroke="${I}" stroke-width="${W.prop}"/>
-      <text x="100" y="212" text-anchor="middle" ${font.mono} font-size="17" font-weight="500" letter-spacing="2" fill="${I}">CEO</text>
-      ${ink('M74 210L126 202', 3.4, P.tomato)}
-      <text x="100" y="239" text-anchor="middle" ${font.hand} font-size="34" fill="${P.tomato}">${human}</text>
-    </g>
-    <g transform="rotate(8 196 196)">
-      ${ink('M188 142q-6 -8 0 -16q6 -8 0 -16M200 140q-6 -8 0 -16', 2.6, I, 'opacity=".45"')}
-      <path d="M178 160L184 222H208L214 160Z" fill="#fffdf8" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
-      <path d="M180.5 182L182.6 204H209.4L211.5 182Z" fill="${WOOD}" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"/>
-      <rect x="173" y="150" width="46" height="12" rx="5" fill="${I}"/>
-    </g>
-    ${hand(186, 210, fill, -12)}
-    ${hand(14, 228, fill, 16)}`
+    ${pen('M92 212L100 201L108 212', 2.4, T)}
+    <text x="100" y="238" text-anchor="middle" ${HAND} font-size="46" fill="${T}" transform="rotate(-3 100 228)">${lang === 'tr' ? 'insan' : 'human'}</text>`
 }
 
-function researcher() {
-  // big glasses, one eyebrow, and a pile of papers (one of them is theirs)
-  const fill = SHELL.white
-  const sheets = [0, 1, 2, 3, 4, 5, 6, 7]
-    .map((k) => {
-      const y = 254 - k * 10
-      const dx = [0, 3, -2, 4, -1, 2, -3, 1][k]
-      const r = [0, 2, -1.5, 1, -2, 1.5, -1, 2][k]
-      return `<rect x="${-40 + dx}" y="${y}" width="74" height="10" rx="2" transform="rotate(${r} ${-3 + dx} ${y + 5})" fill="${k % 2 ? '#fffdf8' : P.cream}" stroke="${I}" stroke-width="${W.fine}"/>`
-    })
-    .join('')
+function researcher(lang: Lang) {
+  // a hairline crack, properly cited
   return `
-    ${eggBody({ fill })}
-    ${face({ y: 134, eyes: 'dot', mouth: 'flat', brows: 'one', look: [5, 1], wow: true })}
-    <g fill="#ffffff" fill-opacity=".3" stroke="${I}" stroke-width="${W.prop}">
-      <circle cx="80" cy="135" r="17"/><circle cx="122" cy="135" r="17"/>
-    </g>
-    ${ink('M97 133q4 -4 8 0M63 131L42 124M139 131L160 124', W.fine)}
-    ${ink('M70 128l7 -6M112 128l7 -6', 2.4, '#ffffff')}
-    ${sheets}
-    <path d="M-30 176h40v24h-40z" transform="rotate(-6 -10 188)" fill="${P.yolk}" stroke="${I}" stroke-width="2.6"/>
-    ${hand(8, 170, fill, 10)}
-    <g transform="rotate(10 186 176)">
-      <rect x="158" y="132" width="58" height="76" rx="3" fill="#fffdf8" stroke="${I}" stroke-width="${W.prop}"/>
-      ${ink('M168 146h38M168 156h30M168 166h36', 2.4, I, 'opacity=".55"')}
-      <path d="M170 196v-14M180 196v-22M190 196v-8M200 196v-18" stroke="${P.lavDeep}" stroke-width="6" stroke-linecap="butt"/>
-      <text x="206" y="150" ${font.serif} font-style="italic" font-size="20" fill="${P.tomato}">¹</text>
-    </g>
-    ${hand(166, 206, fill, -16)}`
+    ${inkEgg(eggOf('researcher'), CAST.researcher.fill)}
+    ${pen('M124 32l-10 24l14 12l-12 22l10 14', 2.4)}
+    <text x="160" y="58" ${SERIF} font-style="italic" font-size="46" fill="${I}">¹</text>
+    ${rule('M-24 286H44', 1.2, I)}
+    <text x="-24" y="312" ${SERIF} font-style="italic" font-size="22" fill="${I}" opacity=".85">${lang === 'tr' ? '¹ hakemli. çoğunlukla.' : '¹ peer reviewed. mostly.'}</text>`
 }
 
 function musician() {
-  // headphones on, eyes shut, guitar
-  const fill = SHELL.tan
-  const g = `translate(80 222) rotate(62)`
+  // the egg as a note on the bass staff, at a sensible tempo
+  const staff = [94, 126, 158, 190, 222].map((y, k) => `M-36 ${y}Q100 ${y + (k % 2 ? 2 : -2)} 236 ${y + (k % 2 ? -1 : 1)}`).join('')
   return `
-    ${note(-16, 54, -8)}${note(16, 14, 6)}
-    ${eggBody({ fill })}
-    ${ink('M18 124C8 30 192 30 182 124', 12, I)}
-    ${ink('M18 124C8 30 192 30 182 124', 5, P.lavDeep)}
-    <rect x="2" y="100" width="30" height="54" rx="14" fill="${P.lavDeep}" stroke="${I}" stroke-width="${W.prop}"/>
-    <rect x="168" y="100" width="30" height="54" rx="14" fill="${P.lavDeep}" stroke="${I}" stroke-width="${W.prop}"/>
-    <rect x="22" y="108" width="12" height="38" rx="6" fill="${I}"/>
-    <rect x="166" y="108" width="12" height="38" rx="6" fill="${I}"/>
-    ${face({ y: 136, eyes: 'closed', mouth: 'o', blush: true, wow: true })}
-    <g transform="${g}">
-      <rect x="-8" y="-150" width="16" height="104" rx="3" fill="${WOOD_DEEP}" stroke="${I}" stroke-width="${W.prop}"/>
-      <path d="M-11 -150L-13 -176Q0 -184 13 -176L11 -150Z" fill="${I}"/>
-      <path d="M0 -76c20 0 30 10 30 26c0 10-6 14-6 22c0 10 14 16 14 36c0 22-18 34-38 34s-38-12-38-34c0-20 14-26 14-36c0-8-6-12-6-22c0-16 10-26 30-26Z" fill="${WOOD}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
-      <circle cx="0" cy="-22" r="11" fill="${I}"/>
-      <rect x="-14" y="16" width="28" height="7" rx="2" fill="${WOOD_DEEP}" stroke="${I}" stroke-width="2.4"/>
-      ${ink('M-3 -170V18M3 -170V18', 1.4, '#fffdf8', 'opacity=".9"')}
-    </g>
-    ${hand(108, 230, fill, -30)}
-    ${hand(174, 166, fill, 20)}`
+    ${rule(staff, 2, I, 'opacity=".6"')}
+    ${pen('M-22 126C-24 100 6 92 10 116C14 142 -4 168 -32 184', 4.2)}
+    <circle cx="-22" cy="126" r="5.5" fill="${I}"/>
+    <circle cx="20" cy="112" r="3.6" fill="${I}"/><circle cx="20" cy="140" r="3.6" fill="${I}"/>
+    ${inkEgg(eggOf('musician'), CAST.musician.fill)}
+    ${rule('M184 150V-12', 4.5, I)}
+    ${pen('M184 -12C188 20 222 30 214 72', 4.5)}
+    <g opacity=".8">
+      <ellipse cx="-27" cy="45" rx="7" ry="5" transform="rotate(-20 -27 45)" fill="${I}"/>
+      ${rule('M-20.5 43V15', 2.4, I)}
+      <text x="-10" y="52" ${MONO} font-size="22" fill="${I}">= 96</text>
+    </g>`
 }
 
 function firstTimer(lang: Lang) {
-  // still wearing some shell. a sticker, in case anyone asks
-  const fill = SHELL.white
-  const size = { w: 158, h: 204 }
-  const top = 262 - size.h
-  const [hello, isNew] = lang === 'tr' ? ['MERHABA', 'yeniyim!'] : ['HELLO', 'I’m new!']
+  // the sticker is still on
+  const [hello, isNew] = lang === 'tr' ? ['MERHABA', 'yeniyim'] : ['HELLO', 'I’m new']
   return `
-    ${ink('M-30 92q-8 14 0 28M-42 86q-12 20 0 40', 3, I, 'opacity=".5"')}
-    ${eggBody({ fill, ...size })}
-    <g transform="rotate(-14 100 ${top + 16})">
-      <path d="M38 ${top + 30}C40 ${top - 14} 70 ${top - 32} 100 ${top - 32}S160 ${top - 14} 162 ${top + 30}L150 ${top + 18}L138 ${top + 32}L124 ${top + 16}L110 ${top + 32}L96 ${top + 16}L82 ${top + 32}L68 ${top + 16}L54 ${top + 32}Z"
-        fill="${lightOf(fill)}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
-      <path d="M58 ${top - 4}q10 -18 30 -22" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+    ${inkEgg(eggOf('firstTimer'), CAST.firstTimer.fill)}
+    <g class="egg__eyes"><circle cx="88" cy="112" r="3.2" fill="${I}"/><circle cx="112" cy="112" r="3.2" fill="${I}"/></g>
+    <g transform="rotate(-5 100 182)">
+      <rect x="52" y="150" width="96" height="64" rx="5" fill="#fffdf8"/>
+      <path d="M52 170V155a5 5 0 0 1 5 -5h86a5 5 0 0 1 5 5V170Z" fill="${T}"/>
+      <rect x="52" y="150" width="96" height="64" rx="5" fill="none" stroke="${I}" stroke-width="2"/>
+      <text x="100" y="165.5" text-anchor="middle" ${MONO} font-size="${lang === 'tr' ? 12.5 : 14}" font-weight="500" letter-spacing="${lang === 'tr' ? 1 : 2.5}" fill="${P.cream}">${hello}</text>
+      <text x="100" y="203" text-anchor="middle" ${HAND} font-size="36" fill="${I}">${isNew}</text>
     </g>
-    ${face({ y: top + 92, gap: 19, eyes: 'wide', mouth: 'smile', blush: true, brows: 'up', wow: true })}
-    <g transform="rotate(-6 100 208)">
-      <rect x="56" y="180" width="88" height="58" rx="7" fill="#ffffff" stroke="${I}" stroke-width="${W.prop}"/>
-      <path d="M56 199V187a7 7 0 0 1 7 -7h74a7 7 0 0 1 7 7v12Z" fill="${P.tomato}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
-      <text x="100" y="195" text-anchor="middle" ${font.mono} font-size="${lang === 'tr' ? 11.5 : 13}" font-weight="500" letter-spacing="1.5" fill="#ffffff">${hello}</text>
-      <text x="100" y="229" text-anchor="middle" ${font.hand} font-size="32" fill="${I}">${isNew}</text>
-    </g>
-    ${hand(-12, 116, fill, -30)}
-    ${hand(184, 226, fill, 16)}`
+    ${pen('M206 72C214 110 188 136 158 146', 2.4, T)}
+    ${pen('M163 135L156 147L169 151', 2.4, T)}
+    <text x="184" y="58" ${MONO} font-size="22" fill="${I}" opacity=".75">v0.1</text>`
 }
 
 function pizza() {
-  // the slice is the plan
-  const fill = SHELL.cream
-  const cheese = '#f7cf5a'
+  // one eighth of an egg, served
+  const d = eggOf('pizza')
+  const id = `pz${++uid}`
+  const wedge = '100,150 240,90 240,210'
+  const pep = (x: number, y: number, r: number) =>
+    `<circle cx="${x + 3}" cy="${y + 2.5}" r="${r}" fill="${T}" opacity=".9"/><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${I}" stroke-width="1.8"/>`
+  const yolk = `<circle cx="104" cy="153" r="30" fill="${P.yolk}"/><circle cx="100" cy="150" r="30" fill="none" stroke="${I}" stroke-width="2.4"/>`
   return `
-    ${eggBody({ fill })}
-    ${face({ y: 132, eyes: 'happy', mouth: 'grin', blush: true, wow: true })}
-    <path d="M136 180q-2 22 6 23q8 1 8 -19z" fill="${cheese}" stroke="${I}" stroke-width="${W.fine}" stroke-linejoin="round"/>
-    <g transform="translate(122 166) rotate(22)">
-      <path d="M0 0L94 -42Q106 0 94 42Z" fill="${cheese}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
-      <circle cx="44" cy="-6" r="9" fill="${P.tomato}" stroke="${I}" stroke-width="2.6"/>
-      <circle cx="72" cy="16" r="9.5" fill="${P.tomato}" stroke="${I}" stroke-width="2.6"/>
-      <circle cx="70" cy="-22" r="8" fill="${P.tomato}" stroke="${I}" stroke-width="2.6"/>
-      <circle cx="20" cy="-1" r="3" fill="${P.mintDeep}"/><circle cx="56" cy="8" r="3" fill="${P.mintDeep}"/>
-      <path d="M90 -46Q108 0 90 46L104 50Q126 0 104 -50Z" fill="${CRUST}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
+    <defs>
+      <mask id="${id}m"><rect x="-60" y="-60" width="340" height="420" fill="#fff"/><polygon points="${wedge}" fill="#000"/></mask>
+      <clipPath id="${id}w"><polygon points="${wedge}"/></clipPath>
+      <clipPath id="${id}e"><path d="${d}"/></clipPath>
+    </defs>
+    <g mask="url(#${id}m)">
+      ${inkEgg(d, CAST.pizza.fill)}
+      <g clip-path="url(#${id}e)">${rule('M100 150L42 10M100 150L158 10M100 150L42 290M100 150L158 290M100 150L-40 92M100 150L-40 208', 1.6, I, 'stroke-dasharray="5 7" opacity=".45"')}</g>
+      ${pep(62, 92, 11)}${pep(124, 62, 10)}${pep(52, 196, 12)}${pep(132, 224, 11)}
+      ${yolk}
     </g>
-    ${hand(212, 208, fill, -20)}
-    ${hand(12, 226, fill, 16)}
-    ${spark(28, 52, 0.6, P.tomato)}`
+    ${pen('M100 150L188 113M100 150L188 187', 2.4)}
+    <g transform="translate(40 8) rotate(5 150 150)">
+      <g clip-path="url(#${id}w)">
+        ${inkEgg(d, CAST.pizza.fill, { gap: 0, shade: false })}
+        ${pep(160, 152, 10)}
+        ${yolk}
+      </g>
+      ${pen('M100 150L190 113M100 150L190 187', 2.4)}
+    </g>
+    ${rule('M214 72L204 104', 1.4, T)}
+    <text x="216" y="64" text-anchor="middle" ${MONO} font-size="22" fill="${T}">1/8</text>`
 }
 
 const DRAW: Record<Kind, (lang: Lang) => string> = {
@@ -291,10 +206,8 @@ const DRAW: Record<Kind, (lang: Lang) => string> = {
 /** One figure's SVG markup (without the outer <svg>). */
 export const figure = (kind: Kind, lang: Lang) => DRAW[kind](lang)
 
-/** The empty seat: a dashed egg, waiting for you. */
+/** The empty seat: a dotted egg, waiting for you. */
 export const emptyEgg = (lang: Lang) => `
-  <ellipse class="egg__ground" cx="104" cy="266" rx="70" ry="9" fill="${I}" opacity=".1"/>
-  <path class="egg__dash" d="${eggPath()}" fill="${P.cream}" fill-opacity=".4" stroke="${I}" stroke-width="${W.prop}" stroke-dasharray="3 12" stroke-linecap="round"/>
-  <text x="100" y="168" text-anchor="middle" ${font.serif} font-style="italic" font-size="52" fill="${I}">${lang === 'tr' ? 'sen?' : 'you?'}</text>`
+  <path class="egg__dash" d="${handEgg(99, { w: 0.95, lean: -5 })}" fill="${P.cream}" fill-opacity="0" stroke="${I}" stroke-width="2.6" stroke-dasharray="2 8" stroke-linecap="round"/>
+  <text x="100" y="160" text-anchor="middle" ${SERIF} font-style="italic" font-size="52" fill="${I}">${lang === 'tr' ? 'sen?' : 'you?'}</text>`
 
-export { FIG_VIEWBOX }
