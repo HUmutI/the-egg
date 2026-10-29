@@ -1568,18 +1568,18 @@ h2 {
 /* ── THE DAY (pinned horizontal story) ───────────────────────── */
 
 /* Seven arched windows from 10:30 to 20:00, joined into one building by a
-   shared floor (scenes: src/dayscenes.ts). Wide screens pin the section and
-   slide the day past while the egg walks it; phones read it top to bottom,
-   with the cast drawn into every scene. */
+   shared floor (drawn in src/dayscenes.ts). Wide screens pin the section and
+   play the day as a story: the egg walks to the middle of each window and
+   stays while its hour happens (src/day.ts scrubs each step's --d, 0 → 1).
+   Phones, and reduced motion, read it as a picture book. */
 .day {
   padding: 0;
-  --scene-w: clamp(300px, min(37vw, calc((100svh - 380px) * 1.333)), 560px);
-  --walker-x: calc(var(--gut) + var(--scene-w) * 0.44);
+  --scene-w: clamp(300px, min(40vw, calc((100svh - 340px) * 1.333)), 720px);
 }
 .day__pin {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--nav-top) + clamp(16px, 3.4vh, 44px)) 0 clamp(18px, 4vh, 44px);
+  padding: calc(var(--nav-top) + clamp(14px, 3vh, 40px)) 0 clamp(16px, 3.6vh, 40px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1601,40 +1601,48 @@ h2 {
 .day__head h2 em {
   color: var(--lav-deep);
 }
+@media (min-width: 1200px) {
+  .day__head h2 br {
+    display: none;
+  }
+}
 
 .day__viewport {
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: flex-end;
-  padding-top: clamp(14px, 3vh, 36px);
+  padding-top: clamp(12px, 2.4vh, 32px);
 }
 .day__track {
   display: flex;
   align-items: stretch;
   margin: 0;
-  padding: 0 var(--gut);
+  padding: 0;
   list-style: none;
   width: max-content;
   will-change: transform;
 }
 .step {
   position: relative;
+  flex: none;
   display: flex;
   flex-direction: column;
   width: var(--scene-w);
+  --d: 0;
 }
-/* the caption sits right on top of its window */
+/* a centred caption over a centred window */
 .step__cap {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 clamp(20px, 1.8vw, 30px) clamp(12px, 1.8vh, 20px);
+  align-items: center;
+  text-align: center;
+  padding: 0 clamp(20px, 2.2vw, 40px) clamp(8px, 1.4vh, 16px);
 }
 .step__time {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-family: var(--f-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -1650,12 +1658,12 @@ h2 {
   font-size: clamp(32px, 2.9vw, 50px);
   letter-spacing: -0.03em;
   line-height: 1;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   color: var(--ink-2);
   transition: color 0.4s;
 }
 .step p {
-  max-width: 30ch;
+  max-width: 34ch;
   font-size: clamp(14px, 1vw, 16px);
   line-height: 1.45;
   color: var(--ink-2);
@@ -1678,6 +1686,36 @@ h2 {
   overflow: visible;
 }
 
+/* the way in and the way home: the floor runs on past the first and last
+   windows, so the egg can stand in the middle of either */
+.day__edge {
+  flex: none;
+  position: relative;
+  width: calc(50vw - var(--scene-w) / 2);
+}
+.day__edge::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--scene-w) * 0.075 - 1px);
+  height: max(2px, calc(var(--scene-w) * 0.0065));
+  background: var(--ink);
+}
+.edge__art {
+  position: absolute;
+  bottom: 0;
+  height: calc(var(--scene-w) * 0.75);
+  width: auto;
+  overflow: visible;
+}
+.day__edge--in .edge__art {
+  right: 0;
+}
+.day__edge--out .edge__art {
+  left: 0;
+}
+
 /* ── the cast: our egg and, from Nest on, its team ── */
 .day__cast {
   position: absolute;
@@ -1696,28 +1734,18 @@ h2 {
   translate: -50% 2.92%;
 }
 .walker {
-  left: var(--walker-x);
-  width: calc(var(--scene-w) * 0.4);
+  left: 50%;
+  width: calc(var(--scene-w) * 0.395);
 }
 .mate {
   width: calc(var(--scene-w) * 0.34);
   opacity: 0;
-  scale: 0.5;
-  transform-origin: 50% 100%;
-  transition:
-    opacity 0.35s var(--ease-out),
-    scale 0.7s var(--ease-spring);
 }
 .mate--a {
-  left: calc(var(--walker-x) - var(--scene-w) * 0.2);
+  left: calc(50% - var(--scene-w) * 0.16);
 }
 .mate--b {
-  left: calc(var(--walker-x) - var(--scene-w) * 0.38);
-  transition-delay: 0.12s;
-}
-.day__cast[data-team='true'] .mate {
-  opacity: 1;
-  scale: 1;
+  left: calc(50% - var(--scene-w) * 0.32);
 }
 .walker__svg,
 .mate__svg {
@@ -1726,55 +1754,82 @@ h2 {
   height: auto;
   overflow: visible;
 }
+/* standing still, they breathe */
+.breathe {
+  transform-box: view-box;
+  transform-origin: 100px 316px;
+}
+.day__cast:not(.is-walking) .breathe {
+  animation: breathe 2.8s ease-in-out infinite;
+}
+.day__cast .mate .breathe {
+  animation-delay: 0.9s;
+}
+.day__cast .mate--b .breathe {
+  animation-delay: 1.6s;
+}
+@keyframes breathe {
+  50% {
+    transform: scaleY(1.022);
+  }
+}
 
-/* the walker carries every state; data-state shows one */
-.wface,
+/* the walker carries every state; data attributes show one */
+.sface,
+.gface,
 .wprop,
+.wbub,
 .mface,
 .mprop,
 .mhands--up {
   display: none;
 }
-.walker[data-state='0'] :is(.wface--0, .wprop--0),
-.walker[data-state='1'] :is(.wface--1, .wprop--1),
-.walker[data-state='2'] :is(.wface--2, .wprop--2),
-.walker[data-state='3'] :is(.wface--3, .wprop--3),
-.walker[data-state='4'] :is(.wface--4, .wprop--4),
-.walker[data-state='5'] :is(.wface--5, .wprop--5),
-.walker[data-state='6'] :is(.wface--6, .wprop--6) {
+.walker[data-state='0'] .sface--0,
+.walker[data-state='1'] :is(.sface--1, .wprop--1),
+.walker[data-state='2'] :is(.sface--2, .wprop--2),
+.walker[data-state='3'] :is(.sface--3, .wprop--3),
+.walker[data-state='4'] :is(.sface--4, .wprop--4),
+.walker[data-state='5'] .sface--5,
+.walker[data-state='5'][data-hatch='popped'] :is(.gface--joy, .wprop--arms),
+.walker[data-state='6'] :is(.gface--calm, .wprop--6),
+.walker[data-state='0']:is([data-beat='3'], [data-beat='4']) .wprop--0,
+.walker[data-state='6']:not([data-beat='0']) .wbub--1,
+.walker[data-state='6']:is([data-beat='2'], [data-beat='3'], [data-beat='4']) .wbub--2,
+.walker[data-state='6']:is([data-beat='3'], [data-beat='4']) .wbub--3 {
   display: inline;
 }
-/* one whole shell until Hatch, then two halves: the top one flies */
+.walker[data-state='6'][data-beat='4'] .gface--calm {
+  display: none;
+}
+.walker[data-state='6'][data-beat='4'] .gface--wink {
+  display: inline;
+}
+/* things it picks up pop into its hands */
+.walker :is(.wprop, .wbub) {
+  transform-box: fill-box;
+  transform-origin: 50% 80%;
+  animation: popIn 0.45s var(--ease-spring) both;
+}
+@keyframes popIn {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+/* one whole shell until the hatch, then two halves */
 .walker__top,
 .walker__bottom {
   opacity: 0;
 }
-.walker__top {
-  transform-box: view-box;
-  transform-origin: 100px 178px;
-  transition:
-    transform 0.9s var(--ease-spring),
-    opacity 0.15s;
-}
-.walker:is([data-state='5'], [data-state='6']) :is(.walker__top, .walker__bottom) {
+.walker[data-hatch='popped'] :is(.walker__top, .walker__bottom) {
   opacity: 1;
 }
-.walker:is([data-state='5'], [data-state='6']) :is(.walker__whole, .walker__hands) {
+.walker[data-hatch='popped'] :is(.walker__whole, .walker__hands) {
   opacity: 0;
 }
-.walker[data-state='5'] .walker__top {
-  transform: translate(106px, -150px) rotate(40deg) scale(0.5);
-}
-.walker[data-state='6'] .walker__top {
-  transform: translate(12px, -98px) rotate(-16deg) scale(0.46);
-}
-.walker__golden {
-  transform-box: view-box;
-  transform-origin: 100px 262px;
-  transition: transform 0.6s var(--ease-spring);
-}
-.walker[data-state='5'] .walker__golden {
-  transform: translateY(-6px) scale(1.03);
+/* the golden egg only shows once the shell has gone */
+.walker:not([data-hatch='popped']) .walker__golden {
+  opacity: 0;
 }
 .walker .hero__crack {
   stroke-dasharray: 1;
@@ -1782,8 +1837,8 @@ h2 {
   transition: stroke-dashoffset 0.6s var(--ease-out);
 }
 .walker:not([data-state='0']) .hero__crack--1,
-.walker:is([data-state='3'], [data-state='4']) .hero__crack--2,
-.walker[data-state='4'] .hero__crack--3 {
+.walker:is([data-state='3'], [data-state='4'], [data-state='5']) .hero__crack--2,
+.walker:is([data-state='4'], [data-state='5']) .hero__crack--3 {
   stroke-dashoffset: 0;
 }
 /* at Pizza it's about to go */
@@ -1835,40 +1890,39 @@ h2 {
 .mate[data-state='4'] .mface--2,
 .mate[data-state='5'] .mface--3,
 .mate[data-state='6'] .mface--4,
-.mate[data-state='5'] .mhands--up,
+.day__cast[data-cheer='true'] .mhands--up,
 .mate[data-state='4'] .mprop--slice,
 .mate[data-state='6'] .mprop--phone,
 .mate--a[data-state='3'] .mprop--laptop {
   display: inline;
 }
-.mate[data-state='5'] .mhands--down {
+.day__cast[data-cheer='true'] .mhands--down {
   display: none;
 }
-.mate[data-state='5'] .mate__svg {
-  animation: cheer 0.5s ease-in-out infinite alternate;
+.mate__body {
+  transform-box: view-box;
+  transform-origin: 100px 316px;
 }
-.mate--b[data-state='5'] .mate__svg {
-  animation-delay: 0.25s;
+.day__cast[data-cheer='true'] .mate__body {
+  animation: cheer 0.48s ease-in-out infinite alternate;
+}
+.day__cast[data-cheer='true'] .mate--b .mate__body {
+  animation-delay: 0.24s;
 }
 @keyframes cheer {
   to {
-    transform: translateY(-9%);
+    transform: translateY(-34px);
   }
 }
 
-/* ── each window comes alive while the egg is in it ── */
-.scene .sc-rays,
-.scene .watch__hand,
-.scene :is(.clock__h, .clock__m),
-.scene .nest,
-.scene .sc-star,
-.scene .pie__slice,
-.scene .chat__b,
-.scene .confetti,
-.scene .door__leaf {
+/* ── each window's moment, scrubbed by its --d ── */
+.scene :is(.sc-rays, .watch__hand, .nest, .sc-star, .pie__slice, .confetti, .door__leaf, .sc-sunset, .mentor, .hearts path) {
   transform-box: fill-box;
 }
-.scene .sc-rays {
+.scene .sc-rays,
+.scene .sc-star,
+.scene .hearts path,
+.scene .confetti {
   transform-origin: center;
 }
 .step.is-now .sc-rays {
@@ -1912,48 +1966,64 @@ h2 {
   }
 }
 
+/* the notes write themselves when their hour comes */
+.scene .note text,
+.edge__art .note text {
+  opacity: 0;
+  transition: opacity 0.5s 0.2s;
+}
+.scene .note__arrow,
+.edge__art .note__arrow {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.8s 0.5s var(--ease-out);
+}
+.step:is(.is-now, .is-past) .note text,
+.step[data-step='6'].is-now ~ .day__edge--out .note text {
+  opacity: 1;
+}
+.step:is(.is-now, .is-past) .note__arrow,
+.step[data-step='6'].is-now ~ .day__edge--out .note__arrow {
+  stroke-dashoffset: 0;
+}
+
 /* 10:30 doors: it swings open on warm light */
 .scene .door__leaf {
   transform-origin: left center;
-  transition: transform 1s var(--ease-spring);
+  transform: scaleX(calc(1 - 0.7 * clamp(0, var(--d) * 2.4, 1))) skewY(calc(clamp(0, var(--d) * 2.4, 1) * -7deg));
 }
-.scene :is(.door__glow, .door__light) {
-  transition: opacity 0.9s var(--ease-out);
+.scene .door__glow {
+  opacity: clamp(0, calc(var(--d) * 2.4 * 0.85), 0.85);
 }
-.step:is(.is-now, .is-past) .scene .door__leaf {
-  transform: scaleX(0.3) skewY(-8deg);
-}
-.step:is(.is-now, .is-past) .scene .door__glow {
-  opacity: 0.85;
-}
-.step:is(.is-now, .is-past) .scene .door__light {
-  opacity: 0.35;
+.scene .door__light {
+  opacity: clamp(0, calc(var(--d) * 2.4 * 0.38), 0.38);
 }
 
-/* 11:00 crack: sixty seconds on the clock, and an idea flickers */
-.scene .watch__hand,
-.scene :is(.clock__h, .clock__m) {
+/* 11:00 crack: sixty seconds on the clock, the idea switches on at the end */
+.scene .watch__hand {
   transform-origin: 50% 100%;
+  transform: rotate(calc(var(--d) * 360deg));
 }
-.step.is-now .scene .watch__hand {
-  animation: rays 6s steps(60) infinite;
+.scene .bulb__on {
+  opacity: clamp(0, calc((var(--d) - 0.72) * 8), 1);
 }
 .scene .bulb__glow {
-  transition: opacity 0.5s;
+  opacity: clamp(0, calc((var(--d) - 0.72) * 5), 0.55);
 }
-.step.is-now .scene .bulb__glow {
-  animation: glow 1.4s ease-in-out infinite alternate;
+.scene--pizza .bulb__on {
+  opacity: clamp(0, calc((var(--d) - 0.62) * 8), 1);
 }
-@keyframes glow {
-  from {
-    opacity: 0.15;
-  }
-  to {
-    opacity: 0.6;
-  }
+.scene--pizza .bulb__glow {
+  opacity: clamp(0, calc((var(--d) - 0.62) * 5), 0.6);
+}
+.scene--pizza .bulb__rays {
+  opacity: clamp(0, calc((var(--d) - 0.7) * 8), 1);
 }
 
-/* 11:30 nest: the two in the nest hop out to walk with the egg */
+/* 11:30 nest: the two inside hop out to join (day.ts throws them) */
+.step:is(.is-now, .is-past) .scene .nesters {
+  opacity: 0;
+}
 .scene .nest {
   transform-origin: 50% 100%;
 }
@@ -1971,18 +2041,7 @@ h2 {
     transform: rotate(1.4deg);
   }
 }
-.scene .nesters {
-  transition:
-    opacity 0.4s var(--ease-out),
-    transform 0.6s var(--ease-spring);
-}
-.step:is(.is-now, .is-past) .scene .nesters {
-  opacity: 0;
-  transform: translateY(-18px);
-}
 .scene .hearts path {
-  transform-box: fill-box;
-  transform-origin: center;
   opacity: 0;
 }
 .step.is-now .scene .hearts path {
@@ -2006,74 +2065,38 @@ h2 {
   }
 }
 
-/* 12:00 incubate: the lamp warms up, the afternoon spins by */
-.step.is-now .scene .lamp__beam {
-  animation: beam 2.4s ease-in-out infinite alternate;
+/* 12:00 incubate: the lamp warms up; the clock and the sun are day.ts's */
+.scene .lamp__beam {
+  opacity: calc(0.12 + 0.3 * var(--d));
 }
-@keyframes beam {
-  from {
-    opacity: 0.16;
-  }
-  to {
-    opacity: 0.42;
-  }
+.scene .mentor {
+  transform-origin: 50% 100%;
 }
-.step.is-now .scene .clock__m {
-  animation: rays 2.4s linear infinite;
+.step.is-now .scene .mentor {
+  animation: pace 5s ease-in-out infinite;
 }
-.step.is-now .scene .clock__h {
-  animation: rays 28.8s linear infinite;
-}
-.step.is-now .scene .code path {
-  animation: float 2.6s ease-in-out infinite alternate;
-}
-.step.is-now .scene .code path + path {
-  animation-delay: 1.3s;
-}
-@keyframes float {
-  to {
-    transform: translateY(-6px);
-  }
-}
-
-/* 18:00 pizza: a slice comes up, the better idea switches on */
-.step.is-now .scene .pie__slice {
-  animation: lift 1.8s ease-in-out infinite;
-}
-@keyframes lift {
+@keyframes pace {
   0%, 100% {
-    transform: translateY(0);
+    transform: translateX(0);
   }
   50% {
-    transform: translateY(-7px) rotate(-2deg);
+    transform: translateX(-16px);
   }
-}
-.scene .sc-sunset {
-  transition: transform 6s linear;
-}
-.step:is(.is-now, .is-past) .scene .sc-sunset {
-  transform: translateY(12px);
 }
 
-/* 19:00 hatch: lights on the stage, confetti */
+/* 18:00 pizza: the sun goes down, a slice comes up */
+.scene .sc-sunset {
+  transform: translateY(calc(var(--d) * 30px));
+}
+.scene .pie__slice {
+  transform: translateY(calc(clamp(0, (var(--d) - 0.2) * 3, 1) * -12px));
+}
+
+/* 19:00 hatch: the spot finds the egg, then confetti */
 .scene .spot {
-  transition: opacity 0.5s;
+  opacity: calc(0.16 + 0.42 * clamp(0, var(--d) * 2, 1));
 }
-.step.is-now .scene .spot {
-  animation: spot 3s ease-in-out infinite alternate;
-}
-@keyframes spot {
-  from {
-    opacity: 0.22;
-  }
-  to {
-    opacity: 0.36;
-  }
-}
-.scene .confetti {
-  transform-origin: center;
-}
-.step.is-now .scene .confetti {
+.step.is-now.is-popped .scene .confetti {
   animation: confetti 2.8s linear infinite;
   animation-delay: calc(var(--i) * -0.2s);
 }
@@ -2090,9 +2113,6 @@ h2 {
     opacity: 0;
   }
 }
-.scene .sc-star {
-  transform-origin: center;
-}
 .step.is-now .scene .sc-star {
   animation: twinkle 2.4s ease-in-out infinite;
 }
@@ -2106,20 +2126,7 @@ h2 {
   }
 }
 
-/* 20:00 afterglow: the group chat starts, the city winks */
-.scene .chat__b {
-  transform-origin: 0 100%;
-  opacity: 0;
-  transform: scale(0.4);
-  transition:
-    opacity 0.3s var(--ease-out),
-    transform 0.5s var(--ease-spring);
-  transition-delay: calc(var(--i) * 0.45s);
-}
-.step.is-now .scene .chat__b {
-  opacity: 1;
-  transform: none;
-}
+/* 20:00 afterglow: the city winks, Atakule blinks */
 .step.is-now .scene .win {
   animation: winkle 3s ease-in-out infinite;
   animation-delay: calc(var(--i) * -0.41s);
@@ -2129,16 +2136,24 @@ h2 {
     opacity: 0.2;
   }
 }
+.step.is-now .scene .atakule__light {
+  animation: blink 1.6s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.15;
+  }
+}
 
-/* wide screens: the walker is the hero, so the scenes keep only their sets */
-@media (min-width: 900px) {
+/* wide screens with motion: the walker is the hero, the scenes keep their sets */
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
   .scene__cast {
     display: none;
   }
 }
 
-/* below 900px the day is a picture book: each scene, then its words */
-@media (max-width: 899px) {
+/* below 900px, or with reduced motion, the day is a picture book */
+@media (max-width: 899px), (prefers-reduced-motion: reduce) {
   .day__pin {
     min-height: 0;
     padding: var(--sec-y) 0;
@@ -2161,6 +2176,7 @@ h2 {
     flex-direction: column;
     gap: clamp(34px, 9vw, 56px);
     width: auto;
+    padding: 0 var(--gut);
     will-change: auto;
   }
   .step {
@@ -2171,6 +2187,8 @@ h2 {
     order: -1;
   }
   .step__cap {
+    align-items: start;
+    text-align: left;
     padding: clamp(10px, 3vw, 16px) 2px 0;
   }
   .step h3 {
@@ -2179,28 +2197,29 @@ h2 {
   .step p {
     max-width: 40ch;
   }
+  .day__edge,
   .day__cast,
   .scene .nesters {
     display: none;
   }
 }
-/* tablets: scene and words side by side, swapping sides down the day */
-@media (min-width: 600px) and (max-width: 899px) {
+/* tablets, and wide screens with reduced motion: scene and words side by side */
+@media (min-width: 600px) and (max-width: 899px), (min-width: 600px) and (prefers-reduced-motion: reduce) {
   .step {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     align-items: center;
     gap: 32px;
-    max-width: none;
+    max-width: 980px;
   }
-  .step:nth-child(even) .step__scene {
+  .step:nth-child(odd) .step__scene {
     order: 2;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .day :is(.scene, .walker, .mate) *,
-  .mate__svg {
+  .day .breathe {
     animation: none !important;
     transition: none !important;
   }

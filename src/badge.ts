@@ -3,7 +3,7 @@ import { $ } from './util'
 /**
  * The "this site is updating itself" badge stays out of the way: it waits
  * until the hero (poster and logo strip) has gone by, steps aside while you scroll and
- * whenever the footer or the arcade is on screen, and says its line once,
+ * whenever the day's walk, the footer or the arcade is on screen, and says its line once,
  * the first time it settles in (hover or focus says it again).
  */
 export function initLiveBadge() {
@@ -40,7 +40,7 @@ export function initLiveBadge() {
     },
     { rootMargin: '0px 0px 15% 0px' },
   )
-  for (const sel of ['#top', '#foot', '#portal']) {
+  for (const sel of ['#top', '#day', '#foot', '#portal']) {
     const el = document.querySelector(sel)
     if (el) io.observe(el)
   }

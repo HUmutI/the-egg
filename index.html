@@ -389,11 +389,12 @@
         <div class="day__pin">
           <header class="day__head">
             <p class="label mono"><span>03</span> <span class="label__txt" data-i18n-tr="Kulüpte bir gün">A day at the club</span></p>
-            <h2 id="dayTitle" data-i18n-tr-html="Sabahtan akşama,<br /><em>aşağı yukarı.</em>">Morning to evening,<br /><em>roughly.</em></h2>
+            <h2 id="dayTitle" data-i18n-tr-html="Sabahtan akşama,<br /> <em>aşağı yukarı.</em>">Morning to evening,<br /> <em>roughly.</em></h2>
           </header>
 
           <div class="day__viewport">
             <ol class="day__track" id="dayTrack">
+              <li class="day__edge day__edge--in" aria-hidden="true"></li>
               <li class="step" data-step="0">
                 <div class="step__cap">
                   <time class="step__time">10:30</time>
@@ -450,6 +451,7 @@
                 </div>
                 <div class="step__scene" aria-hidden="true"></div>
               </li>
+              <li class="day__edge day__edge--out" aria-hidden="true"></li>
             </ol>
           </div>
 
