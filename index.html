@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>The Egg Club — a free Sunday build club in Ankara</title>
+    <title data-i18n-tr="The Egg Club — Ankara’da bir şeyler üretenlerin pazar kulübü">The Egg Club — a free Sunday build club in Ankara</title>
     <meta
       name="description"
       content="Every other Sunday at METU: doors at noon, pizza at six, demos at 21:30. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
@@ -28,7 +28,34 @@
       href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=Reenie+Beanie&display=swap"
     />
     <link rel="stylesheet" href="/src/styles/main.css" />
-    <script>document.documentElement.classList.add('js')</script>
+    <script>
+      // Mirrors getLang() in src/i18n.ts: a Turkish visitor shouldn't see the
+      // English source flash first, so its translatable text waits for
+      // applyI18n() (or 3 s, if the script never arrives).
+      ;(function () {
+        var d = document.documentElement
+        var l = null
+        d.classList.add('js')
+        try {
+          l = localStorage.getItem('eggclub:lang')
+        } catch (e) {}
+        if (l !== 'tr' && l !== 'en') {
+          var p = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]
+          for (var i = 0; i < p.length && !l; i++) {
+            var c = String(p[i] || '').toLowerCase()
+            if (c.indexOf('tr') === 0) l = 'tr'
+            else if (c.indexOf('en') === 0) l = 'en'
+          }
+        }
+        if (l === 'tr') {
+          d.lang = 'tr'
+          d.classList.add('i18n-pending')
+          setTimeout(function () {
+            d.classList.remove('i18n-pending')
+          }, 3000)
+        }
+      })()
+    </script>
     <!-- Silkscreen is only for the hidden game at the very bottom: keep it off the critical path. -->
     <link
       rel="stylesheet"
@@ -174,7 +201,7 @@
           <circle class="clock__sun" r="4" cx="3" cy="24" />
         </svg>
         <span class="clock__time">09:00</span>
-        <span class="clock__label">doors soon</span>
+        <span class="clock__label" data-i18n-tr="kapılar yakında">doors soon</span>
       </div>
 
       <nav class="nav__links" aria-label="Primary" data-i18n-tr-attr-aria-label="Ana menü">

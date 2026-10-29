@@ -44,8 +44,10 @@ export const lang: Lang = getLang()
  *   attributes like `placeholder`, `aria-label`, or even `data-note`
  */
 export function applyI18n() {
-  document.documentElement.lang = lang
-  if (lang !== 'tr') return
+  const root = document.documentElement
+  root.lang = lang
+  // the head script hides translatable text for Turkish visitors until now
+  if (lang !== 'tr') return root.classList.remove('i18n-pending')
 
   document.querySelectorAll<HTMLElement>('[data-i18n-tr]').forEach((el) => {
     el.textContent = el.dataset.i18nTr ?? ''
@@ -59,6 +61,7 @@ export function applyI18n() {
       if (m) el.setAttribute(m[1], attr.value)
     }
   })
+  root.classList.remove('i18n-pending')
 }
 
 /** The little EN/TR pill in the nav — always wired, in either language. */
