@@ -2362,8 +2362,22 @@ html:not(.js) .rule__fix,
   align-items: baseline;
   flex-wrap: wrap;
   gap: 8px 24px;
-  padding: 10px var(--gut) 26px;
-  color: rgba(253, 248, 239, 0.5);
+  padding: 10px var(--gut) calc(26px + var(--safe-b));
+  color: rgba(253, 248, 239, 0.66);
+}
+/* phones: every footer link is a full finger tall */
+@media (max-width: 700px) {
+  .foot__cols ul {
+    gap: 0;
+  }
+  .foot__cols .mono {
+    margin-bottom: 2px;
+  }
+  .foot__cols a {
+    display: inline-block;
+    padding: 11px 0;
+    background-position: 0 calc(100% - 9px);
+  }
 }
 /* the hint for the hidden game: big, handwritten, impossible to miss */
 .foot__hint {
@@ -2540,9 +2554,11 @@ html:not(.js) .rule__fix,
 }
 
 /* The game lives below the footer. Scrolling into it opens the portal. */
+/* tall enough to rise into and settle, short enough that it never reads
+   as an empty screen after the footer */
 .stage {
   position: relative;
-  height: 210svh;
+  height: 185svh;
   padding: 0;
   background: var(--night);
   color: var(--cream);
@@ -2553,9 +2569,15 @@ html:not(.js) .rule__fix,
   height: 100svh;
   display: grid;
   place-items: center;
-  padding: calc(var(--nav-h) * 0.5) clamp(12px, 3vw, 40px) clamp(12px, 2vw, 24px);
+  padding: calc(var(--nav-h) * 0.5 + var(--safe-t)) max(clamp(12px, 3vw, 40px), var(--safe-r), var(--safe-l))
+    max(clamp(12px, 2vw, 24px), var(--safe-b));
   overflow: hidden;
   perspective: 1400px;
+}
+@media (max-width: 700px) {
+  .stage {
+    height: 160svh;
+  }
 }
 .js .stage .cabinet {
   opacity: 0;
@@ -2937,6 +2959,41 @@ body.is-arcade .nav > * {
   }
   .screen {
     border-radius: 8px;
+  }
+}
+/* landscape phones: there's no height for a deck under the screen, so
+   the controls stand beside it and the screen takes the full height */
+@media (max-height: 500px) and (orientation: landscape) {
+  .stage__sticky {
+    padding: 8px max(12px, var(--safe-r), var(--safe-l)) max(8px, var(--safe-b));
+  }
+  .cabinet {
+    --p: 10px;
+    --deck: 124px;
+    display: flex;
+    width: auto;
+    max-width: 100%;
+    border-radius: 18px;
+  }
+  .screen {
+    width: auto;
+    height: min(calc(100svh - 16px - 2 * var(--p)), calc((100vw - 24px - var(--deck) - 2 * var(--p)) * 0.6));
+    border-radius: 8px;
+  }
+  .cabinet__deck {
+    flex: none;
+    flex-direction: column;
+    justify-content: center;
+    width: var(--deck);
+    padding: var(--p) var(--p) var(--p) 0;
+    text-align: center;
+  }
+  .cabinet__name {
+    font-size: 11px;
+    white-space: normal;
+  }
+  .cabinet__help {
+    display: none;
   }
 }
 

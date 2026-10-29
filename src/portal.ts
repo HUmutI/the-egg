@@ -46,27 +46,31 @@ export function initPortal() {
     }
   }
 
+  // The cabinet rises straight out of the footer: it starts as soon as the
+  // stage comes up, has settled by ~70% of the way, and the last stretch is
+  // a short hold before the game goes live — no screen of empty night.
   const reveal = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
   if (reduce) {
     reveal.set(stage, { '--r': '150%' }).set(cabinet, { opacity: 1 })
   } else {
     reveal
-      .fromTo(stage, { '--r': '0%' }, { '--r': '150%', duration: 0.5, ease: 'power2.in' }, 0)
+      .fromTo(stage, { '--r': '0%' }, { '--r': '150%', duration: 0.4, ease: 'power2.in' }, 0)
       .fromTo(
         cabinet,
-        { opacity: 0, y: 120, scale: 0.82, rotateX: 22 },
+        { opacity: 0, y: 90, scale: 0.86, rotateX: 18 },
         { opacity: 1, y: 0, scale: 1, rotateX: 0, duration: 0.55, ease: 'power3.out' },
-        0.3,
+        0.05,
       )
+      .to({}, { duration: 0.25 })
   }
 
   const st = ScrollTrigger.create({
     trigger: stage,
-    start: 'top 85%',
+    start: 'top bottom',
     end: 'bottom bottom',
     scrub: reduce ? true : 0.25,
     animation: reveal,
-    onUpdate: (self) => setMode(self.progress > 0.85 ? 'live' : self.progress > 0.2 ? 'preview' : 'off'),
+    onUpdate: (self) => setMode(self.progress > 0.85 ? 'live' : self.progress > 0.12 ? 'preview' : 'off'),
     onLeaveBack: () => setMode('off'),
   })
 
