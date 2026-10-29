@@ -23,7 +23,7 @@ colours as you scroll, and the club clock in the nav runs from doors (10:30) int
 | Background + clock | Section colours (`data-bg`, painted through `--page` so the nav's backdrop band drifts with them) and the scroll-driven clock: the day section runs 10:30 to 20:00, the rest of the page is the afterglow, the footer is the way home | `src/sky.ts` |
 | Live badge | The small egg in the corner that links to the commits; it says its line once, then on hover/focus, and steps aside while you scroll, over the hero's logos, the footer and the arcade | `src/badge.ts` |
 | What / Who comes / Why | "Who comes": a typeset guest list of disciplines, each with a one-line caption on hover/tap; hand-drawn strikethroughs | `src/story.ts` |
-| The day | Pinned horizontal timeline on wide screens, a vertical rail below 900px; an egg in red sneakers walks the ruler and hatches the golden egg at the 19:00 pitches | `src/day.ts` |
+| The day | Seven arched windows from 10:30 to 20:00, each painted with its hour of the sky (gold morning → blue noon → sunset → dusk → night over Ankara) and a scene in front: a door swinging open on coffee, a 60-second stopwatch, a nest, a heat lamp over laptops, pizza, a stage with confetti, the metro home. Wide screens pin the section and slide the day past while our egg walks it — cracking a little at every step, picking up two teammates at Nest, hatching the golden egg at the 19:00 pitches, walking home in its shell cap; at the end the camera stops and the team walks on into the evening. The page colour drifts with it. Below 900px it's a picture book (side by side on tablets) with the cast drawn into each scene | `src/day.ts`, `src/dayscenes.ts` |
 | Who shows up | A specimen plate of egg characters (the night-owl engineer, the designer, the hardware person…, and the dashed "you?"); pull one and it springs back, hover/tap for its quote | `src/flock.ts`, `src/figures.ts` |
 | Good questions | The FAQ: native `<details>` disclosures (cost, who can come, what to bring, where, language, food, selection, friends…) | markup only, `src/styles/story.css` |
 | Join | A ticket for the next Sunday, the apply button, what happens after you apply, and a bring-a-friend share (native share sheet, else WhatsApp; copy link). Applications live on app.the-egg.club | `src/next.ts`, `src/share.ts` |
@@ -36,7 +36,7 @@ Everything respects `prefers-reduced-motion`.
 Every egg on the page comes from one SVG character kit in `src/ink.ts`: the
 body (eggshell fills, soft shade, highlight, one ink weight), a face kit (eyes,
 mouths, blush) and shared hands. `src/figures.ts` dresses the plate's
-characters; the day walker and the statement's chips use the same family. The
+characters; `src/dayscenes.ts` draws the day's scenes and its walking cast, and the statement's chips use the same family. The
 brand mark is the hero's golden egg with two dot eyes: the nav logo,
 the live badge, `public/favicon.svg`/`favicon.ico` and `public/icons/*`
 (apple-touch, 192, 512, maskable).

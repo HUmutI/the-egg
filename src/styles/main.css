@@ -1567,23 +1567,21 @@ h2 {
 
 /* ── THE DAY (pinned horizontal story) ───────────────────────── */
 
+/* Seven arched windows from 10:30 to 20:00, joined into one building by a
+   shared floor (scenes: src/dayscenes.ts). Wide screens pin the section and
+   slide the day past while the egg walks it; phones read it top to bottom,
+   with the cast drawn into every scene. */
 .day {
   padding: 0;
+  --scene-w: clamp(300px, min(37vw, calc((100svh - 380px) * 1.333)), 560px);
+  --walker-x: calc(var(--gut) + var(--scene-w) * 0.44);
 }
 .day__pin {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--nav-top) + 40px) 0 0;
-  display: grid;
-  /* heading, programme and egg sit together, centred in the screen,
-     instead of the programme being pushed down to the floor */
-  grid-template-rows: auto auto auto;
-  align-content: center;
-  grid-template-columns: minmax(0, 1fr);
-  overflow: hidden;
-}
-.day__viewport {
-  min-width: 0;
+  padding: calc(var(--nav-top) + clamp(16px, 3.4vh, 44px)) 0 clamp(18px, 4vh, 44px);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 .day__head {
@@ -1598,71 +1596,45 @@ h2 {
   order: 2;
 }
 .day__head h2 {
-  font-size: clamp(40px, 5vw, 86px);
+  font-size: clamp(38px, 4.4vw, 76px);
 }
 .day__head h2 em {
   color: var(--lav-deep);
 }
 
 .day__viewport {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: flex-end;
-  padding: clamp(36px, 6vh, 72px) 0 clamp(8px, 1.6vh, 20px);
+  padding-top: clamp(14px, 3vh, 36px);
 }
 .day__track {
   display: flex;
+  align-items: stretch;
   margin: 0;
   padding: 0 var(--gut);
   list-style: none;
   width: max-content;
   will-change: transform;
 }
-/* a quiet programme: a hairline, a small time, an italic title.
-   The step under the egg is inked in; the others stay readable, just
-   softer (quiet ink, never faded below AA). */
 .step {
   position: relative;
-  width: clamp(260px, 23vw, 360px);
-  padding: 26px clamp(28px, 3vw, 56px) 0 0;
-  border-top: 1px solid var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  width: var(--scene-w);
 }
-.step::after {
-  /* the stretch of the line you're in, drawn in ink */
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -1px;
-  height: 1.5px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.6s var(--ease-out);
-}
-.step.is-now::after {
-  transform: scaleX(1);
-}
-.step__node {
-  position: absolute;
-  left: 0;
-  top: -9px;
-  width: 13px;
-  height: 17px;
-  border: 1.5px solid var(--ink);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--cream);
-  transition: background 0.4s, transform 0.5s var(--ease-spring);
-}
-.step.is-now .step__node {
-  background: var(--yolk);
-  transform: scale(1.2);
-}
-.step--hatch.is-now .step__node {
-  background: var(--tomato);
+/* the caption sits right on top of its window */
+.step__cap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 clamp(20px, 1.8vw, 30px) clamp(12px, 1.8vh, 20px);
 }
 .step__time {
   display: block;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   font-family: var(--f-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -1670,171 +1642,508 @@ h2 {
   color: var(--ink-2);
   transition: color 0.4s;
 }
-.step.is-now .step__time {
-  color: var(--ink);
-}
 .step h3 {
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(34px, 3.2vw, 54px);
+  font-size: clamp(32px, 2.9vw, 50px);
   letter-spacing: -0.03em;
   line-height: 1;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   color: var(--ink-2);
   transition: color 0.4s;
 }
-.step.is-now h3 {
+.step p {
+  max-width: 30ch;
+  font-size: clamp(14px, 1vw, 16px);
+  line-height: 1.45;
+  color: var(--ink-2);
+  transition: color 0.4s;
+}
+.step.is-now :is(.step__time, h3, p) {
   color: var(--ink);
 }
-.step p {
-  max-width: 28ch;
-  font-size: clamp(15px, 1.1vw, 17px);
-  line-height: 1.5;
-  color: var(--ink-2);
+.step--hatch.is-now h3 {
+  color: var(--lav-deep);
+}
+.step__scene {
+  line-height: 0;
+}
+.step__scene svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  overflow: visible;
 }
 
-.day__ground {
-  position: relative;
-  height: clamp(150px, 22vh, 210px);
-}
-.day__pin {
-  --ruler-y: clamp(72px, 10vh, 112px);
-}
-.ruler {
+/* ── the cast: our egg and, from Nest on, its team ── */
+.day__cast {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--ruler-y);
-  height: 10px;
-  border-top: 1px solid var(--ink);
-  background-image: repeating-linear-gradient(90deg, var(--ink-3) 0 1px, transparent 1px 16px),
-    repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px 96px);
-  background-size: 100% 4px, 100% 9px;
-  background-repeat: repeat-x;
+  top: 80%;
+  height: 0;
+  pointer-events: none;
+  z-index: 2;
 }
-.roller {
-  --w: clamp(64px, 6.4vw, 96px);
+.walker,
+.mate {
   position: absolute;
-  /* rests inside the first column so the day starts at Doors */
-  left: calc(var(--gut) + 28px);
-  bottom: calc(var(--ruler-y) + 2px);
-  width: var(--w);
-  height: calc(var(--w) * 1.5);
+  bottom: 0;
+  /* the svg's floor (y 316 of -150…330) sits on the line */
+  translate: -50% 2.92%;
 }
-.roller__svg {
+.walker {
+  left: var(--walker-x);
+  width: calc(var(--scene-w) * 0.4);
+}
+.mate {
+  width: calc(var(--scene-w) * 0.34);
+  opacity: 0;
+  scale: 0.5;
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.35s var(--ease-out),
+    scale 0.7s var(--ease-spring);
+}
+.mate--a {
+  left: calc(var(--walker-x) - var(--scene-w) * 0.2);
+}
+.mate--b {
+  left: calc(var(--walker-x) - var(--scene-w) * 0.38);
+  transition-delay: 0.12s;
+}
+.day__cast[data-team='true'] .mate {
+  opacity: 1;
+  scale: 1;
+}
+.walker__svg,
+.mate__svg {
+  display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   overflow: visible;
 }
-.roller__egg,
-.roller__top,
-.roller__chick {
-  transform-box: view-box;
-  transform-origin: 100px 130px;
+
+/* the walker carries every state; data-state shows one */
+.wface,
+.wprop,
+.mface,
+.mprop,
+.mhands--up {
+  display: none;
 }
-/* the egg's at the door for "Doors" only — gone the moment it walks in */
-.roller__door {
-  transform-box: view-box;
-  transform-origin: 100px 130px;
+.walker[data-state='0'] :is(.wface--0, .wprop--0),
+.walker[data-state='1'] :is(.wface--1, .wprop--1),
+.walker[data-state='2'] :is(.wface--2, .wprop--2),
+.walker[data-state='3'] :is(.wface--3, .wprop--3),
+.walker[data-state='4'] :is(.wface--4, .wprop--4),
+.walker[data-state='5'] :is(.wface--5, .wprop--5),
+.walker[data-state='6'] :is(.wface--6, .wprop--6) {
+  display: inline;
+}
+/* one whole shell until Hatch, then two halves: the top one flies */
+.walker__top,
+.walker__bottom {
   opacity: 0;
-  transform: scale(0.94);
-  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-spring);
 }
-.roller[data-doors='true'] .roller__door {
+.walker__top {
+  transform-box: view-box;
+  transform-origin: 100px 178px;
+  transition:
+    transform 0.9s var(--ease-spring),
+    opacity 0.15s;
+}
+.walker:is([data-state='5'], [data-state='6']) :is(.walker__top, .walker__bottom) {
   opacity: 1;
-  transform: scale(1);
 }
-.roller__top {
-  transition: transform 0.7s var(--ease-spring), opacity 0.4s;
-}
-.roller__chick {
-  transform: translateY(40px) scale(0.6);
+.walker:is([data-state='5'], [data-state='6']) :is(.walker__whole, .walker__hands) {
   opacity: 0;
-  transition: transform 0.6s var(--ease-spring), opacity 0.3s;
 }
-.roller .crack--1,
-.roller .crack--2,
-.roller .crack--3 {
-  stroke-dasharray: 80;
-  stroke-dashoffset: 80;
-  transition: stroke-dashoffset 0.4s var(--ease-out);
+.walker[data-state='5'] .walker__top {
+  transform: translate(106px, -150px) rotate(40deg) scale(0.5);
 }
-.roller .crack--edge {
-  opacity: 0;
-  stroke-dasharray: 340;
-  stroke-dashoffset: 340;
-  transition: stroke-dashoffset 0.5s var(--ease-out);
+.walker[data-state='6'] .walker__top {
+  transform: translate(12px, -98px) rotate(-16deg) scale(0.46);
 }
-.roller[data-stage='1'] .crack--1,
-.roller[data-stage='2'] .crack--1,
-.roller[data-stage='2'] .crack--2,
-.roller[data-stage='3'] .crack--1,
-.roller[data-stage='3'] .crack--2,
-.roller[data-stage='3'] .crack--3,
-.roller[data-stage='3'] .crack--edge,
-.roller[data-stage='4'] .crack--edge {
+.walker__golden {
+  transform-box: view-box;
+  transform-origin: 100px 262px;
+  transition: transform 0.6s var(--ease-spring);
+}
+.walker[data-state='5'] .walker__golden {
+  transform: translateY(-6px) scale(1.03);
+}
+.walker .hero__crack {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.6s var(--ease-out);
+}
+.walker:not([data-state='0']) .hero__crack--1,
+.walker:is([data-state='3'], [data-state='4']) .hero__crack--2,
+.walker[data-state='4'] .hero__crack--3 {
   stroke-dashoffset: 0;
-  opacity: 1;
 }
-.roller[data-stage='4'] .crack--1,
-.roller[data-stage='4'] .crack--2,
-.roller[data-stage='4'] .crack--3 {
-  opacity: 0;
-}
-/* the cap pops off to the side, clear of the programme text above */
-.roller[data-stage='4'] .roller__top {
-  transform: translate(118px, -40px) rotate(56deg);
-}
-.roller[data-stage='4'] .roller__chick {
-  opacity: 1;
-  transform: translateY(-58px);
-}
-.sun__rays {
+/* at Pizza it's about to go */
+.walker__whole {
   transform-box: view-box;
-  transform-origin: 100px 130px;
-  animation: rays 14s linear infinite;
+  transform-origin: 100px 262px;
+}
+.walker[data-state='4'] .walker__whole {
+  animation: eggWobble 1.6s ease-in-out infinite;
+}
+@keyframes eggWobble {
+  0%, 60%, 100% {
+    transform: rotate(0);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+  90% {
+    transform: rotate(-1.5deg);
+  }
+}
+.walker .egg__eyes,
+.mate .egg__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: eggBlink 5s 1.2s infinite;
+}
+.mate .egg__eyes {
+  animation-delay: 2.6s;
+}
+.walker .steam path {
+  animation: steam 2.4s ease-in-out infinite;
+}
+.walker .steam path + path {
+  animation-delay: 0.8s;
+}
+.walker .sound path {
+  animation: sound 1.2s ease-out infinite;
+}
+.walker .sound path + path {
+  animation-delay: 0.3s;
+}
+
+.mate[data-state='2'] .mface--0,
+.mate[data-state='3'] .mface--1,
+.mate[data-state='4'] .mface--2,
+.mate[data-state='5'] .mface--3,
+.mate[data-state='6'] .mface--4,
+.mate[data-state='5'] .mhands--up,
+.mate[data-state='4'] .mprop--slice,
+.mate[data-state='6'] .mprop--phone,
+.mate--a[data-state='3'] .mprop--laptop {
+  display: inline;
+}
+.mate[data-state='5'] .mhands--down {
+  display: none;
+}
+.mate[data-state='5'] .mate__svg {
+  animation: cheer 0.5s ease-in-out infinite alternate;
+}
+.mate--b[data-state='5'] .mate__svg {
+  animation-delay: 0.25s;
+}
+@keyframes cheer {
+  to {
+    transform: translateY(-9%);
+  }
+}
+
+/* ── each window comes alive while the egg is in it ── */
+.scene .sc-rays,
+.scene .watch__hand,
+.scene :is(.clock__h, .clock__m),
+.scene .nest,
+.scene .sc-star,
+.scene .pie__slice,
+.scene .chat__b,
+.scene .confetti,
+.scene .door__leaf {
+  transform-box: fill-box;
+}
+.scene .sc-rays {
+  transform-origin: center;
+}
+.step.is-now .sc-rays {
+  animation: rays 18s linear infinite;
 }
 @keyframes rays {
   to {
     transform: rotate(360deg);
   }
 }
-.leg {
-  transform-box: view-box;
+.step.is-now .scene .steam path {
+  animation: steam 2.4s ease-in-out infinite;
 }
-.leg--l {
-  transform-origin: 80px 244px;
+.step.is-now .scene .steam path + path {
+  animation-delay: 0.9s;
 }
-.leg--r {
-  transform-origin: 120px 244px;
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
-/* its face follows the day: calm at the door, busy, uh-oh, then joy */
-.walker__face {
-  display: none;
-}
-.roller:not([data-stage]) .walker__face--calm,
-.roller[data-stage='0'] .walker__face--calm,
-.roller[data-stage='1'] .walker__face--busy,
-.roller[data-stage='2'] .walker__face--busy,
-.roller[data-stage='3'] .walker__face--uhoh,
-.roller[data-stage='4'] .walker__face--joy {
-  display: inline;
-}
-.roller .egg__eyes {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: eggBlink 5s 1.2s infinite;
+@keyframes sound {
+  0% {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(6px);
+  }
 }
 
-/* below 900px the day is a printed programme: a vertical line with an
-   egg on it at every time, read top to bottom (no pin) */
+/* 10:30 doors: it swings open on warm light */
+.scene .door__leaf {
+  transform-origin: left center;
+  transition: transform 1s var(--ease-spring);
+}
+.scene :is(.door__glow, .door__light) {
+  transition: opacity 0.9s var(--ease-out);
+}
+.step:is(.is-now, .is-past) .scene .door__leaf {
+  transform: scaleX(0.3) skewY(-8deg);
+}
+.step:is(.is-now, .is-past) .scene .door__glow {
+  opacity: 0.85;
+}
+.step:is(.is-now, .is-past) .scene .door__light {
+  opacity: 0.35;
+}
+
+/* 11:00 crack: sixty seconds on the clock, and an idea flickers */
+.scene .watch__hand,
+.scene :is(.clock__h, .clock__m) {
+  transform-origin: 50% 100%;
+}
+.step.is-now .scene .watch__hand {
+  animation: rays 6s steps(60) infinite;
+}
+.scene .bulb__glow {
+  transition: opacity 0.5s;
+}
+.step.is-now .scene .bulb__glow {
+  animation: glow 1.4s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from {
+    opacity: 0.15;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+/* 11:30 nest: the two in the nest hop out to walk with the egg */
+.scene .nest {
+  transform-origin: 50% 100%;
+}
+.step.is-now .scene .nest {
+  animation: nestRock 2.2s ease-in-out infinite;
+}
+@keyframes nestRock {
+  0%, 100% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-1.4deg);
+  }
+  70% {
+    transform: rotate(1.4deg);
+  }
+}
+.scene .nesters {
+  transition:
+    opacity 0.4s var(--ease-out),
+    transform 0.6s var(--ease-spring);
+}
+.step:is(.is-now, .is-past) .scene .nesters {
+  opacity: 0;
+  transform: translateY(-18px);
+}
+.scene .hearts path {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+.step.is-now .scene .hearts path {
+  animation: heartUp 2.6s ease-out infinite;
+}
+.step.is-now .scene .hearts path + path {
+  animation-delay: 1.1s;
+}
+@keyframes heartUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.6);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px) scale(0.9);
+  }
+}
+
+/* 12:00 incubate: the lamp warms up, the afternoon spins by */
+.step.is-now .scene .lamp__beam {
+  animation: beam 2.4s ease-in-out infinite alternate;
+}
+@keyframes beam {
+  from {
+    opacity: 0.16;
+  }
+  to {
+    opacity: 0.42;
+  }
+}
+.step.is-now .scene .clock__m {
+  animation: rays 2.4s linear infinite;
+}
+.step.is-now .scene .clock__h {
+  animation: rays 28.8s linear infinite;
+}
+.step.is-now .scene .code path {
+  animation: float 2.6s ease-in-out infinite alternate;
+}
+.step.is-now .scene .code path + path {
+  animation-delay: 1.3s;
+}
+@keyframes float {
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+/* 18:00 pizza: a slice comes up, the better idea switches on */
+.step.is-now .scene .pie__slice {
+  animation: lift 1.8s ease-in-out infinite;
+}
+@keyframes lift {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px) rotate(-2deg);
+  }
+}
+.scene .sc-sunset {
+  transition: transform 6s linear;
+}
+.step:is(.is-now, .is-past) .scene .sc-sunset {
+  transform: translateY(12px);
+}
+
+/* 19:00 hatch: lights on the stage, confetti */
+.scene .spot {
+  transition: opacity 0.5s;
+}
+.step.is-now .scene .spot {
+  animation: spot 3s ease-in-out infinite alternate;
+}
+@keyframes spot {
+  from {
+    opacity: 0.22;
+  }
+  to {
+    opacity: 0.36;
+  }
+}
+.scene .confetti {
+  transform-origin: center;
+}
+.step.is-now .scene .confetti {
+  animation: confetti 2.8s linear infinite;
+  animation-delay: calc(var(--i) * -0.2s);
+}
+@keyframes confetti {
+  from {
+    transform: translateY(-40px) rotate(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(70px) rotate(300deg);
+    opacity: 0;
+  }
+}
+.scene .sc-star {
+  transform-origin: center;
+}
+.step.is-now .scene .sc-star {
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+.step.is-now .scene .sc-star:nth-of-type(2n) {
+  animation-delay: 1.2s;
+}
+@keyframes twinkle {
+  50% {
+    transform: scale(0.55);
+    opacity: 0.6;
+  }
+}
+
+/* 20:00 afterglow: the group chat starts, the city winks */
+.scene .chat__b {
+  transform-origin: 0 100%;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.3s var(--ease-out),
+    transform 0.5s var(--ease-spring);
+  transition-delay: calc(var(--i) * 0.45s);
+}
+.step.is-now .scene .chat__b {
+  opacity: 1;
+  transform: none;
+}
+.step.is-now .scene .win {
+  animation: winkle 3s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.41s);
+}
+@keyframes winkle {
+  45%, 55% {
+    opacity: 0.2;
+  }
+}
+
+/* wide screens: the walker is the hero, so the scenes keep only their sets */
+@media (min-width: 900px) {
+  .scene__cast {
+    display: none;
+  }
+}
+
+/* below 900px the day is a picture book: each scene, then its words */
 @media (max-width: 899px) {
   .day__pin {
     min-height: 0;
     padding: var(--sec-y) 0;
     display: block;
+    overflow: visible;
   }
   .day__head {
     flex-direction: column-reverse;
@@ -1845,76 +2154,55 @@ h2 {
     margin-bottom: 16px;
   }
   .day__viewport {
-    padding: clamp(32px, 6vw, 56px) 0 0;
+    display: block;
+    padding-top: clamp(28px, 6vw, 48px);
   }
   .day__track {
-    --rail: 6px;
     flex-direction: column;
+    gap: clamp(34px, 9vw, 56px);
     width: auto;
     will-change: auto;
   }
   .step {
     width: auto;
-    padding: 0 0 clamp(28px, 6vw, 40px) 36px;
-    border-top: 0;
+    max-width: 480px;
   }
-  /* the line: each step draws the stretch down to the next one */
-  .step::after {
-    left: var(--rail);
-    right: auto;
-    top: 6px;
-    bottom: -6px;
-    width: 1.5px;
-    height: auto;
-    background: var(--ink-3);
-    transform: none;
+  .step__scene {
+    order: -1;
   }
-  .step:last-child::after {
-    display: none;
-  }
-  .step__node {
-    left: calc(var(--rail) - 6px);
-    top: -2px;
-  }
-  .step__time {
-    margin-bottom: 8px;
-    line-height: 1;
+  .step__cap {
+    padding: clamp(10px, 3vw, 16px) 2px 0;
   }
   .step h3 {
     font-size: clamp(32px, 8.6vw, 44px);
-    margin-bottom: 10px;
   }
   .step p {
     max-width: 40ch;
   }
-  .day__ground {
+  .day__cast,
+  .scene .nesters {
     display: none;
   }
 }
-/* tablets: the time gets its own column, like a printed schedule */
+/* tablets: scene and words side by side, swapping sides down the day */
 @media (min-width: 600px) and (max-width: 899px) {
-  .day__track {
-    --rail: 118px;
-  }
   .step {
     display: grid;
-    grid-template-columns: 82px 1fr;
-    column-gap: 72px;
-    align-items: start;
-    padding-left: 0;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    gap: 32px;
+    max-width: none;
   }
-  .step__time {
-    grid-row: 1 / span 2;
-    margin: 0;
-    font-size: 13px;
-    text-align: right;
+  .step:nth-child(even) .step__scene {
+    order: 2;
   }
-  .step h3 {
-    margin-top: -6px;
-  }
-  .step h3,
-  .step p {
-    grid-column: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .day :is(.scene, .walker, .mate) *,
+  .mate__svg {
+    animation: none !important;
+    transition: none !important;
   }
 }
 

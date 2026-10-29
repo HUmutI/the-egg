@@ -5,7 +5,7 @@ import { initHero } from './hero'
 import { initLiveBadge } from './badge'
 import { initSky } from './sky'
 import { initReveals, initRules, initStatement } from './story'
-import { initDay } from './day'
+import { initDay, renderDay } from './day'
 import { initFlock } from './flock'
 import { initPortal } from './portal'
 import { initNextSunday } from './next'
@@ -18,6 +18,9 @@ gsap.registerPlugin(ScrollTrigger)
 // Translate the DOM before anything measures or animates it.
 applyI18n()
 initLangToggle()
+// The day's scenes are drawn now, so the page has its final height before
+// anything measures it.
+renderDay()
 initNextSunday()
 initShare()
 // The hero is a picture, not measured text: show it as soon as it decodes

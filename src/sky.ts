@@ -56,7 +56,9 @@ export function initSky() {
   // nav's backdrop band tints itself with it, so both drift together.
   gsap.set(root, { '--page': PALETTE.butter })
   $$('[data-bg]').forEach((el) => {
-    const color = BG[el.dataset.bg ?? 'butter']
+    // The day section paints its own sky as it goes (day.ts keeps data-sky
+    // current); every other section is one colour.
+    const colorOf = () => (el.dataset.bg === 'day' ? (el.dataset.sky ?? PALETTE.lav) : BG[el.dataset.bg ?? 'butter'])
     // Night only falls once the footer has really arrived.
     const at = el.dataset.bg === 'night' ? '25%' : '55%'
     ScrollTrigger.create({
@@ -65,6 +67,8 @@ export function initSky() {
       end: `bottom ${at}`,
       onToggle: (self) => {
         if (!self.isActive) return
+        const color = colorOf()
+        root.dataset.sky = el.id
         gsap.to(root, { '--page': color, duration: 0.9, ease: 'power2.out', overwrite: true })
         body.classList.toggle('is-night', el.dataset.bg === 'night')
         meta?.setAttribute('content', color)
