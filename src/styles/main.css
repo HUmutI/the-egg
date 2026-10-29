@@ -333,11 +333,26 @@ body::after {
   text-decoration: none;
 }
 .nav__logo svg {
-  width: 20px;
+  width: 28px;
+  height: 28px;
+  margin: 0 -2px;
   transition: transform 0.5s var(--ease-spring);
 }
 .nav__logo:hover svg {
   transform: rotate(-14deg) translateY(-2px);
+}
+/* the mark (nav, live badge): the golden egg, and it blinks */
+.mark .mark__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.nav__logo:hover .mark__eyes {
+  animation: markWink 0.26s 0.12s;
+}
+@keyframes markWink {
+  50% {
+    transform: scaleY(0.12);
+  }
 }
 
 .nav__clock {
@@ -821,25 +836,17 @@ html:not(.js) .hero__art img {
   }
 }
 
-/* ── shared egg drawing (day walker, join, anywhere a plain egg appears) ── */
-.shell {
-  fill: var(--cream);
-  stroke: var(--ink);
-  stroke-width: 3.4;
-  stroke-linejoin: round;
-  filter: url(#wobble);
-}
+/* ── shared egg drawing (the day walker): one clean ink line, like the flock ── */
 .shell-line {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 3.4;
+  stroke-width: 7.5;
   stroke-linejoin: round;
-  filter: url(#wobble);
 }
 .crack {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 3.4;
+  stroke-width: 6;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
@@ -946,26 +953,33 @@ h2 {
     transform: translateY(0.42em);
   }
 }
+/* three of the flock, peeking out of a carton: white, brown and tan eggs */
 .chip--eggs {
-  gap: 0;
-  padding: 0 0.16em;
-  background: var(--cream);
+  gap: 0.02em;
+  padding: 0 0.14em;
+  background: var(--lav);
 }
 .chip--eggs i {
+  --shell: var(--cream);
   width: 0.4em;
   height: 0.52em;
-  margin: 0 -0.06em;
+  margin: 0 -0.05em;
   border: var(--line) solid var(--ink);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--lav);
+  background:
+    radial-gradient(ellipse 0.026em 0.034em at 31% 57%, var(--ink) 88%, transparent 100%),
+    radial-gradient(ellipse 0.026em 0.034em at 69% 57%, var(--ink) 88%, transparent 100%),
+    radial-gradient(ellipse 0.05em 0.085em at 28% 30%, rgba(255, 255, 255, 0.85) 70%, transparent 80%),
+    var(--shell);
+  box-shadow: inset -0.06em -0.045em 0 rgba(184, 105, 63, 0.24);
   transition: transform 0.4s var(--ease-spring);
 }
 .chip--eggs i:nth-child(2) {
-  background: var(--mint);
+  --shell: var(--peach);
   transform: translateY(-0.04em);
 }
 .chip--eggs i:nth-child(3) {
-  background: var(--peach);
+  --shell: #e7b896;
 }
 .statement:hover .chip--eggs i:nth-child(1) {
   transform: rotate(-14deg) translateY(-0.06em);
@@ -1487,15 +1501,14 @@ h2 {
 .roller .crack--1,
 .roller .crack--2,
 .roller .crack--3 {
-  stroke-width: 3;
   stroke-dasharray: 80;
   stroke-dashoffset: 80;
   transition: stroke-dashoffset 0.4s var(--ease-out);
 }
 .roller .crack--edge {
   opacity: 0;
-  stroke-dasharray: 260;
-  stroke-dashoffset: 260;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
   transition: stroke-dashoffset 0.5s var(--ease-out);
 }
 .roller[data-stage='1'] .crack--1,
@@ -1514,8 +1527,9 @@ h2 {
 .roller[data-stage='4'] .crack--3 {
   opacity: 0;
 }
+/* the cap pops off to the side, clear of the programme text above */
 .roller[data-stage='4'] .roller__top {
-  transform: translate(70px, -150px) rotate(38deg);
+  transform: translate(118px, -40px) rotate(56deg);
 }
 .roller[data-stage='4'] .roller__chick {
   opacity: 1;
@@ -1535,10 +1549,27 @@ h2 {
   transform-box: view-box;
 }
 .leg--l {
-  transform-origin: 82px 246px;
+  transform-origin: 80px 244px;
 }
 .leg--r {
-  transform-origin: 118px 246px;
+  transform-origin: 120px 244px;
+}
+/* its face follows the day: calm at the door, busy, uh-oh, then joy */
+.walker__face {
+  display: none;
+}
+.roller:not([data-stage]) .walker__face--calm,
+.roller[data-stage='0'] .walker__face--calm,
+.roller[data-stage='1'] .walker__face--busy,
+.roller[data-stage='2'] .walker__face--busy,
+.roller[data-stage='3'] .walker__face--uhoh,
+.roller[data-stage='4'] .walker__face--joy {
+  display: inline;
+}
+.roller .egg__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: eggBlink 5s 1.2s infinite;
 }
 
 @media (max-width: 899px) {
@@ -1626,8 +1657,11 @@ h2 {
 .bird:hover,
 .bird:focus-visible,
 .bird.is-talking {
-  background: rgba(253, 248, 239, 0.45);
+  background: color-mix(in srgb, var(--accent, var(--cream)) 60%, transparent);
   outline: none;
+}
+.bird:focus-visible {
+  box-shadow: inset 0 0 0 3px var(--tomato);
 }
 .bird.is-dragging {
   cursor: grabbing;
@@ -1646,7 +1680,7 @@ h2 {
   padding: 6px 4px;
 }
 .bird__body svg {
-  width: min(78%, 170px);
+  width: min(94%, 214px);
   overflow: visible;
   transition: transform 0.6s var(--ease-out);
 }
@@ -1656,6 +1690,45 @@ h2 {
 .bird.is-dragging .bird__body svg {
   transition: none;
 }
+/* the faces: they blink now and then, and gasp when pulled */
+.bird .egg__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: eggBlink 7s calc(var(--i, 0) * -0.83s) infinite;
+}
+@keyframes eggBlink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  96.5% {
+    transform: scaleY(0.12);
+  }
+}
+.egg__wow {
+  opacity: 0;
+}
+.bird.is-dragging .egg__face {
+  opacity: 0;
+}
+.bird.is-dragging .egg__wow {
+  opacity: 1;
+}
+/* the empty seat: its dashes march while you look at it */
+.bird--you .egg__dash {
+  transition: fill-opacity 0.4s;
+}
+.bird--you:hover .egg__dash,
+.bird--you:focus-visible .egg__dash {
+  fill-opacity: 0.9;
+  animation: eggDash 1.2s linear infinite;
+}
+@keyframes eggDash {
+  to {
+    stroke-dashoffset: -30;
+  }
+}
 .bird__name {
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 50, 'WONK' 1;
@@ -1664,7 +1737,7 @@ h2 {
   line-height: 1.2;
   color: var(--ink);
 }
-/* the quote prints into the top of the cell */
+/* the quote: a speech bubble over the figure's head */
 .bird__say {
   position: absolute;
   top: 34px;
@@ -1672,8 +1745,10 @@ h2 {
   right: 14px;
   z-index: 2;
   padding: 9px 12px 10px;
-  border: 1px solid var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
   background: var(--cream);
+  box-shadow: 3px 3px 0 var(--ink);
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 50, 'WONK' 1;
   font-style: italic;
@@ -1690,6 +1765,18 @@ h2 {
 .bird.is-talking .bird__say {
   opacity: 1;
   transform: none;
+}
+.bird__say::after {
+  content: '';
+  position: absolute;
+  left: 46%;
+  bottom: -9px;
+  width: 14px;
+  height: 14px;
+  border: solid var(--ink);
+  border-width: 0 1.5px 1.5px 0;
+  background: var(--cream);
+  transform: rotate(45deg) skew(8deg, 8deg);
 }
 .bird.is-dragging .bird__say {
   opacity: 0;
@@ -1733,9 +1820,9 @@ h2 {
     display: none;
   }
   .bird {
-    flex: 0 0 44%;
+    flex: 0 0 56%;
     scroll-snap-align: start;
-    min-height: 240px;
+    min-height: 280px;
     padding: 12px;
     cursor: pointer;
   }
@@ -2701,24 +2788,13 @@ body.is-arcade .nav > * {
   box-shadow: 0 10px 22px -10px rgba(31, 23, 34, 0.4);
 }
 .live-badge__egg {
-  width: 18px;
-  height: 23px;
+  width: 24px;
+  height: 24px;
   flex: none;
+  margin: -2px -2px -2px 0;
 }
-.live-badge__shell {
-  fill: var(--yolk);
-  stroke: var(--ink);
-  stroke-width: 2.6;
-}
-.live-badge__crack {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: liveBadgeCrack 3.2s ease-in-out infinite;
+.live-badge__egg .mark__eyes {
+  animation: eggBlink 4.2s 1s infinite;
 }
 .live-badge__text {
   display: flex;
@@ -2734,17 +2810,6 @@ body.is-arcade .nav > * {
   border-radius: 50%;
   background: var(--mint-deep);
   animation: liveBadgePulse 1.8s ease-in-out infinite;
-}
-@keyframes liveBadgeCrack {
-  0%, 20% {
-    stroke-dashoffset: 1;
-  }
-  45%, 70% {
-    stroke-dashoffset: 0;
-  }
-  92%, 100% {
-    stroke-dashoffset: 1;
-  }
 }
 @keyframes liveBadgePulse {
   0%, 100% {
@@ -2765,11 +2830,8 @@ body.is-arcade .nav > * {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .live-badge__crack,
+  .live-badge__egg .mark__eyes,
   .live-badge__dot {
     animation: none;
-  }
-  .live-badge__crack {
-    stroke-dashoffset: 0.4;
   }
 }
