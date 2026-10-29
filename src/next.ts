@@ -13,7 +13,9 @@ type NextEvent = {
 /** Where the next Sunday stands: on today, taking applications, or not yet. */
 type State = 'live' | 'open' | 'soon' | 'next'
 
-const DAY = 24 * 60 * 60 * 1000
+// The club runs noon to midnight. The app keeps a Sunday "current" for a day
+// (for late submissions), but after midnight the page should stop saying it's on.
+const LIVE_FOR = 12 * 60 * 60 * 1000
 
 /**
  * Fill a template kept on the element itself (`data-<state>`, translated by
@@ -51,8 +53,9 @@ export async function initNextSunday() {
   const start = new Date(event.startsAt)
   if (Number.isNaN(start.getTime())) return
   const age = Date.now() - start.getTime()
-  // The app falls back to the most recent Sunday when nothing is scheduled.
-  if (age > DAY) return
+  // The app falls back to the most recent Sunday when nothing is scheduled;
+  // once that Sunday is over, the page stays general.
+  if (age >= LIVE_FOR) return
 
   const state: State =
     age > 0 ? 'live' : event.applicationsOpen === true ? 'open' : event.applicationsOpen === false ? 'soon' : 'next'
@@ -93,4 +96,7 @@ export async function initNextSunday() {
   if (/^https:\/\/app\.the-egg\.club\//.test(event.url)) {
     document.querySelectorAll<HTMLAnchorElement>('a[data-apply]').forEach((a) => (a.href = event!.url))
   }
+
+  // the hero's next line can add a row: let the scroll triggers re-measure
+  document.dispatchEvent(new Event('egg:relayout'))
 }

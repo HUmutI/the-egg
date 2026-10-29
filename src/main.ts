@@ -43,3 +43,15 @@ Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]).th
   start()
   ScrollTrigger.refresh()
 })
+
+// Anything that changes height after load (an FAQ answer opening, the
+// next-Sunday lines arriving from the app) moves every trigger below it, so
+// re-measure, or night falls on the join section early. `toggle` doesn't
+// bubble, hence the capture listener.
+let relayout = 0
+const remeasure = () => {
+  window.clearTimeout(relayout)
+  relayout = window.setTimeout(() => ScrollTrigger.refresh(), 250)
+}
+document.addEventListener('toggle', remeasure, true)
+document.addEventListener('egg:relayout', remeasure)
