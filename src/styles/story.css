@@ -323,9 +323,6 @@
   color: var(--ink-2);
 }
 .ticket__status {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
   margin-top: 16px;
   padding-top: 12px;
   border-top: 2px dashed var(--ink-3);
@@ -339,8 +336,9 @@
 }
 .ticket__status::before {
   content: '';
-  flex: none;
-  align-self: center;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: -1px;
   width: 9px;
   height: 11px;
   border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
