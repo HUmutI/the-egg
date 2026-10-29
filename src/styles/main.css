@@ -1074,17 +1074,18 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: calc(var(--nav-h) + 24px) 0 clamp(48px, 8vh, 96px);
+  padding: calc(var(--nav-top) + 24px) 0 clamp(48px, 8vh, 96px);
 }
 .what__stage .label {
   position: absolute;
-  top: calc(var(--nav-h) + 28px);
+  top: calc(var(--nav-top) + 28px);
   left: 0;
 }
 .what__cue {
   position: absolute;
   left: 0;
-  bottom: clamp(24px, 5vh, 48px);
+  /* clear of the live badge in the corner */
+  bottom: max(72px, 8vh);
   color: var(--ink-2);
 }
 .what__cue::after {
@@ -1100,13 +1101,33 @@ h2 {
 .js .statement .hl {
   --p: 0%;
 }
+/* sized by the screen's height as well as its width, so the sentence
+   fills its scene instead of floating in it */
 .statement {
-  max-width: 17em;
-  font-size: clamp(36px, 5.8vw, 104px);
+  max-width: 15em;
+  font-size: clamp(36px, min(6.8vw, 11.6vh), 132px);
   font-weight: 420;
   line-height: 1.04;
   letter-spacing: -0.03em;
   text-wrap: balance;
+}
+/* phones: the scene is in the page's flow, not a whole empty screen */
+@media (max-width: 860px) {
+  .what__stage {
+    min-height: 0;
+    padding: var(--sec-y) 0 calc(var(--sec-y) * 0.8);
+  }
+  .what__stage .label,
+  .what__cue {
+    position: static;
+  }
+  .what__cue {
+    margin-top: 32px;
+  }
+  .statement {
+    font-size: clamp(34px, min(10.2vw, 13vh), 60px);
+    overflow-wrap: break-word;
+  }
 }
 
 .chip {
@@ -1406,19 +1427,23 @@ h2 {
 .why {
   padding-top: clamp(40px, 6vw, 96px);
 }
+/* a pull quote between two scenes: set large and balanced so it holds
+   the space on desktop instead of drifting in it */
 .why--mini {
-  padding-bottom: clamp(24px, 4vw, 56px);
+  padding-top: var(--sec-y);
+  padding-bottom: var(--sec-y);
 }
 .why__mini {
-  max-width: 52ch;
+  max-width: 21ch;
   margin: 0 auto;
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-weight: 460;
-  font-size: clamp(22px, 2.4vw, 32px);
-  line-height: 1.25;
+  font-weight: 440;
+  font-size: clamp(28px, 4.4vw, 76px);
+  line-height: 1.08;
   text-align: center;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 .why__mini em {
   color: var(--tomato);
