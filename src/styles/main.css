@@ -2585,6 +2585,14 @@ html:not(.js) .rule__fix,
 
 /* ── late additions ──────────────────────────────────────────── */
 
+/* Tomato type on pink and lavender sits just under 3:1; a hair deeper red
+   clears the large-text bar there and looks the same. */
+.flock,
+.rules,
+.day {
+  --tomato: #d63c24;
+}
+
 .js .reveal {
   opacity: 0;
   transform: translateY(36px);
