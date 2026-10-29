@@ -2153,6 +2153,11 @@ h2 {
   /* room for the hand-written correction above "do not" */
   padding-top: 0.3em;
 }
+/* in Turkish the struck word wraps onto the second line, so the
+   correction needs room between the lines, not just above them */
+:lang(tr) .rule--first p {
+  line-height: 1.42;
+}
 /* the second rule is said louder */
 .rule--second strong {
   font-weight: 760;
