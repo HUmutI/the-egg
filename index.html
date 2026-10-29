@@ -96,7 +96,7 @@
         <a href="#who" data-i18n-tr="Kimler geliyor">Who comes</a>
         <a href="#rules" data-i18n-tr="Kurallar">The rules</a>
         <button type="button" id="langToggle" class="lang-toggle">TR</button>
-        <a href="https://app.the-egg.club" class="btn btn--ink btn--sm" target="_blank" rel="noopener"><span data-i18n-tr="Yerini ayırt">Save a seat</span></a>
+        <a href="https://app.the-egg.club" class="btn btn--ink btn--sm" target="_blank" rel="noopener" data-apply><span data-i18n-tr="Başvur">Apply</span></a>
       </nav>
     </header>
 
@@ -194,8 +194,28 @@
         </figure>
 
         <div class="hero__cta">
-          <a class="btn btn--ink" href="https://app.the-egg.club" target="_blank" rel="noopener"><span data-i18n-tr="Yerini ayırt →">Save a seat →</span></a>
-          <p class="hero__next mono" id="heroNext" data-i18n-tr="Her iki haftada bir Pazar · ODTÜ, Ankara">Every other Sunday · METU, Ankara</p>
+          <a class="btn btn--ink" href="https://app.the-egg.club" target="_blank" rel="noopener" data-apply><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
+          <div class="hero__info">
+            <ul class="hero__facts mono" aria-label="At a glance" data-i18n-tr-attr-aria-label="Kısaca">
+              <li data-i18n-tr="Ücretsiz">Free</li>
+              <li data-i18n-tr="İki haftada bir pazar">Every other Sunday</li>
+              <li data-i18n-tr="Öğlenden gece yarısına">Noon to midnight</li>
+              <li data-i18n-tr="ODTÜ, Ankara">METU, Ankara</li>
+            </ul>
+            <p
+              class="hero__next mono"
+              id="heroNext"
+              hidden
+              data-live="Nº{n} is on right now"
+              data-open="Next: {short} · applications are open"
+              data-soon="Next: {short} · applications open soon"
+              data-next="Next: {short}"
+              data-i18n-tr-attr-data-live="Nº{n} şu an sürüyor"
+              data-i18n-tr-attr-data-open="Sıradaki: {short} · başvurular açık"
+              data-i18n-tr-attr-data-soon="Sıradaki: {short} · başvurular yakında"
+              data-i18n-tr-attr-data-next="Sıradaki: {short}"
+            ></p>
+          </div>
         </div>
 
         <div class="hero__built">

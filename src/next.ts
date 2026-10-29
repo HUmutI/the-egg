@@ -6,14 +6,36 @@ type NextEvent = {
   number: number
   startsAt: string
   url: string
+  location?: string | null
+  applicationsOpen?: boolean
 }
+
+/** Where the next Sunday stands: on today, taking applications, or not yet. */
+type State = 'live' | 'open' | 'soon' | 'next'
 
 const DAY = 24 * 60 * 60 * 1000
 
 /**
- * The next Sunday, from the app: the masthead's issue number and date, plus a
- * "next Sunday" link in the join section. If the app can't be reached the
- * page keeps its static masthead and the link stays hidden.
+ * Fill a template kept on the element itself (`data-<state>`, translated by
+ * i18n like any other attribute), so every word stays in index.html.
+ */
+function fill(el: HTMLElement | null, key: string, vars: Record<string, string>) {
+  const tpl = el?.dataset[key]
+  if (!el || tpl == null) return false
+  // templates may carry markup; the values come from the app, so escape them
+  el.innerHTML = tpl.replace(/\{(\w+)\}/g, (_, k: string) => escape(vars[k] ?? ''))
+  return true
+}
+
+const escape = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+
+/**
+ * The next Sunday, from the app: the masthead's issue number and date, a
+ * "next" line under the hero, the ticket in the join section, and every
+ * apply link pointed straight at that Sunday's page. The page ships with a
+ * complete, date-free version of all of these, so if the app is slow or
+ * down nothing breaks — it just stays general.
  */
 export async function initNextSunday() {
   let event: NextEvent | null
@@ -24,44 +46,51 @@ export async function initNextSunday() {
   } catch {
     return
   }
-  if (!event) return
+  if (!event?.startsAt) return
 
   const start = new Date(event.startsAt)
+  if (Number.isNaN(start.getTime())) return
   const age = Date.now() - start.getTime()
   // The app falls back to the most recent Sunday when nothing is scheduled.
   if (age > DAY) return
 
+  const state: State =
+    age > 0 ? 'live' : event.applicationsOpen === true ? 'open' : event.applicationsOpen === false ? 'soon' : 'next'
+
   const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
-  const date = new Intl.DateTimeFormat(locale, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'Europe/Istanbul',
-  }).format(start)
-  const time = new Intl.DateTimeFormat(locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Europe/Istanbul',
-  }).format(start)
-
-  const issue = document.querySelector('.mh__issue em')
-  const season = document.querySelector('.mh__season')
-  if (issue) issue.textContent = String(event.number).padStart(3, '0')
-  if (season) season.textContent = date
-
-  const heroNext = document.getElementById('heroNext')
-  if (heroNext) {
-    heroNext.textContent =
-      lang === 'tr' ? `Sıradaki: ${date}, ${time} · ODTÜ, Ankara` : `Next: ${date}, ${time} · METU, Ankara`
+  const tz = 'Europe/Istanbul'
+  const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale, { ...o, timeZone: tz }).format(start)
+  const vars = {
+    n: String(event.number).padStart(3, '0'),
+    short: fmt({ weekday: 'short', day: 'numeric', month: 'short' }),
+    long: fmt({ weekday: 'long', day: 'numeric', month: 'long' }),
+    time: fmt({ hour: '2-digit', minute: '2-digit', hour12: false }),
+    place: event.location?.trim() || (lang === 'tr' ? 'ODTÜ, Ankara' : 'METU, Ankara'),
   }
 
-  const link = document.getElementById('nextSunday') as HTMLAnchorElement | null
-  if (!link) return
-  const live = age > 0
-  link.textContent =
-    lang === 'tr'
-      ? `${live ? 'Bugün' : 'Sıradaki Pazar'}: ${date}, ${time} · Nº${event.number} →`
-      : `${live ? 'On today' : 'Next Sunday'}: ${date}, ${time} · Nº${event.number} →`
-  link.href = event.url
-  link.hidden = false
+  // masthead
+  const issue = document.querySelector('.mh__issue em')
+  const season = document.querySelector('.mh__season')
+  if (issue) issue.textContent = vars.n
+  if (season) season.textContent = vars.short
+
+  // hero: one line under the facts
+  const heroNext = document.getElementById('heroNext')
+  if (fill(heroNext, state, vars)) heroNext!.hidden = false
+
+  // join: the ticket
+  const ticket = document.getElementById('ticket')
+  if (ticket) {
+    ticket.dataset.state = state
+    for (const el of ticket.querySelectorAll<HTMLElement>('[data-tpl]')) fill(el, 'tpl', vars)
+    const no = document.getElementById('ticketNo')
+    if (no) no.hidden = false
+    fill(document.getElementById('ticketStatus'), state, vars)
+  }
+  fill(document.getElementById('joinCtaLabel'), state, vars)
+
+  // every apply button goes straight to that Sunday on the app
+  if (/^https:\/\/app\.the-egg\.club\//.test(event.url)) {
+    document.querySelectorAll<HTMLAnchorElement>('a[data-apply]').forEach((a) => (a.href = event!.url))
+  }
 }

@@ -8,6 +8,8 @@ import { initDay } from './day'
 import { initFlock } from './flock'
 import { initPortal } from './portal'
 import { initNextSunday } from './next'
+// hero facts, FAQ, join ticket and share: new UI, kept out of main.css
+import './styles/story.css'
 
 gsap.registerPlugin(ScrollTrigger)
 

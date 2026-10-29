@@ -1,0 +1,65 @@
+/* ──────────────────────────────────────────────────────────────
+   STORY — the practical bits: hero facts, good questions (FAQ),
+   the join section's ticket, steps and bring-a-friend share.
+   Kept apart from main.css so layout work there and content work
+   here don't collide. Mobile first; wide screens from 861px.
+   Only new classes (or higher-specificity selectors) live here,
+   so the order this loads in relative to main.css doesn't matter.
+   ────────────────────────────────────────────────────────────── */
+
+/* ── HERO · the practical line under the button ──────────────── */
+
+.hero__info {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+}
+.hero__facts li {
+  white-space: nowrap;
+}
+.hero__facts li:not(:last-child)::after {
+  content: '·';
+  content: '·' / '';
+  margin: 0 0.7em;
+  color: var(--ink-2);
+}
+.hero__info .hero__next {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+}
+.hero__info .hero__next[hidden] {
+  display: none;
+}
+.hero__info .hero__next::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 10px;
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  background: var(--yolk);
+  box-shadow: 0 0 0 1.5px var(--ink);
+}
+
+@media (min-width: 861px) {
+  .hero__info {
+    justify-items: start;
+    text-align: left;
+  }
+  .hero__facts {
+    justify-content: flex-start;
+  }
+}
