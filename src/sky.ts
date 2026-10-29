@@ -24,13 +24,13 @@ const LABELS: [number, string][] =
     ? [
         [12 * 60, 'kapılar yakında'],
         [12 * 60 + 30, 'kapılar açık'],
-        [13 * 60 + 15, 'sunumlar'],
-        [13 * 60 + 30, 'takım kuruluyor'],
-        [18 * 60, 'inşa ediliyor'],
+        [13 * 60 + 15, 'fikir sunumu'],
+        [13 * 60 + 30, 'takım kurma'],
+        [18 * 60, 'işbaşında'],
         [19 * 60, 'pizza'],
-        [21 * 60 + 30, 'inşa ediliyor'],
+        [21 * 60 + 30, 'işbaşında'],
         [23 * 60, 'demolar'],
-        [24 * 60, 'son parıltı'],
+        [24 * 60, 'tatlı yorgunluk'],
         [24 * 60 + 40, 'son metro'],
         [99 * 60, 'gece kuşları'],
       ]
