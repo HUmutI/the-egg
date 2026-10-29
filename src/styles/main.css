@@ -2694,18 +2694,21 @@ html:not(.js) .rule__fix,
     .foot__img {
       animation: footPan linear both;
       animation-timeline: view();
+      animation-range: cover;
     }
   }
 }
+/* over the image's whole pass through the screen: drifting in, held while
+   it's all in view (roughly the middle 40% of the pass on a phone), drifting out */
 @keyframes footPan {
-  entry 0% {
+  0% {
     object-position: 24% 50%;
   }
-  entry 100%,
-  exit 0% {
+  30%,
+  70% {
     object-position: 48.5% 50%;
   }
-  exit 100% {
+  100% {
     object-position: 76% 50%;
   }
 }
@@ -3475,6 +3478,18 @@ body.is-arcade .nav > * {
       transform 0.45s var(--ease-out),
       opacity 0.3s var(--ease-out),
       visibility 0s;
+  }
+  /* the page fades out under it, so text never runs into the buttons */
+  .dock::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: calc(-1 * var(--gut));
+    right: calc(-1 * var(--gut));
+    bottom: calc(-10px - var(--safe-b));
+    height: calc(100% + 44px + var(--safe-b));
+    background: linear-gradient(180deg, transparent, var(--page) 58%);
+    pointer-events: none;
   }
   .dock.is-away {
     opacity: 0;
