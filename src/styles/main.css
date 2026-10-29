@@ -1626,8 +1626,11 @@ h2 {
 .bird:hover,
 .bird:focus-visible,
 .bird.is-talking {
-  background: rgba(253, 248, 239, 0.45);
+  background: color-mix(in srgb, var(--accent, var(--cream)) 60%, transparent);
   outline: none;
+}
+.bird:focus-visible {
+  box-shadow: inset 0 0 0 3px var(--tomato);
 }
 .bird.is-dragging {
   cursor: grabbing;
@@ -1646,7 +1649,7 @@ h2 {
   padding: 6px 4px;
 }
 .bird__body svg {
-  width: min(78%, 170px);
+  width: min(94%, 214px);
   overflow: visible;
   transition: transform 0.6s var(--ease-out);
 }
@@ -1656,6 +1659,45 @@ h2 {
 .bird.is-dragging .bird__body svg {
   transition: none;
 }
+/* the faces: they blink now and then, and gasp when pulled */
+.bird .egg__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: eggBlink 7s calc(var(--i, 0) * -0.83s) infinite;
+}
+@keyframes eggBlink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  96.5% {
+    transform: scaleY(0.12);
+  }
+}
+.egg__wow {
+  opacity: 0;
+}
+.bird.is-dragging .egg__face {
+  opacity: 0;
+}
+.bird.is-dragging .egg__wow {
+  opacity: 1;
+}
+/* the empty seat: its dashes march while you look at it */
+.bird--you .egg__dash {
+  transition: fill-opacity 0.4s;
+}
+.bird--you:hover .egg__dash,
+.bird--you:focus-visible .egg__dash {
+  fill-opacity: 0.9;
+  animation: eggDash 1.2s linear infinite;
+}
+@keyframes eggDash {
+  to {
+    stroke-dashoffset: -30;
+  }
+}
 .bird__name {
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 50, 'WONK' 1;
@@ -1664,7 +1706,7 @@ h2 {
   line-height: 1.2;
   color: var(--ink);
 }
-/* the quote prints into the top of the cell */
+/* the quote: a speech bubble over the figure's head */
 .bird__say {
   position: absolute;
   top: 34px;
@@ -1672,8 +1714,10 @@ h2 {
   right: 14px;
   z-index: 2;
   padding: 9px 12px 10px;
-  border: 1px solid var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
   background: var(--cream);
+  box-shadow: 3px 3px 0 var(--ink);
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 50, 'WONK' 1;
   font-style: italic;
@@ -1690,6 +1734,18 @@ h2 {
 .bird.is-talking .bird__say {
   opacity: 1;
   transform: none;
+}
+.bird__say::after {
+  content: '';
+  position: absolute;
+  left: 46%;
+  bottom: -9px;
+  width: 14px;
+  height: 14px;
+  border: solid var(--ink);
+  border-width: 0 1.5px 1.5px 0;
+  background: var(--cream);
+  transform: rotate(45deg) skew(8deg, 8deg);
 }
 .bird.is-dragging .bird__say {
   opacity: 0;
@@ -1733,9 +1789,9 @@ h2 {
     display: none;
   }
   .bird {
-    flex: 0 0 44%;
+    flex: 0 0 56%;
     scroll-snap-align: start;
-    min-height: 240px;
+    min-height: 280px;
     padding: 12px;
     cursor: pointer;
   }
