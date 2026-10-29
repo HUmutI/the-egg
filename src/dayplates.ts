@@ -268,19 +268,19 @@ function nest() {
 /** 12:00 Incubate: one laptop, a progress bar that keeps resetting, and six hours, abridged. */
 function incubate() {
   return `
-    ${rule(462, 468, 776, 468, 4.4)}
-    ${line('M486 468 V600 M752 468 V600', 3.6)}
-    ${print('M548 462 L562 352 L712 352 L702 462 Z', PALETTE.lav, [548, 352, 164, 110], { sw: 4 })}
-    ${line('M526 462 H724 L730 470 H520 Z', 3)}
-    <ellipse cx="632" cy="404" rx="11" ry="14" fill="${PALETTE.yolk}" stroke="${I}" stroke-width="2"/>
+    ${rule(452, 468, 716, 468, 4.4)}
+    ${line('M474 468 V600 M694 468 V600', 3.6)}
+    ${print('M510 462 L524 352 L674 352 L664 462 Z', PALETTE.lav, [510, 352, 164, 110], { sw: 4 })}
+    ${line('M488 462 H686 L692 470 H482 Z', 3)}
+    <ellipse cx="594" cy="404" rx="11" ry="14" fill="${PALETTE.yolk}" stroke="${I}" stroke-width="2"/>
     <g class="here">
-      <rect x="520" y="290" width="200" height="16" fill="none" stroke="${T}" stroke-width="2.2"/>
-      <rect class="bar__fill" x="523" y="293" width="194" height="10" fill="${T}"/>
-      ${mono(520, 274, 'v0.3 · 100%', T, 'class="bar__label"')}
+      <rect x="484" y="290" width="200" height="16" fill="none" stroke="${T}" stroke-width="2.2"/>
+      <rect class="bar__fill" x="487" y="293" width="194" height="10" fill="${T}"/>
+      ${mono(484, 274, 'v0.3 · 100%', T, 'class="bar__label"')}
     </g>
     <rect x="772" y="586" width="16" height="32" style="fill: var(--page)"/>
     ${line('M764 620 L778 582 M782 620 L796 582', 2.6)}
-    ${mono(806, 588, tr ? '≈ 6 sa' : '≈ 6 h', I, 'fill-opacity=".72"')}`
+    ${mono(714, 566, tr ? '≈ 6 sa' : '≈ 6 h', I, 'fill-opacity=".72"')}`
 }
 
 /** 18:00 Pizza: box one of twelve, and the pineapple question, still open. */
