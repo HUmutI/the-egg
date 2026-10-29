@@ -624,6 +624,8 @@ export function createNightShift(opts: {
 }): NightShift {
   const { canvas, hud, dialog, dialogName, dialogText, card, hint } = opts
   const ctx = canvas.getContext('2d')!
+  // a touch screen moves by tapping (see the canvas's pointerdown), so its prompts say so
+  const touch = matchMedia('(hover: none) and (pointer: coarse)').matches
   const screenEl = canvas.parentElement!
 
   // Wide screens see the whole loft; phones get a taller view that follows you.
@@ -691,7 +693,7 @@ export function createNightShift(opts: {
     const mid =
       clockOn
         ? `<b>${fmt(minutes)}</b><i> · ${lang === 'tr' ? 'sunumlar 19:00' : 'pitches 19:00'}</i>`
-        : `<b>${lang === 'tr' ? 'hareket et, başla' : 'move to start'}</b>`
+        : `<b>${touch ? (lang === 'tr' ? 'dokun, yürü' : 'tap to walk') : lang === 'tr' ? 'hareket et, başla' : 'move to start'}</b>`
     const fedLabel = lang === 'tr' ? 'beslenen' : 'fed'
     const handsFree = lang === 'tr' ? 'eller boş' : 'hands free'
     const sliceLabel = lang === 'tr' ? '<b>● dilim</b>' : '<b>● slice</b>'
@@ -784,9 +786,15 @@ export function createNightShift(opts: {
     card.innerHTML = ''
     state = 'play'
     hint.innerHTML =
-      lang === 'tr'
+      (lang === 'tr'
         ? 'Saat 18:00. Sunumlar 19:00’da. Pizza tezgahta — <b>8 kişinin hepsini doyur</b>.'
-        : 'It’s 18:00. Pitches at 19:00. Pizza’s on the counter — <b>feed all 8 builders</b>.'
+        : 'It’s 18:00. Pitches at 19:00. Pizza’s on the counter — <b>feed all 8 builders</b>.') +
+      // no keyboard on a phone: say how to move before anyone has to guess
+      (touch
+        ? lang === 'tr'
+          ? '<br>Yürümek için yere, sohbet için birine dokun.'
+          : '<br>Tap the floor to walk, tap someone to talk.'
+        : '')
     renderHud()
   }
 
