@@ -2675,13 +2675,38 @@ html:not(.js) .rule__fix,
   .foot__sign {
     font-size: clamp(34px, 10vw, 44px);
   }
+  /* the phone picture has no empty sky on top, so it can stand taller:
+     the castle, Anıtkabir and Atakule across the frame, the party under them */
   .foot__img {
-    height: clamp(280px, 82vw, 360px);
+    height: clamp(290px, 85vw, 400px);
     aspect-ratio: auto;
     object-fit: cover;
-    object-position: 47% 50%;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 92%, transparent 100%);
-    mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 92%, transparent 100%);
+    object-position: 48.5% 50%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  }
+}
+/* and as it scrolls by, the view drifts across the roof: in from the
+   friends on the cushions, settled on the skyline while it's all on
+   screen, out past Atakule to the cat on the wall */
+@supports (animation-timeline: view()) {
+  @media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+    .foot__img {
+      animation: footPan linear both;
+      animation-timeline: view();
+    }
+  }
+}
+@keyframes footPan {
+  entry 0% {
+    object-position: 24% 50%;
+  }
+  entry 100%,
+  exit 0% {
+    object-position: 48.5% 50%;
+  }
+  exit 100% {
+    object-position: 76% 50%;
   }
 }
 
