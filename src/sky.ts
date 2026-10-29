@@ -22,29 +22,27 @@ const BG: Record<string, string> = {
 const LABELS: [number, string][] =
   lang === 'tr'
     ? [
-        [12 * 60, 'kapılar yakında'],
-        [12 * 60 + 30, 'kapılar açık'],
-        [13 * 60 + 15, 'fikir sunumu'],
-        [13 * 60 + 30, 'takım kurma'],
+        [10 * 60 + 30, 'kapılar yakında'],
+        [11 * 60, 'kapılar açık'],
+        [11 * 60 + 30, 'fikir sunumu'],
+        [12 * 60, 'takım kurma'],
         [18 * 60, 'işbaşında'],
         [19 * 60, 'pizza'],
-        [21 * 60 + 30, 'işbaşında'],
-        [23 * 60, 'demolar'],
-        [24 * 60, 'tatlı yorgunluk'],
-        [24 * 60 + 40, 'son metro'],
+        [20 * 60, 'sunumlar'],
+        [21 * 60, 'tatlı yorgunluk'],
+        [22 * 60, 'eve dönüş'],
         [99 * 60, 'gece kuşları'],
       ]
     : [
-        [12 * 60, 'doors soon'],
-        [12 * 60 + 30, 'doors open'],
-        [13 * 60 + 15, 'pitching'],
-        [13 * 60 + 30, 'teaming up'],
+        [10 * 60 + 30, 'doors soon'],
+        [11 * 60, 'doors open'],
+        [11 * 60 + 30, 'idea pitches'],
+        [12 * 60, 'teaming up'],
         [18 * 60, 'building'],
         [19 * 60, 'pizza'],
-        [21 * 60 + 30, 'building'],
-        [23 * 60, 'demos'],
-        [24 * 60, 'afterglow'],
-        [24 * 60 + 40, 'last metro'],
+        [20 * 60, 'pitches'],
+        [21 * 60, 'afterglow'],
+        [22 * 60, 'heading home'],
         [99 * 60, 'night owls'],
       ]
 
@@ -87,12 +85,12 @@ export function initSky() {
     const max = document.documentElement.scrollHeight - innerHeight
     const footTop = foot.offsetTop - innerHeight * 0.6
     const keys: [number, number][] = [
-      [0, 11 * 60 + 40],
-      [Math.max(1, clockState.dayStart), 12 * 60],
-      [clockState.dayEnd, 23 * 60 + 10],
-      // rules, questions and the carton share the afterglow; midnight is the footer
-      [footTop, 23 * 60 + 58],
-      [max, 24 * 60 + 59],
+      [0, 10 * 60 + 10],
+      [Math.max(1, clockState.dayStart), 10 * 60 + 30],
+      [clockState.dayEnd, 20 * 60 + 10],
+      // rules, questions and the carton share the afterglow; the footer is the way home
+      [footTop, 20 * 60 + 58],
+      [max, 22 * 60 + 30],
     ]
     for (let i = 0; i < keys.length - 1; i++) {
       const [y0, m0] = keys[i]
@@ -101,7 +99,7 @@ export function initSky() {
         return lerp(m0, m1, clamp((y - y0) / Math.max(1, y1 - y0), 0, 1))
       }
     }
-    return 12 * 60
+    return 10 * 60 + 30
   }
 
   let last = ''
@@ -117,12 +115,13 @@ export function initSky() {
       last = str
       time.textContent = str
       label.textContent = (LABELS.find(([t]) => m < t) ?? LABELS[LABELS.length - 1])[1]
-      // Sun travels the arc from 07:00 to 21:00, then the moon takes over.
-      const t = clamp((m - 7 * 60) / (14 * 60), 0, 1)
+      // Sun travels the arc from 07:00 to 18:00 (an autumn Ankara day), then
+      // the moon takes over around pizza.
+      const t = clamp((m - 7 * 60) / (11 * 60), 0, 1)
       const a = Math.PI * (1 - t)
       sun.setAttribute('cx', String(32 + Math.cos(a) * 29))
       sun.setAttribute('cy', String(24 - Math.sin(a) * 22))
-      sun.style.fill = m > 20 * 60 + 30 ? PALETTE.lav : PALETTE.yolk
+      sun.style.fill = m > 17 * 60 + 30 ? PALETTE.lav : PALETTE.yolk
     }
   }
 

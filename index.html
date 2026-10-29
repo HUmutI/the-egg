@@ -6,7 +6,7 @@
     <title data-i18n-tr="The Egg Club — Ankara’da bir şeyler üretenlerin pazar kulübü">The Egg Club — a free Sunday build club in Ankara</title>
     <meta
       name="description"
-      content="Every other Sunday at METU: doors at noon, pizza at six, demos at 21:30. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
+      content="Every other Sunday at METU: doors at 10:30, build all day, pitches at 19:00. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
     />
     <link rel="canonical" href="https://the-egg.club/" />
     <meta name="theme-color" content="#fdf3d7" />
@@ -80,7 +80,7 @@
     <meta property="og:title" content="The Egg Club — a free Sunday build club in Ankara" />
     <meta
       property="og:description"
-      content="Every other Sunday at METU: doors at noon, pizza at six, demos at 21:30. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
+      content="Every other Sunday at METU: doors at 10:30, build all day, pitches at 19:00. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
     />
     <meta property="og:image" content="https://the-egg.club/og/the-egg-club-og.jpg" />
     <meta property="og:image:secure_url" content="https://the-egg.club/og/the-egg-club-og.jpg" />
@@ -96,7 +96,7 @@
     <meta name="twitter:title" content="The Egg Club — a free Sunday build club in Ankara" />
     <meta
       name="twitter:description"
-      content="Every other Sunday at METU: doors at noon, pizza at six, demos at 21:30. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
+      content="Every other Sunday at METU: doors at 10:30, build all day, pitches at 19:00. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
     />
     <meta name="twitter:image" content="https://the-egg.club/og/the-egg-club-og.jpg" />
     <meta
@@ -135,7 +135,7 @@
             "@type": "EventSeries",
             "@id": "https://the-egg.club/#sundays",
             "name": "The Egg Club Sundays",
-            "description": "A free build club every other Sunday at METU (ODTÜ), Ankara. Doors at noon, pizza at six, five-minute demos at 21:30, done before midnight. Applications at app.the-egg.club.",
+            "description": "A free build club every other Sunday at METU (ODTÜ), Ankara. Doors at 10:30, build all day, pizza at six, five-minute pitches at 19:00, done by 20:00. Applications at app.the-egg.club.",
             "url": "https://the-egg.club/",
             "image": "https://the-egg.club/og/the-egg-club-og.jpg",
             "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
@@ -154,7 +154,8 @@
               "@type": "Schedule",
               "repeatFrequency": "P2W",
               "byDay": "https://schema.org/Sunday",
-              "startTime": "12:00",
+              "startTime": "10:30",
+              "endTime": "20:00",
               "scheduleTimezone": "Europe/Istanbul"
             },
             "offers": {
@@ -312,7 +313,7 @@
             <ul class="hero__facts mono" aria-label="At a glance" data-i18n-tr-attr-aria-label="Kısaca">
               <li data-i18n-tr="Ücretsiz">Free</li>
               <li data-i18n-tr="İki haftada bir pazar">Every other Sunday</li>
-              <li data-i18n-tr="Öğlenden gece yarısına">Noon to midnight</li>
+              <li>10:30–20:00</li>
               <li data-i18n-tr="ODTÜ, Ankara">METU, Ankara</li>
             </ul>
             <p
@@ -388,32 +389,32 @@
         <div class="day__pin">
           <header class="day__head">
             <p class="label mono"><span>03</span> <span class="label__txt" data-i18n-tr="Kulüpte bir gün">A day at the club</span></p>
-            <h2 id="dayTitle" data-i18n-tr-html="Öğlenden gece yarısına,<br /><em>aşağı yukarı.</em>">Noon to midnight,<br /><em>roughly.</em></h2>
+            <h2 id="dayTitle" data-i18n-tr-html="Sabahtan akşama,<br /><em>aşağı yukarı.</em>">Morning to evening,<br /><em>roughly.</em></h2>
           </header>
 
           <div class="day__viewport">
             <ol class="day__track" id="dayTrack">
               <li class="step" data-step="0">
                 <span class="step__node" aria-hidden="true"></span>
-                <time class="step__time">12:00</time>
+                <time class="step__time">10:30</time>
                 <h3 data-i18n-tr="Kapılar açılır">Doors</h3>
                 <p data-i18n-tr="Kahve, tanışma faslı, post-it’lerle dolu bir duvar. Yaka kartı isteğe bağlı. Fikir beyan etmek zorunlu.">Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
               </li>
               <li class="step" data-step="1">
                 <span class="step__node" aria-hidden="true"></span>
-                <time class="step__time">12:30</time>
+                <time class="step__time">11:00</time>
                 <h3 data-i18n-tr="Çatlak">Crack</h3>
                 <p data-i18n-tr="İsteyen altmış saniyede bir fikir anlatır. Rafadan fikirler evin spesiyalitesidir.">Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
               </li>
               <li class="step" data-step="2">
                 <span class="step__node" aria-hidden="true"></span>
-                <time class="step__time">13:15</time>
+                <time class="step__time">11:30</time>
                 <h3 data-i18n-tr="Yuva">Nest</h3>
                 <p data-i18n-tr="Takımlar en eğlenceli görünen fikrin etrafında toplanır. Birbirini hiç tanımayanlar, çok saçma bir şeyin kurucu ortağı olur.">Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
               </li>
               <li class="step" data-step="3">
                 <span class="step__node" aria-hidden="true"></span>
-                <time class="step__time">13:30</time>
+                <time class="step__time">12:00</time>
                 <h3 data-i18n-tr="Kuluçka">Incubate</h3>
                 <p data-i18n-tr="Herkes işine gömülür. Yap, boz, yeniden yap. Mentorlar bir elinde atıştırmalık, bir elinde fikirlerle masaları dolaşır.">Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
               </li>
@@ -425,15 +426,15 @@
               </li>
               <li class="step step--hatch" data-step="5">
                 <span class="step__node" aria-hidden="true"></span>
-                <time class="step__time">21:30</time>
+                <time class="step__time">19:00</time>
                 <h3 data-i18n-tr="Doğuş">Hatch</h3>
-                <p data-i18n-tr="Beşer dakikalık demolar, herkes alkışlar. Çalışması teşvik edilir. İddialı ama bozuk olması da sayılır.">Five-minute demos, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
+                <p data-i18n-tr="Klavyeler bırakılır. Beşer dakikalık sunumlar, herkes alkışlar. Çalışması teşvik edilir. İddialı ama bozuk olması da sayılır.">Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
               </li>
               <li class="step" data-step="6">
                 <span class="step__node" aria-hidden="true"></span>
-                <time class="step__time">23:00</time>
+                <time class="step__time">20:00</time>
                 <h3 data-i18n-tr="Tatlı yorgunluk">Afterglow</h3>
-                <p data-i18n-tr="Soğuk pizza, eve son metro ve bütün hafta susmayan bir mesaj grubu.">Cold pizza, the last metro home, and a group chat that keeps going all week.</p>
+                <p data-i18n-tr="Saat 20:00’de ışıklar kapanır. Soğuk pizza, metroyla eve dönüş ve bütün hafta susmayan bir mesaj grubu.">Lights out at 20:00. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
               </li>
             </ol>
           </div>
@@ -490,7 +491,7 @@
         <p class="label mono"><span>04</span> <span class="label__txt" data-i18n-tr="Kulüp kuralları">House rules</span></p>
         <header class="rules__head">
           <h2 id="rulesTitle" class="rules__title" data-i18n-tr-html="Egg Club’ın <em>kuralları.</em>">The rules of <em>Egg Club.</em></h2>
-          <p class="rules__deck mono" data-i18n-tr="Öğlen, daha kimse laptopunu açmadan yüksek sesle okunur.">Recited at noon, before anyone opens a laptop.</p>
+          <p class="rules__deck mono" data-i18n-tr="Saat 11:00’de, daha kimse laptopunu açmadan yüksek sesle okunur.">Recited at 11:00, before anyone opens a laptop.</p>
         </header>
         <ol class="rules__list">
           <li class="rule rule--first">
@@ -550,7 +551,7 @@
           <details class="faq__item">
             <summary><span class="faq__q" data-i18n-tr="Takımım, fikrim ya da tecrübem olmalı mı?">Do I need a team, an idea or skills?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Hayır, hayır ve hayır. 12:30’da isteyen fikrini bir dakikada anlatır, 13:15’te takımlar en eğlenceli fikirlerin etrafında kurulur. Fikrin varsa getir, yoksa birininkine katıl. İlk kez gelenlere kapımız açık; tek şart, izlemeye değil yapmaya gelmen.">No, no and no. At 12:30 anyone can pitch an idea in sixty seconds, and by 13:15 teams form around the ones that sound most fun. Bring an idea if you have one; join someone else’s if you don’t. First-timers are welcome — just come to make something, not to watch.</p>
+              <p data-i18n-tr="Hayır, hayır ve hayır. 11:00’de isteyen fikrini bir dakikada anlatır, 11:30’da takımlar en eğlenceli fikirlerin etrafında kurulur. Fikrin varsa getir, yoksa birininkine katıl. İlk kez gelenlere kapımız açık; tek şart, izlemeye değil yapmaya gelmen.">No, no and no. At 11:00 anyone can pitch an idea in sixty seconds, and by 11:30 teams form around the ones that sound most fun. Bring an idea if you have one; join someone else’s if you don’t. First-timers are welcome — just come to make something, not to watch.</p>
             </div>
           </details>
 
@@ -585,7 +586,7 @@
           <details class="faq__item">
             <summary><span class="faq__q" data-i18n-tr="Günün sadece bir kısmına gelebilir miyim?">Can I come for part of the day?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Hayat bu, olur. Ama fikirler öğlen anlatılıyor, takımlar o zaman kuruluyor; demolar da 21:30’da. İkisini de kaçırmamaya çalış.">Life happens, so yes. But noon is when ideas get pitched and teams form, and 21:30 is when everyone demos. Try to catch both.</p>
+              <p data-i18n-tr="Hayat bu, olur. Ama fikirler 11:00’de anlatılıyor, takımlar o zaman kuruluyor; herkes de yaptığını 19:00’da sunuyor. İkisini de kaçırmamaya çalış.">Life happens, so yes. But ideas get pitched and teams form at 11:00, and everyone shows what they built at 19:00. Try to catch both.</p>
             </div>
           </details>
 
@@ -627,9 +628,9 @@
               </p>
               <p class="ticket__date" id="ticketDate" data-tpl="{long}" data-i18n-tr="İki haftada bir pazar">Every other Sunday</p>
               <dl class="ticket__times mono">
-                <div><dt data-i18n-tr="Kapılar">Doors</dt><dd data-tpl="{time}">12:00</dd></div>
-                <div><dt>Pizza</dt><dd>18:00</dd></div>
-                <div><dt data-i18n-tr="Demolar">Demos</dt><dd>21:30</dd></div>
+                <div><dt data-i18n-tr="Kapılar">Doors</dt><dd>10:30</dd></div>
+                <div><dt data-i18n-tr="Sunumlar">Pitches</dt><dd>19:00</dd></div>
+                <div><dt data-i18n-tr="Bitiş">Wrap</dt><dd>20:00</dd></div>
               </dl>
               <p class="ticket__meta mono">
                 <span data-tpl="{place}" data-i18n-tr="ODTÜ, Ankara">METU, Ankara</span>
@@ -678,7 +679,7 @@
                 </li>
                 <li>
                   <strong data-i18n-tr="Pazar.">Sunday.</strong>
-                  <span data-i18n-tr="Kapılar 12:00’de açılıyor. Laptopunu ve şarj aletini al, aç gel.">Doors at 12:00. Bring a laptop, a charger and an appetite.</span>
+                  <span data-i18n-tr="Kapılar 10:30’da açılıyor. Laptopunu ve şarj aletini al, aç gel.">Doors at 10:30. Bring a laptop, a charger and an appetite.</span>
                 </li>
               </ol>
             </div>
@@ -691,8 +692,8 @@
                 <blockquote
                   class="share__msg"
                   id="shareMsg"
-                  data-i18n-tr="baksana, ODTÜ’de iki haftada bir pazar toplanıp bir şeyler yapılan ücretsiz bir kulüp varmış. öğlen başlıyor gece bitiyor, pizza var, sonunda demolar. benimle gelsene?"
-                >ok look — there’s a free build club at METU every other Sunday. noon to midnight, pizza at six, demos at the end. come with me?</blockquote>
+                  data-i18n-tr="baksana, ODTÜ’de iki haftada bir pazar toplanıp bir şeyler yapılan ücretsiz bir kulüp varmış. 10.30’da başlıyor akşam 8’de bitiyor, pizza var, sonunda herkes yaptığını sunuyor. benimle gelsene?"
+                >ok look — there’s a free build club at METU every other Sunday. 10:30 to 8pm, free pizza, everyone shows what they built at the end. come with me?</blockquote>
                 <figcaption class="share__link mono">the-egg.club</figcaption>
               </figure>
               <div class="share__btns">
@@ -700,7 +701,7 @@
                 <a
                   class="btn btn--ink btn--sm"
                   id="shareWa"
-                  href="https://wa.me/?text=ok%20look%20%E2%80%94%20there%E2%80%99s%20a%20free%20build%20club%20at%20METU%20every%20other%20Sunday.%20noon%20to%20midnight%2C%20pizza%20at%20six%2C%20demos%20at%20the%20end.%20come%20with%20me%3F%20https%3A%2F%2Fthe-egg.club%2F"
+                  href="https://wa.me/?text=ok%20look%20%E2%80%94%20there%E2%80%99s%20a%20free%20build%20club%20at%20METU%20every%20other%20Sunday.%2010%3A30%20to%208pm%2C%20free%20pizza%2C%20everyone%20shows%20what%20they%20built%20at%20the%20end.%20come%20with%20me%3F%20https%3A%2F%2Fthe-egg.club%2F"
                   target="_blank"
                   rel="noopener"
                 ><span data-i18n-tr="WhatsApp’tan gönder">Send on WhatsApp</span></a>
@@ -724,7 +725,7 @@
       </section>
     </main>
 
-    <!-- ───────────── 23:00 · FOOTER + EGG RESCUE ───────────── -->
+    <!-- ───────────── 20:00 · FOOTER + EGG RESCUE ───────────── -->
     <footer class="foot" id="foot" data-bg="night">
       <div class="foot__scene">
         <picture>

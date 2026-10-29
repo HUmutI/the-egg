@@ -13,9 +13,10 @@ type NextEvent = {
 /** Where the next Sunday stands: on today, taking applications, or not yet. */
 type State = 'live' | 'open' | 'soon' | 'next'
 
-// The club runs noon to midnight. The app keeps a Sunday "current" for a day
-// (for late submissions), but after midnight the page should stop saying it's on.
-const LIVE_FOR = 12 * 60 * 60 * 1000
+// The club runs 10:30 to 20:00. The app keeps a Sunday "current" for a day
+// (for late submissions), but once the evening's done the page should stop
+// saying it's on (half an hour of slack for the last pitch).
+const LIVE_FOR = 10 * 60 * 60 * 1000
 
 /**
  * Fill a template kept on the element itself (`data-<state>`, translated by
@@ -67,7 +68,6 @@ export async function initNextSunday() {
     n: String(event.number).padStart(3, '0'),
     short: fmt({ weekday: 'short', day: 'numeric', month: 'short' }),
     long: fmt({ weekday: 'long', day: 'numeric', month: 'long' }),
-    time: fmt({ hour: '2-digit', minute: '2-digit', hour12: false }),
     place: event.location?.trim() || (lang === 'tr' ? 'ODTÜ, Ankara' : 'METU, Ankara'),
   }
 

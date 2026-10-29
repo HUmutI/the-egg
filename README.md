@@ -1,7 +1,7 @@
 # The Egg Club
 
 Landing page for The Egg Club — a free build club every other Sunday at ODTÜ
-(METU), Ankara. Doors at noon, pizza at six, demos at 21:30, done before midnight.
+(METU), Ankara. Doors at 10:30, build all day, pizza at six, pitches at 19:00, done by 20:00.
 
 ```bash
 npm install
@@ -15,15 +15,15 @@ HTML in `index.html`, with one module per interaction in `src/`.
 ## How the page is put together
 
 The whole page is **one Sunday**. The background drifts through the day's
-colours as you scroll, and the club clock in the nav goes from noon to past midnight.
+colours as you scroll, and the club clock in the nav runs from doors (10:30) into the evening.
 
 | Where | What | Code |
 | --- | --- | --- |
-| Hero | The finished illustration in `public/hero/` with hand-drawn notes on top (`#doodles`), a magazine-style masthead, the apply button with the essentials under it (free · every other Sunday · noon to midnight · METU) plus the next date from the app, and a slow "Built with love by people from…" logo strip (`public/logos/`) | `src/hero.ts`, `src/next.ts` |
-| Background + clock | Section colours (`data-bg`, painted through `--page` so the nav's backdrop band drifts with them) and the scroll-driven clock: the day section runs noon to 23:00, the rest of the page is the afterglow, midnight is the footer | `src/sky.ts` |
+| Hero | The finished illustration in `public/hero/` with hand-drawn notes on top (`#doodles`), a magazine-style masthead, the apply button with the essentials under it (free · every other Sunday · 10:30–20:00 · METU) plus the next date from the app, and a slow "Built with love by people from…" logo strip (`public/logos/`) | `src/hero.ts`, `src/next.ts` |
+| Background + clock | Section colours (`data-bg`, painted through `--page` so the nav's backdrop band drifts with them) and the scroll-driven clock: the day section runs 10:30 to 20:00, the rest of the page is the afterglow, the footer is the way home | `src/sky.ts` |
 | Live badge | The small egg in the corner that links to the commits; it says its line once, then on hover/focus, and steps aside while you scroll, over the hero's logos, the footer and the arcade | `src/badge.ts` |
 | What / Who comes / Why | "Who comes": a typeset guest list of disciplines, each with a one-line caption on hover/tap; hand-drawn strikethroughs | `src/story.ts` |
-| The day | Pinned horizontal timeline on wide screens, a vertical rail below 900px; an egg in red sneakers walks the ruler and hatches the golden egg at 21:30 demos | `src/day.ts` |
+| The day | Pinned horizontal timeline on wide screens, a vertical rail below 900px; an egg in red sneakers walks the ruler and hatches the golden egg at the 19:00 pitches | `src/day.ts` |
 | Who shows up | A specimen plate of egg characters (the night-owl engineer, the designer, the hardware person…, and the dashed "you?"); pull one and it springs back, hover/tap for its quote | `src/flock.ts`, `src/figures.ts` |
 | Good questions | The FAQ: native `<details>` disclosures (cost, who can come, what to bring, where, language, food, selection, friends…) | markup only, `src/styles/story.css` |
 | Join | A ticket for the next Sunday, the apply button, what happens after you apply, and a bring-a-friend share (native share sheet, else WhatsApp; copy link). Applications live on app.the-egg.club | `src/next.ts`, `src/share.ts` |
@@ -57,7 +57,7 @@ masthead, the hero's next-date line, the Join ticket, and points every
 date-free copy, so if the app is slow, down, or has nothing scheduled the page
 just stays general. Copy for each state (`live`, `open` — applications open,
 `soon` — not yet, `next` — unknown) lives on the element as `data-<state>`
-templates (`{n}`, `{short}`, `{long}`, `{time}`, `{place}`), translated like any
+templates (`{n}`, `{short}`, `{long}`, `{place}`), translated like any
 other attribute.
 
 ### Languages
@@ -72,11 +72,11 @@ Every visible string needs both.
 
 ### Night Shift (the hidden game)
 
-A pixel-art loft in Kızılay at 23:00, drawn procedurally at 320×192 (no image
-assets). Eight builders need pizza before midnight demos: grab a slice from
+A pixel-art loft in Kızılay at 18:00, drawn procedurally at 320×192 (no image
+assets). Eight builders need pizza before the 19:00 pitches: grab a slice from
 the counter, walk it over, and each fed team "hatches" its project (the same
 ideas as the carton). Arrows/WASD or tap to walk, E/space or the yellow button
-to talk. The midnight clock only starts on your first move. On phones the view narrows and follows you, with edge markers for
+to talk. The clock only starts on your first move. On phones the view narrows and follows you, with edge markers for
 anyone off-screen. There's a golden egg hidden somewhere.
 
 ## Before launch

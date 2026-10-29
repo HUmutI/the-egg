@@ -4,8 +4,8 @@ import { lang } from './i18n'
 /**
  * NIGHT SHIFT — the hidden game behind the footer.
  *
- * A tiny top-down pixel loft in Kızılay, 23:00. Eight builders are racing to
- * demo at midnight and nobody has eaten. Grab slices from the pizza counter,
+ * A tiny top-down pixel loft in Kızılay, 18:00. Eight builders are racing to
+ * pitch at 19:00 and nobody has eaten. Grab slices from the pizza counter,
  * walk them over, and every team you feed hatches its project. Talk to
  * everyone; there's a golden egg hidden somewhere.
  *
@@ -658,7 +658,10 @@ export function createNightShift(opts: {
   const you: Actor = { x: START.x, y: START.y, body: PALETTE.yolk, acc: 'crack', facing: 1, moving: false, anim: 0, path: [] }
   let carrying = false
   let fed = 0
-  let minutes = 23 * 60
+  // the game's hour: pizza at six, pitches at seven, like the real Sunday
+  const CLOCK_START = 18 * 60
+  const PITCHES = 19 * 60
+  let minutes = CLOCK_START
   let golden = false
   let clockOn = false
   let pending: null | { kind: 'npc'; npc: Npc } | { kind: 'counter' } = null
@@ -687,7 +690,7 @@ export function createNightShift(opts: {
     }
     const mid =
       clockOn
-        ? `<b>${fmt(minutes)}</b><i> · ${lang === 'tr' ? 'demolar 00:00' : 'demos 00:00'}</i>`
+        ? `<b>${fmt(minutes)}</b><i> · ${lang === 'tr' ? 'sunumlar 19:00' : 'pitches 19:00'}</i>`
         : `<b>${lang === 'tr' ? 'hareket et, başla' : 'move to start'}</b>`
     const fedLabel = lang === 'tr' ? 'beslenen' : 'fed'
     const handsFree = lang === 'tr' ? 'eller boş' : 'hands free'
@@ -739,23 +742,23 @@ export function createNightShift(opts: {
     card.innerHTML =
       lang === 'tr'
         ? won
-          ? `<h3>Demo zamanı</h3>
+          ? `<h3>Sunum zamanı</h3>
              <p>Tüm takımlar yayına girdi. Herkes doydu, saat daha ${fmt(minutes)}${golden ? ' ve altın yumurtayı da buldun' : ''}.</p>
              <ul>${shipped}</ul>
              <p>The Egg Club’da bir pazar böyle hissettirir. Gel, gerçeğini yap.</p>
              <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Başvur</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Tekrar oyna</button></div>`
-          : `<h3>Gece yarısı</h3>
-             <p>Demolara ${8 - fed} kişi aç karnına çıktı. Seni affederler. Muhtemelen.</p>
+          : `<h3>Saat 19:00</h3>
+             <p>Sunumlara ${8 - fed} kişi aç karnına çıktı. Seni affederler. Muhtemelen.</p>
              ${shipped ? `<ul>${shipped}</ul>` : ''}
              <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Tekrar dene</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Başvur</button></div>`
         : won
-          ? `<h3>Demo time</h3>
+          ? `<h3>Pitch time</h3>
              <p>Every team shipped. Everyone fed by ${fmt(minutes)}${golden ? ', and you found the golden egg' : ''}.</p>
              <ul>${shipped}</ul>
              <p>This is what a Sunday at The Egg Club feels like. Come build the real thing.</p>
              <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Apply for a seat</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Play again</button></div>`
-          : `<h3>Midnight</h3>
-             <p>Demos started with ${8 - fed} hungry builder${8 - fed === 1 ? '' : 's'}. They’ll forgive you. Probably.</p>
+          : `<h3>19:00</h3>
+             <p>Pitches started with ${8 - fed} hungry builder${8 - fed === 1 ? '' : 's'}. They’ll forgive you. Probably.</p>
              ${shipped ? `<ul>${shipped}</ul>` : ''}
              <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Try again</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Apply for a seat</button></div>`
     renderHud()
@@ -770,7 +773,7 @@ export function createNightShift(opts: {
     you.facing = 1
     carrying = false
     fed = 0
-    minutes = 23 * 60
+    minutes = CLOCK_START
     golden = false
     clockOn = false
     pending = null
@@ -782,8 +785,8 @@ export function createNightShift(opts: {
     state = 'play'
     hint.innerHTML =
       lang === 'tr'
-        ? 'Saat 23:00. Demolar gece yarısı. Pizza tezgahta — <b>8 kişinin hepsini doyur</b>.'
-        : 'It’s 23:00. Demos at midnight. Pizza’s on the counter — <b>feed all 8 builders</b>.'
+        ? 'Saat 18:00. Sunumlar 19:00’da. Pizza tezgahta — <b>8 kişinin hepsini doyur</b>.'
+        : 'It’s 18:00. Pitches at 19:00. Pizza’s on the counter — <b>feed all 8 builders</b>.'
     renderHud()
   }
 
@@ -959,8 +962,8 @@ export function createNightShift(opts: {
 
     // phones see less of the room at once, so they get a gentler clock
     if (clockOn) minutes += dt * (VW < W ? MIN_PER_SEC * 0.7 : MIN_PER_SEC)
-    if (minutes >= 24 * 60) {
-      minutes = 24 * 60
+    if (minutes >= PITCHES) {
+      minutes = PITCHES
       return endCard(false)
     }
 

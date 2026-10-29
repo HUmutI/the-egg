@@ -10,7 +10,7 @@ const toMin = (s: string) => {
 /**
  * "A day at the club": on wide screens the section pins and the day slides
  * past horizontally while a single egg waddles along the ruler, cracking a
- * little more at every step until it hatches at 17:30 demos.
+ * little more at every step until it hatches at the 19:00 pitches.
  */
 export function initDay() {
   const section = $('#day')
