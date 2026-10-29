@@ -389,82 +389,94 @@
         <div class="day__pin">
           <header class="day__head">
             <p class="label mono"><span>03</span> <span class="label__txt" data-i18n-tr="Kulüpte bir gün">A day at the club</span></p>
-            <h2 id="dayTitle" data-i18n-tr-html="Sabahtan akşama,<br /> <em>aşağı yukarı.</em>">Morning to evening,<br /> <em>roughly.</em></h2>
+            <div class="day__headrow">
+              <h2 id="dayTitle" data-i18n-tr-html="Sabahtan akşama,<br /> <em>aşağı yukarı.</em>">Morning to evening,<br /> <em>roughly.</em></h2>
+              <p class="day__deck mono" data-i18n-tr="Bir yumurta, 10:30 → 20:00. Ölçeksizdir.">One egg, 10:30 → 20:00. Not to scale.</p>
+            </div>
           </header>
 
           <div class="day__viewport">
-            <ol class="day__track" id="dayTrack">
-              <li class="day__edge day__edge--in" aria-hidden="true"></li>
-              <li class="step" data-step="0">
-                <div class="step__cap">
-                  <time class="step__time">10:30</time>
-                  <h3 data-i18n-tr="Kapılar açılır">Doors</h3>
-                  <p data-i18n-tr="Kahve, tanışma faslı, post-it’lerle dolu bir duvar. Yaka kartı isteğe bağlı. Fikir beyan etmek zorunlu.">Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="step" data-step="1">
-                <div class="step__cap">
-                  <time class="step__time">11:00</time>
-                  <h3 data-i18n-tr="Çatlak">Crack</h3>
-                  <p data-i18n-tr="İsteyen altmış saniyede bir fikir anlatır. Rafadan fikirler evin spesiyalitesidir.">Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="step" data-step="2">
-                <div class="step__cap">
-                  <time class="step__time">11:30</time>
-                  <h3 data-i18n-tr="Yuva">Nest</h3>
-                  <p data-i18n-tr="Takımlar en eğlenceli görünen fikrin etrafında toplanır. Birbirini hiç tanımayanlar, çok saçma bir şeyin kurucu ortağı olur.">Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="step" data-step="3">
-                <div class="step__cap">
-                  <time class="step__time">12:00</time>
-                  <h3 data-i18n-tr="Kuluçka">Incubate</h3>
-                  <p data-i18n-tr="Herkes işine gömülür. Yap, boz, yeniden yap. Mentorlar bir elinde atıştırmalık, bir elinde fikirlerle masaları dolaşır.">Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="step" data-step="4">
-                <div class="step__cap">
-                  <time class="step__time">18:00</time>
-                  <h3 data-i18n-tr="Pizza">Pizza</h3>
-                  <p data-i18n-tr="Pazarlığı yok. Laptoplar kapanır, on iki kutu açılır, ananas tartışması bir türlü bitmez. İkinci ve daha iyi fikir genelde burada gelir.">Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="step step--hatch" data-step="5">
-                <div class="step__cap">
-                  <time class="step__time">19:00</time>
-                  <h3 data-i18n-tr="Doğuş">Hatch</h3>
-                  <p data-i18n-tr="Klavyeler bırakılır. Beşer dakikalık sunumlar, herkes alkışlar. Çalışması teşvik edilir. İddialı ama bozuk olması da sayılır.">Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="step" data-step="6">
-                <div class="step__cap">
-                  <time class="step__time">20:00</time>
-                  <h3 data-i18n-tr="Tatlı yorgunluk">Afterglow</h3>
-                  <p data-i18n-tr="Saat 20:00’de ışıklar kapanır. Soğuk pizza, metroyla eve dönüş ve bütün hafta susmayan bir mesaj grubu.">Lights out at 20:00. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
-                </div>
-                <div class="step__scene" aria-hidden="true"></div>
-              </li>
-              <li class="day__edge day__edge--out">
-                <div class="edge__note" aria-hidden="true"></div>
-                <a class="btn btn--ink day__apply" href="https://app.the-egg.club" target="_blank" rel="noopener" data-apply><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
-              </li>
-            </ol>
-          </div>
+            <div class="day__track" id="dayTrack">
+              <span class="day__progress" aria-hidden="true"></span>
+              <ol class="day__steps">
+                <li class="step" data-step="0">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">10:30</time>
+                    <h3 data-i18n-tr="Kapılar açılır">Doors</h3>
+                    <p data-i18n-tr="Kahve, tanışma faslı, post-it’lerle dolu bir duvar. Yaka kartı isteğe bağlı. Fikir beyan etmek zorunlu.">Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+                <li class="step" data-step="1">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">11:00</time>
+                    <h3 data-i18n-tr="Çatlak">Crack</h3>
+                    <p data-i18n-tr="İsteyen altmış saniyede bir fikir anlatır. Rafadan fikirler evin spesiyalitesidir.">Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+                <li class="step" data-step="2">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">11:30</time>
+                    <h3 data-i18n-tr="Yuva">Nest</h3>
+                    <p data-i18n-tr="Takımlar en eğlenceli görünen fikrin etrafında toplanır. Birbirini hiç tanımayanlar, çok saçma bir şeyin kurucu ortağı olur.">Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+                <li class="step" data-step="3">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">12:00</time>
+                    <h3 data-i18n-tr="Kuluçka">Incubate</h3>
+                    <p data-i18n-tr="Herkes işine gömülür. Yap, boz, yeniden yap. Mentorlar bir elinde atıştırmalık, bir elinde fikirlerle masaları dolaşır.">Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+                <li class="step" data-step="4">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">18:00</time>
+                    <h3 data-i18n-tr="Pizza">Pizza</h3>
+                    <p data-i18n-tr="Pazarlığı yok. Laptoplar kapanır, on iki kutu açılır, ananas tartışması bir türlü bitmez. İkinci ve daha iyi fikir genelde burada gelir.">Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+                <li class="step step--hatch" data-step="5">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">19:00</time>
+                    <h3 data-i18n-tr="Doğuş">Hatch</h3>
+                    <p data-i18n-tr="Klavyeler bırakılır. Beşer dakikalık sunumlar, herkes alkışlar. Çalışması teşvik edilir. İddialı ama bozuk olması da sayılır.">Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+                <li class="step" data-step="6">
+                  <span class="step__node" aria-hidden="true"></span>
+                  <div class="step__text">
+                    <time class="step__time">20:00</time>
+                    <h3 data-i18n-tr="Tatlı yorgunluk">Afterglow</h3>
+                    <p data-i18n-tr="Saat 20:00’de ışıklar kapanır. Soğuk pizza, metroyla eve dönüş ve bütün hafta susmayan bir mesaj grubu.">Lights out at 20:00. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
+                  </div>
+                  <div class="step__fig" aria-hidden="true"></div>
+                </li>
+              </ol>
 
-          <!-- the egg that walks the day, the two it meets at Crack, and what stands in front of them (drawn by src/dayscenes.ts) -->
-          <div class="day__cast" id="dayCast" aria-hidden="true">
-            <div class="walker walker--glow" id="walkerRays"></div>
-            <div class="mate mate--b" id="mateB"></div>
-            <div class="mate mate--a" id="mateA"></div>
-            <div class="walker" id="walker"></div>
-            <div class="day__fronts" id="dayFronts"></div>
+              <!-- the way out: the programme hands over to Apply -->
+              <div class="day__end">
+                <p class="day__bye hand" data-i18n-tr-html="iki pazar sonra<br />görüşürüz">see you in<br />two Sundays</p>
+                <svg class="day__arrow" viewBox="0 0 120 150" aria-hidden="true" focusable="false">
+                  <path d="M18 8 C 70 20 96 58 84 128" />
+                  <path d="M62 112 L 84 132 L 100 106" />
+                </svg>
+                <a class="btn btn--ink day__apply" href="https://app.the-egg.club" target="_blank" rel="noopener" data-apply><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
+              </div>
+
+              <!-- our egg and the two it meets at Crack, walked across the plates (drawn by src/dayplates.ts) -->
+              <svg class="day__cast" id="dayCast" viewBox="0 0 5600 600" aria-hidden="true" focusable="false"></svg>
+            </div>
           </div>
         </div>
       </section>
