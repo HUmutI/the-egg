@@ -114,9 +114,15 @@ export function initDay() {
 
   mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
     const q = <T extends Element>(el: Element, sel: string) => el.querySelector<T>(sel)!
+    // each leg swings at the hip; its shin folds and its shoe comes up with it
+    const legsOf = (el: Element) =>
+      ['.leg--l', '.leg--r'].map((sel) => {
+        const leg = q<SVGGElement>(el, sel)
+        return { leg, shin: q<SVGGElement>(leg, '.shin'), shoe: q<SVGGElement>(leg, '.shoe') }
+      })
     const hero = {
       body: q<SVGGElement>(walker, '.walker__body'),
-      legs: [q<SVGGElement>(walker, '.leg--l'), q<SVGGElement>(walker, '.leg--r')],
+      legs: legsOf(walker),
       whole: q<SVGGElement>(walker, '.walker__whole'),
       top: q<SVGGElement>(walker, '.walker__top'),
       golden: q<SVGGElement>(walker, '.walker__golden'),
@@ -127,7 +133,7 @@ export function initDay() {
       el: m,
       svg: q<SVGSVGElement>(m, 'svg'),
       body: q<SVGGElement>(m, '.mate__body'),
-      legs: [q<SVGGElement>(m, '.leg--l'), q<SVGGElement>(m, '.leg--r')],
+      legs: legsOf(m),
     }))
     const incubate = steps[3]
     const clockH = q<SVGGElement>(incubate, '.clock__h')
@@ -201,12 +207,15 @@ export function initDay() {
     }
 
     /** Legs and a waddle. `fold` shortens the shins for sitting (0 standing, 1 seated). */
-    const pose = (legs: SVGGElement[], body: SVGGElement, ph: number, a: number, fold = 0, dangle = 0) => {
+    const pose = (legs: ReturnType<typeof legsOf>, body: SVGGElement, ph: number, a: number, fold = 0, dangle = 0) => {
       const sw = Math.sin(2 * ph) * 24 * a + dangle
       const sy = lerp(1, SEAT_LEGS, fold)
-      const leg = (deg: number, x: number) => `translate(${x} 248) scale(1 ${sy.toFixed(3)}) rotate(${deg.toFixed(2)}) translate(${-x} -248)`
-      legs[0].setAttribute('transform', leg(sw, 80))
-      legs[1].setAttribute('transform', leg(-sw * (dangle ? 0.8 : 1), 120))
+      const swing = [sw, -sw * (dangle ? 0.8 : 1)]
+      legs.forEach((l, i) => {
+        l.leg.setAttribute('transform', `rotate(${swing[i].toFixed(2)} ${i ? 120 : 80} 248)`)
+        l.shin.setAttribute('transform', `translate(0 248) scale(1 ${sy.toFixed(3)}) translate(0 -248)`)
+        l.shoe.setAttribute('transform', `translate(0 ${(-(1 - sy) * 54).toFixed(2)})`)
+      })
       body.setAttribute('transform', `translate(0 ${(-Math.abs(Math.cos(2 * ph)) * 6 * a).toFixed(2)}) rotate(${(Math.sin(2 * ph) * 3 * a).toFixed(2)} 100 316)`)
     }
 
@@ -458,7 +467,8 @@ export function initDay() {
       joined = false
       gsap.set([track, walker, glow, cast, ...team.map((m) => m.svg), ...fronts.map((f) => f.el)], { clearProps: 'transform,opacity' })
       team.forEach((m) => (gsap.killTweensOf(m.el), gsap.set(m.el, { clearProps: 'all' })))
-      ;[...hero.legs, hero.body, hero.whole, hero.top, hero.golden, ...team.flatMap((m) => [...m.legs, m.body])].forEach((g) => g.removeAttribute('transform'))
+      const parts = [hero, ...team].flatMap((c) => c.legs.flatMap((l) => [l.leg, l.shin, l.shoe]))
+      ;[...parts, hero.body, hero.whole, hero.top, hero.golden, ...team.map((m) => m.body)].forEach((g) => g.removeAttribute('transform'))
       section.style.removeProperty('--out')
       delete section.dataset.end
       delete section.dataset.walking

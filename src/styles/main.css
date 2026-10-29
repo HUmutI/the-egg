@@ -1727,6 +1727,7 @@ h2 {
 }
 .day__edge--out .edge__art {
   left: calc(var(--scene-w) * 0.6);
+  bottom: calc(var(--scene-w) * 0.1);
 }
 /* the way home ends on the way in: apply for the next one */
 .edge__note {
@@ -1735,8 +1736,10 @@ h2 {
 }
 .day__apply {
   position: absolute;
-  left: calc(var(--scene-w) * 0.96);
-  bottom: calc(var(--scene-w) * 0.12);
+  left: calc(var(--scene-w) * 0.7);
+  bottom: calc(var(--scene-w) * 0.1);
+  padding: 20px 34px;
+  font-size: 18px;
   opacity: 0;
   visibility: hidden;
   translate: 0 12px;
@@ -1904,7 +1907,13 @@ h2 {
 .day__cast.is-walking .mate[data-state='4'] .mface--2 {
   display: inline;
 }
-/* the wave goodbye beside the way to apply */
+/* the wave goodbye beside the way to apply: the other two cheer, eyes open */
+.mate[data-state='6'][data-beat='5'] .mface--4 {
+  display: none;
+}
+.mate[data-state='6'][data-beat='5'] .mface--3 {
+  display: inline;
+}
 .walker[data-state='6'][data-beat='5'] :is(.wprop--arms, .gface--joy) {
   display: inline;
 }
@@ -2171,6 +2180,7 @@ h2 {
 
 /* 11:30 nest: the three sit down in it and the team flag goes up */
 .scene .team-flag__cloth {
+  opacity: clamp(0, calc(var(--d) * 12), 1);
   transform: translateY(calc((1 - clamp(0, calc(var(--d) * 1.6), 1)) * 76px));
 }
 .scene .hearts path {
@@ -2234,7 +2244,7 @@ h2 {
 
 /* 18:00 pizza: the sun goes down behind the empty boxes */
 .scene .sc-sunset {
-  transform: translateY(calc(var(--d) * 42px));
+  transform: translateY(calc(var(--d) * 62px));
 }
 
 /* 19:00 hatch: the spot finds the egg, flares on the pop, then confetti;
@@ -2469,10 +2479,13 @@ h2 {
 @media (min-width: 600px) and (max-width: 899px), (min-width: 600px) and (prefers-reduced-motion: reduce) {
   .step {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1.6fr 1fr;
     align-items: center;
     gap: 32px;
     max-width: 980px;
+  }
+  .step:nth-child(odd) {
+    grid-template-columns: 1fr 1.6fr;
   }
   .step:nth-child(odd) .step__scene {
     order: 2;
