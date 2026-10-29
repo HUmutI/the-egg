@@ -953,26 +953,33 @@ h2 {
     transform: translateY(0.42em);
   }
 }
+/* three of the flock, peeking out of a carton: white, brown and tan eggs */
 .chip--eggs {
-  gap: 0;
-  padding: 0 0.16em;
-  background: var(--cream);
+  gap: 0.02em;
+  padding: 0 0.14em;
+  background: var(--lav);
 }
 .chip--eggs i {
+  --shell: var(--cream);
   width: 0.4em;
   height: 0.52em;
-  margin: 0 -0.06em;
+  margin: 0 -0.05em;
   border: var(--line) solid var(--ink);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--lav);
+  background:
+    radial-gradient(ellipse 0.026em 0.034em at 31% 57%, var(--ink) 88%, transparent 100%),
+    radial-gradient(ellipse 0.026em 0.034em at 69% 57%, var(--ink) 88%, transparent 100%),
+    radial-gradient(ellipse 0.05em 0.085em at 28% 30%, rgba(255, 255, 255, 0.85) 70%, transparent 80%),
+    var(--shell);
+  box-shadow: inset -0.06em -0.045em 0 rgba(184, 105, 63, 0.24);
   transition: transform 0.4s var(--ease-spring);
 }
 .chip--eggs i:nth-child(2) {
-  background: var(--mint);
+  --shell: var(--peach);
   transform: translateY(-0.04em);
 }
 .chip--eggs i:nth-child(3) {
-  background: var(--peach);
+  --shell: #e7b896;
 }
 .statement:hover .chip--eggs i:nth-child(1) {
   transform: rotate(-14deg) translateY(-0.06em);
