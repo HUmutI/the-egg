@@ -333,11 +333,26 @@ body::after {
   text-decoration: none;
 }
 .nav__logo svg {
-  width: 20px;
+  width: 28px;
+  height: 28px;
+  margin: 0 -2px;
   transition: transform 0.5s var(--ease-spring);
 }
 .nav__logo:hover svg {
   transform: rotate(-14deg) translateY(-2px);
+}
+/* the mark (nav, live badge): the golden egg, and it blinks */
+.mark .mark__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.nav__logo:hover .mark__eyes {
+  animation: markWink 0.26s 0.12s;
+}
+@keyframes markWink {
+  50% {
+    transform: scaleY(0.12);
+  }
 }
 
 .nav__clock {
@@ -2766,24 +2781,13 @@ body.is-arcade .nav > * {
   box-shadow: 0 10px 22px -10px rgba(31, 23, 34, 0.4);
 }
 .live-badge__egg {
-  width: 18px;
-  height: 23px;
+  width: 24px;
+  height: 24px;
   flex: none;
+  margin: -2px -2px -2px 0;
 }
-.live-badge__shell {
-  fill: var(--yolk);
-  stroke: var(--ink);
-  stroke-width: 2.6;
-}
-.live-badge__crack {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: liveBadgeCrack 3.2s ease-in-out infinite;
+.live-badge__egg .mark__eyes {
+  animation: eggBlink 4.2s 1s infinite;
 }
 .live-badge__text {
   display: flex;
@@ -2799,17 +2803,6 @@ body.is-arcade .nav > * {
   border-radius: 50%;
   background: var(--mint-deep);
   animation: liveBadgePulse 1.8s ease-in-out infinite;
-}
-@keyframes liveBadgeCrack {
-  0%, 20% {
-    stroke-dashoffset: 1;
-  }
-  45%, 70% {
-    stroke-dashoffset: 0;
-  }
-  92%, 100% {
-    stroke-dashoffset: 1;
-  }
 }
 @keyframes liveBadgePulse {
   0%, 100% {
@@ -2830,11 +2823,8 @@ body.is-arcade .nav > * {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .live-badge__crack,
+  .live-badge__egg .mark__eyes,
   .live-badge__dot {
     animation: none;
-  }
-  .live-badge__crack {
-    stroke-dashoffset: 0.4;
   }
 }
