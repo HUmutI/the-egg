@@ -3326,3 +3326,91 @@ body.is-arcade .nav > * {
     animation: none;
   }
 }
+
+/* ── PHONES: the dock and the badge's place in the footer ────────
+   On a phone the floating badge would sit on whatever you're reading,
+   so it settles into the footer's last line instead, and the bottom of
+   the screen goes to the thing a phone visitor came to do: Apply, with
+   send-to-a-friend beside it. The dock looks like the nav's pills.  */
+.dock,
+.foot__live {
+  display: none;
+}
+/* phones either way up (a phone on its side is short, not narrow) */
+@media (max-width: 700px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  .live-badge {
+    display: none;
+  }
+  .foot__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .foot__live .live-badge__dot {
+    background: var(--mint);
+  }
+}
+@media (max-width: 700px) {
+  .dock {
+    position: fixed;
+    left: var(--gut);
+    right: var(--gut);
+    bottom: calc(10px + var(--safe-b));
+    z-index: 55;
+    display: flex;
+    gap: 8px;
+    transition:
+      transform 0.45s var(--ease-out),
+      opacity 0.3s var(--ease-out),
+      visibility 0s;
+  }
+  .dock.is-away {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(calc(100% + 16px));
+    transition:
+      transform 0.35s var(--ease-out),
+      opacity 0.25s var(--ease-out),
+      visibility 0s 0.35s;
+  }
+  .dock__share,
+  .dock__apply {
+    height: 52px;
+    box-shadow: 0 10px 24px -14px rgba(31, 23, 34, 0.55);
+  }
+  .dock__share {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    padding: 0;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .dock__share svg {
+    width: 22px;
+    height: 22px;
+    margin: 1px 2px 0 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .dock__share:active {
+    transform: scale(0.96);
+  }
+  .dock__apply {
+    flex: 1;
+    min-width: 0;
+    padding: 0 20px;
+    border: 1px solid var(--ink);
+    font-size: 16px;
+  }
+}

@@ -803,6 +803,11 @@
       <div class="foot__base">
         <span class="mono" data-i18n-tr="© 2026 The Egg Club">© 2026 The Egg Club</span>
         <span class="mono hide-sm" data-i18n-tr="Ankara’da, gereğinden fazla pizzayla yapıldı">Made in Ankara on too much pizza</span>
+        <!-- phones: the live badge settles here instead of floating over the page -->
+        <a class="foot__live mono" href="https://github.com/HUmutI/the-egg" target="_blank" rel="noopener">
+          <span class="live-badge__dot" aria-hidden="true"></span>
+          <span data-i18n-tr="bu site şu an kendini güncelliyor">this site is updating itself, live</span>
+        </a>
       </div>
     </footer>
 
@@ -844,6 +849,14 @@
       </div>
     </div>
     </section>
+
+    <!-- ───────────── PHONES: Apply under the thumb, once the hero's button has gone by (src/dock.ts) ───────────── -->
+    <div class="dock is-away" id="dock">
+      <button class="dock__share" type="button" data-share aria-label="Send it to a friend" data-i18n-tr-attr-aria-label="Arkadaşına gönder">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.5 2.5 10.6 13.4" /><path d="M21.5 2.5 14.6 21.5l-4-8.1-8.1-4z" /></svg>
+      </button>
+      <a class="btn btn--ink dock__apply" href="https://app.the-egg.club" target="_blank" rel="noopener" data-apply><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
+    </div>
 
     <!-- ───────────── LIVE BADGE: the site rebuilds itself ───────────── -->
     <a
