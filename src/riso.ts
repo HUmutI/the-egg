@@ -15,13 +15,17 @@ const I = PALETTE.ink
 /** One-time SVG defs: the wobble filter, halftone dots and the shading mask. */
 export function installInkDefs() {
   const defs = document.querySelector('.defs defs')
-  if (!defs || defs.querySelector('#wobble')) return // normally shipped in index.html
-  defs.insertAdjacentHTML(
-    'beforeend',
-    `<filter id="wobble" x="-10%" y="-10%" width="120%" height="120%">
+  if (!defs || defs.querySelector('#halftone')) return
+  // index.html ships the wobble filter; the halftone and the shading mask are added here
+  const wobble = defs.querySelector('#wobble')
+    ? ''
+    : `<filter id="wobble" x="-10%" y="-10%" width="120%" height="120%">
        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/>
        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
-     </filter>
+     </filter>`
+  defs.insertAdjacentHTML(
+    'beforeend',
+    `${wobble}
      <pattern id="halftone" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
        <circle cx="3" cy="3" r="1.15" fill="${I}"/>
      </pattern>

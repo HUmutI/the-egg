@@ -1,5 +1,5 @@
 import { gsap } from 'gsap'
-import { $, PALETTE, clamp, reducedMotion } from './util'
+import { $, clamp, reducedMotion } from './util'
 import { FIG_VIEWBOX, emptyEgg, figure, type Kind } from './figures'
 import { lang } from './i18n'
 
@@ -7,31 +7,29 @@ interface Bird {
   name: string
   say: string
   kind: Kind
-  /** the colour the cell warms to when this one talks */
-  accent: string
   tilt: number
 }
 
 const FLOCK_EN: Bird[] = [
-  { name: 'the night-owl engineer', say: 'it works on my machine.', kind: 'owl', accent: PALETTE.lav, tilt: -5 },
-  { name: 'the designer', say: 'can we try it in a softer yellow?', kind: 'designer', accent: PALETTE.butter, tilt: 6 },
-  { name: 'the hardware person', say: 'I brought a soldering iron. And a spare.', kind: 'hardware', accent: PALETTE.mint, tilt: -4 },
-  { name: 'the recovering founder', say: 'no pitch, promise. ok, a tiny one.', kind: 'founder', accent: PALETTE.peach, tilt: 5 },
-  { name: 'the researcher', say: 'there’s a paper on this. I wrote it.', kind: 'researcher', accent: PALETTE.sky, tilt: 4 },
-  { name: 'the musician', say: 'what if the app… had a bassline?', kind: 'musician', accent: PALETTE.mint, tilt: -6 },
-  { name: 'the first-timer', say: 'first hackathon. third slice.', kind: 'firstTimer', accent: PALETTE.cream, tilt: 5 },
-  { name: 'here for the pizza', say: 'honestly? the pizza.', kind: 'pizza', accent: PALETTE.butter, tilt: -4 },
+  { name: 'the night-owl engineer', say: 'it works on my machine.', kind: 'owl', tilt: -5 },
+  { name: 'the designer', say: 'can we try it in a softer yellow?', kind: 'designer', tilt: 6 },
+  { name: 'the hardware person', say: 'I brought a soldering iron. And a spare.', kind: 'hardware', tilt: -4 },
+  { name: 'the recovering founder', say: 'no pitch, promise. ok, a tiny one.', kind: 'founder', tilt: 5 },
+  { name: 'the researcher', say: 'there’s a paper on this. I wrote it.', kind: 'researcher', tilt: 4 },
+  { name: 'the musician', say: 'what if the app… had a bassline?', kind: 'musician', tilt: -6 },
+  { name: 'the first-timer', say: 'first hackathon. third slice.', kind: 'firstTimer', tilt: 5 },
+  { name: 'here for the pizza', say: 'honestly? the pizza.', kind: 'pizza', tilt: -4 },
 ]
 
 const FLOCK_TR: Bird[] = [
-  { name: 'gece kuşu mühendis', say: 'bende çalışıyor.', kind: 'owl', accent: PALETTE.lav, tilt: -5 },
-  { name: 'tasarımcı', say: 'daha yumuşak bir sarı deneyebilir miyiz?', kind: 'designer', accent: PALETTE.butter, tilt: 6 },
-  { name: 'donanımcı', say: 'bir lehim havyası getirdim. Bir de yedek.', kind: 'hardware', accent: PALETTE.mint, tilt: -4 },
-  { name: 'iyileşen girişimci', say: 'sunum yok, söz. tamam, ufak bir tane.', kind: 'founder', accent: PALETTE.peach, tilt: 5 },
-  { name: 'araştırmacı', say: 'bu konuda bir makale var. Ben yazdım.', kind: 'researcher', accent: PALETTE.sky, tilt: 4 },
-  { name: 'müzisyen', say: 'uygulamanın… bir bas hattı olsa?', kind: 'musician', accent: PALETTE.mint, tilt: -6 },
-  { name: 'ilk kez gelen', say: 'ilk hackathon. üçüncü dilim.', kind: 'firstTimer', accent: PALETTE.cream, tilt: 5 },
-  { name: 'pizza için burada', say: 'açıkçası? pizza.', kind: 'pizza', accent: PALETTE.butter, tilt: -4 },
+  { name: 'gece kuşu mühendis', say: 'bende çalışıyor.', kind: 'owl', tilt: -5 },
+  { name: 'tasarımcı', say: 'daha yumuşak bir sarı deneyebilir miyiz?', kind: 'designer', tilt: 6 },
+  { name: 'donanımcı', say: 'bir lehim havyası getirdim. Bir de yedek.', kind: 'hardware', tilt: -4 },
+  { name: 'iyileşen girişimci', say: 'sunum yok, söz. tamam, ufak bir tane.', kind: 'founder', tilt: 5 },
+  { name: 'araştırmacı', say: 'bu konuda bir makale var. Ben yazdım.', kind: 'researcher', tilt: 4 },
+  { name: 'müzisyen', say: 'uygulamanın… bir bas hattı olsa?', kind: 'musician', tilt: -6 },
+  { name: 'ilk kez gelen', say: 'ilk hackathon. üçüncü dilim.', kind: 'firstTimer', tilt: 5 },
+  { name: 'pizza için burada', say: 'açıkçası? pizza.', kind: 'pizza', tilt: -4 },
 ]
 
 const FLOCK: Bird[] = lang === 'tr' ? FLOCK_TR : FLOCK_EN
@@ -50,7 +48,6 @@ export function initFlock() {
     el.type = 'button'
     el.className = `bird bird--${b.kind}`
     el.style.setProperty('--tilt', `${b.tilt}deg`)
-    el.style.setProperty('--accent', b.accent)
     el.style.setProperty('--i', String(i))
     el.setAttribute('aria-label', `${b.name}: “${b.say}”`)
     el.innerHTML = `
