@@ -1574,7 +1574,7 @@ h2 {
    Phones, and reduced motion, read it as a picture book. */
 .day {
   padding: 0;
-  --scene-w: clamp(300px, min(46vw, calc((100svh - 350px) * 1.333)), 760px);
+  --scene-w: clamp(300px, min(46vw, calc((100svh - 350px) * 1.333)), 880px);
 }
 .day__pin {
   position: relative;
@@ -1698,7 +1698,8 @@ h2 {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(var(--scene-w) * 0.075 - 1px);
+  /* the same 2.6-unit line as the windows' floor, on their y 270 */
+  bottom: calc(var(--scene-w) * 0.07175);
   height: max(2px, calc(var(--scene-w) * 0.0065));
   background: var(--ink);
 }
@@ -1752,7 +1753,7 @@ h2 {
   opacity: 1;
   visibility: visible;
   translate: 0 0;
-  transition-delay: 0.9s, 0.9s, 0s;
+  transition-delay: 0.25s, 0.25s, 0s;
 }
 /* lights out at 20:00: as the three walk off, the club's windows go dark one
    by one (the last window is the city outside, which comes on instead) */
@@ -1906,6 +1907,19 @@ h2 {
 }
 .day__cast.is-walking .mate[data-state='4'] .mface--2 {
   display: inline;
+}
+/* at the workbench the hands on the laptop type */
+.walker .key {
+  transform-box: fill-box;
+  animation: keys 0.34s ease-in-out infinite alternate;
+}
+.walker .key--r {
+  animation-delay: 0.17s;
+}
+@keyframes keys {
+  to {
+    transform: translateY(-5px);
+  }
 }
 /* the wave goodbye beside the way to apply: the other two cheer, eyes open */
 .mate[data-state='6'][data-beat='5'] .mface--4 {

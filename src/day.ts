@@ -142,6 +142,7 @@ export function initDay() {
     // the door frame and the nest's front wall, laid over the cast
     const fronts = $$<SVGSVGElement>('.day__front', cast).map((el) => ({ el, i: Number(el.dataset.step) }))
     const door = fronts.find((f) => f.i === 0)?.el
+    const rim = fronts.find((f) => f.i === NEST)?.el
 
     // GSAP owns the cast's centring, so its own x/y tweens never fight a CSS translate;
     // they scale and turn round on their feet (y 316 of the -150…330 view box)
@@ -183,10 +184,13 @@ export function initDay() {
       if (t <= 0) return lifts[state]
       const from = lifts[state]
       const to = lifts[state + 1] ?? 0
-      const off = from > 4 ? 10 : state === NEST ? 18 : 0
-      const on = to > 4 ? 14 : state + 1 === NEST ? 18 : 0
-      if (t < 0.2) return lerp(from, 0, easeOut(t / 0.2)) + Math.sin((Math.PI * t) / 0.2) * off
-      if (t > 0.8) return lerp(0, to, easeIn((t - 0.8) / 0.2)) + Math.sin((Math.PI * (t - 0.8)) / 0.2) * on
+      // the nest's rim is high: a long hop in, from just outside it, and out again
+      const off = from > 4 ? 10 : state === NEST ? 60 : 0
+      const on = to > 4 ? 14 : state + 1 === NEST ? 60 : 0
+      const offEnd = state === NEST ? 0.35 : 0.2
+      const onStart = state + 1 === NEST ? 0.55 : 0.8
+      if (t < offEnd) return lerp(from, 0, easeOut(t / offEnd)) + Math.sin((Math.PI * t) / offEnd) * off
+      if (t > onStart) return lerp(0, to, easeIn((t - onStart) / (1 - onStart))) + Math.sin((Math.PI * (t - onStart)) / (1 - onStart)) * on
       return 0
     }
     /** Where a teammate stands in its window, moving into the next window's spot over the walk. */
@@ -197,7 +201,7 @@ export function initDay() {
       const now = TURN[state][k] ? 1 : 0
       if (t <= 0) return now
       const next = TURN[state + 1][k] ? 1 : 0
-      return Math.max(now * (1 - band(t, 0, 0.14)), next * band(t, 0.86, 1))
+      return Math.max(now * (1 - band(t, 0, 0.08)), next * band(t, 0.92, 1))
     }
     /** How folded the legs are: sitting at a seated step, standing up to walk, sitting down on arrival. */
     const foldAt = (state: number, t: number, d: number) => {
@@ -206,8 +210,8 @@ export function initDay() {
       return SEATED[state] ? 1 : 0
     }
 
-    /** Legs and a waddle. `fold` shortens the shins for sitting (0 standing, 1 seated). */
-    const pose = (legs: ReturnType<typeof legsOf>, body: SVGGElement, ph: number, a: number, fold = 0, dangle = 0) => {
+    /** Legs and a waddle. `fold` shortens the shins for sitting (0 standing, 1 seated); `lean` tips the body on its feet, `rise` lifts it. */
+    const pose = (legs: ReturnType<typeof legsOf>, body: SVGGElement, ph: number, a: number, fold = 0, dangle = 0, lean = 0, rise = 0) => {
       const sw = Math.sin(2 * ph) * 24 * a + dangle
       const sy = lerp(1, SEAT_LEGS, fold)
       const swing = [sw, -sw * (dangle ? 0.8 : 1)]
@@ -216,7 +220,7 @@ export function initDay() {
         l.shin.setAttribute('transform', `translate(0 248) scale(1 ${sy.toFixed(3)}) translate(0 -248)`)
         l.shoe.setAttribute('transform', `translate(0 ${(-(1 - sy) * 54).toFixed(2)})`)
       })
-      body.setAttribute('transform', `translate(0 ${(-Math.abs(Math.cos(2 * ph)) * 6 * a).toFixed(2)}) rotate(${(Math.sin(2 * ph) * 3 * a).toFixed(2)} 100 316)`)
+      body.setAttribute('transform', `translate(0 ${(-Math.abs(Math.cos(2 * ph)) * 6 * a - rise).toFixed(2)}) rotate(${(Math.sin(2 * ph) * 3 * a + lean).toFixed(2)} 100 316)`)
     }
 
     /**
@@ -234,7 +238,7 @@ export function initDay() {
       walker.dataset.hatch = popped ? 'popped' : 'whole'
       steps[5].classList.toggle('is-popped', popped)
       // "it works!" is written once the hat has come down, not under the flying shell
-      steps[5].classList.toggle('is-landed', d >= 0.74)
+      steps[5].classList.toggle('is-landed', d >= 0.6)
       cast.dataset.cheer = String(popped)
       // squash and stretch as it comes out: 0.9 → 1.12 → 1
       const s1 = band(d, POP, 0.48)
@@ -256,7 +260,7 @@ export function initDay() {
       hero.top.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) translate(100 178) rotate(${r.toFixed(1)}) scale(${s.toFixed(3)}) translate(-100 -178)`)
       // everything it carried today bursts out with the shell, past the arch like the poster
       hero.burst.forEach((g, i) => {
-        const b = band(d, POP + i * 0.012, 0.9)
+        const b = band(d, POP + i * 0.012, 0.7)
         if (b <= 0.02 || b >= 1) return g.setAttribute('opacity', '0')
         const o = BURST[i]
         const ang = (o.a * Math.PI) / 180
@@ -267,7 +271,7 @@ export function initDay() {
         const by = Math.min(fall, 306)
         const spin = (i % 2 ? 1 : -1) * 260 * b
         g.setAttribute('transform', `translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${spin.toFixed(1)}) scale(${(0.7 + 0.3 * Math.min(1, b * 3)).toFixed(2)})`)
-        g.setAttribute('opacity', (b < 0.6 ? 1 : 1 - (b - 0.6) / 0.4).toFixed(2))
+        g.setAttribute('opacity', (b < 0.5 ? 1 : 1 - (b - 0.5) / 0.5).toFixed(2))
       })
     }
     const settled = () => {
@@ -369,6 +373,8 @@ export function initDay() {
         a = p > 0 && p < 1 ? 1 : 0
       }
       if (door) door.style.opacity = inDoor && band(d, OPEN, IN) < 0.06 ? '1' : '0'
+      // the nest's wall is in front of them from the top of the hop in to the top of the hop out
+      if (rim) rim.style.opacity = (state === NEST && t < 0.175) || (state === NEST - 1 && t > 0.775) ? '1' : '0'
       // hatched, it stands taller: up on the pop, back to size on the way off stage
       if (state === 5) sc = t > 0 ? lerp(HATCH_S, 1, easeInOut(band(t, 0, 0.5))) : lerp(1, HATCH_S, easeOut(band(d, POP, POP + 0.14)))
 
@@ -380,7 +386,7 @@ export function initDay() {
         a = home > 0 && home < 1 ? 1 : 0
         if (a) dangle = 0
         section.style.setProperty('--out', band(d, 0.58, 0.98).toFixed(3))
-        section.dataset.end = String(d > 0.7)
+        section.dataset.end = String(d > 0.9)
         cast.dataset.cheer = String(d > 0.94)
       }
       cast.classList.toggle('is-walking', a > 0.05)
@@ -388,11 +394,29 @@ export function initDay() {
       section.dataset.walking = String(t > 0)
       const sit = state === last && t === 0 ? fold : 1
       gsap.set([walker, glow], { x: ax * u, y: -(lerp(0, liftAt(LIFT, state, t), sit) + ay) * u, scale: sc })
-      pose(hero.legs, hero.body, walked / 32, a, fold, dangle)
-      // the team walks in its own formation, falling back or passing behind the hero to reach its next spots
+      // one thing each middle stay does with its body (degrees, the team's leaning towards the hero):
+      // the three bump in the nest, the two lean in to the laptop when it works, the hero and the
+      // beanie pull the pizza apart and stand up straight for the better idea
+      const lean = [0, 0, 0]
+      let rise = 0
+      if (t === 0 && state === NEST) {
+        const bump = Math.sin(Math.PI * band(d, 0.3, 0.6))
+        lean[1] = lean[2] = 5 * bump
+        rise = 6 * bump
+      }
+      if (t === 0 && state === 3) lean[1] = lean[2] = 6 * easeOut(band(d, 0.68, 0.78))
+      if (t === 0 && state === 4) {
+        const pull = easeOut(band(d, 0.35, 0.6)) * (1 - easeOut(band(d, 0.62, 0.67)))
+        lean[0] = lean[1] = -5 * pull
+      }
+      pose(hero.legs, hero.body, walked / 32, a, fold, dangle, lean[0], rise)
+      // the team walks in its own formation, falling back or passing behind the hero to reach its next spots;
+      // turning round is a quick flip, never edge-on
       team.forEach((m, k) => {
-        gsap.set(m.svg, { x: (teamAt(state, t, k) - SLOTS[k]) * u, y: -lerp(0, liftAt(MATE_LIFT, state, t), sit) * u, scaleX: 1 - 2 * turnAt(state, t, k) })
-        pose(m.legs, m.body, walked / 32 - (k + 1) * 0.9, a, fold, dangle ? Math.sin(d * Math.PI * 7 + k + 1) * 9 : 0)
+        const turn = turnAt(state, t, k)
+        const sx = (turn > 0.5 ? -1 : 1) * Math.max(0.55, Math.abs(1 - 2 * turn))
+        gsap.set(m.svg, { x: (teamAt(state, t, k) - SLOTS[k]) * u, y: -lerp(0, liftAt(MATE_LIFT, state, t), sit) * u, scaleX: sx })
+        pose(m.legs, m.body, walked / 32 - (k + 1) * 0.9, a, fold, dangle ? Math.sin(d * Math.PI * 7 + k + 1) * 9 : 0, lean[k + 1])
       })
 
       // what it's doing: a coffee once it's in; on the bench three bubbles, a wink, then a wave goodbye

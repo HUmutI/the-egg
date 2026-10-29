@@ -126,11 +126,13 @@ const note = (step: number, o: { x: number; y: number; w: number; rot?: number; 
   // a two-line note breaks at its last space, and sizes to its longer line
   const cut = text.lastIndexOf(' ')
   const lines = o.two && cut > 0 ? [text.slice(0, cut), text.slice(cut + 1)] : [text]
-  const size = Math.min(27, o.w / (Math.max(...lines.map((l) => l.length)) * 0.44))
+  const size = Math.min(34, o.w / (Math.max(...lines.map((l) => l.length)) * 0.44))
   const c = o.c ?? P.tomato
+  // a halo in the sky's opposite, so the hand lettering reads on any sky
+  const halo = c === P.cream ? mix(P.lavDeep, I, 0.45) : P.cream
   return `
   <g class="note">
-    <text transform="rotate(${o.rot ?? -4} ${o.x} ${o.y})" font-family="${HAND}" font-size="${n(size)}" fill="${c}">${lines.map((l, i) => `<tspan x="${o.x + i * 8}" y="${n(o.y + i * size * 1.05)}">${l}</tspan>`).join('')}</text>
+    <text transform="rotate(${o.rot ?? -4} ${o.x} ${o.y})" font-family="${HAND}" font-size="${n(size)}" fill="${c}" stroke="${halo}" stroke-width="5" stroke-linejoin="round" paint-order="stroke">${lines.map((l, i) => `<tspan x="${o.x + i * 8}" y="${n(o.y + i * size * 1.05)}">${l}</tspan>`).join('')}</text>
     <path class="note__arrow" pathLength="1" d="${o.arrow}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
   </g>`
 }
@@ -172,7 +174,7 @@ const slice = (x: number, y: number, r = 0) => `
  * the hero, so it hangs between their hands).
  */
 const cheese = () => {
-  const d = 'M198 188C210 252 256 258 274 206'
+  const d = 'M198 190C222 220 252 220 274 204'
   return `<g class="cheese">${line(d, 11)}${line(d, 7, P.yolk)}</g>`
 }
 
@@ -218,7 +220,7 @@ const laptopOpen = (skin: string) => `
     <rect x="52" y="176" width="96" height="62" rx="7" fill="${SCREEN}" stroke="${I}" stroke-width="${W.prop}"/>
     <path d="M100 194c4.4 0 7.6 6.4 7.6 11.4c0 4.6-3.2 7.4-7.6 7.4s-7.6-2.8-7.6-7.4c0-5 3.2-11.4 7.6-11.4Z" fill="${P.yolk}" stroke="${I}" stroke-width="2.6"/>
     <path class="lap__glow" d="M56 176q44 -14 88 0" fill="none" stroke="${P.sky}" stroke-width="5" stroke-linecap="round" opacity=".8"/>
-    ${hand(40, 236, skin, -10)}${hand(160, 236, skin, 10)}
+    <g class="key key--l">${hand(40, 236, skin, -10)}</g><g class="key key--r">${hand(160, 236, skin, 10)}</g>
   </g>`
 
 const SWEAT = `<path d="M168 92q8 12 0 18q-8 -6 0 -18z" fill="${P.sky}" stroke="${I}" stroke-width="3"/>`
@@ -326,14 +328,14 @@ export const BURST = [
   { a: -124, x: 100, y: 60, far: 230 },
   { a: -56, x: 100, y: 60, far: 230 },
   { a: -28, x: 100, y: 60, far: 270 },
-  { a: -40, x: 150, y: 176, far: 340 },
-  { a: -12, x: 176, y: 176, far: 360 },
-  { a: 22, x: 186, y: 180, far: 320 },
-  { a: 58, x: 160, y: 182, far: 300 },
-  { a: -140, x: 50, y: 176, far: 340 },
-  { a: -168, x: 24, y: 176, far: 360 },
-  { a: 158, x: 14, y: 180, far: 320 },
-  { a: 122, x: 40, y: 182, far: 300 },
+  { a: -40, x: 150, y: 176, far: 190 },
+  { a: -12, x: 176, y: 176, far: 200 },
+  { a: 22, x: 186, y: 180, far: 180 },
+  { a: 58, x: 160, y: 182, far: 160 },
+  { a: -140, x: 50, y: 176, far: 190 },
+  { a: -168, x: 24, y: 176, far: 200 },
+  { a: 158, x: 14, y: 180, far: 180 },
+  { a: 122, x: 40, y: 182, far: 160 },
 ]
 const shard = (k: number) => {
   const s = 1.4 + (k % 3) * 0.25
@@ -367,7 +369,8 @@ export function raysSvg() {
     const r = i % 2 ? 196 : 244
     return `<path d="M${at(a - w * 0.35, 70)}L${at(a - w, r)}L${at(a + w, r)}L${at(a + w * 0.35, 70)}Z" fill="${i % 2 ? P.cream : P.yolk}"/>`
   }).join('')
-  return `<svg class="walker__svg" viewBox="-70 -150 340 480" aria-hidden="true"><g class="walker__rays" opacity="0">${wedges}</g></svg>`
+  const clip = nextId('rc')
+  return `<svg class="walker__svg" viewBox="-70 -150 340 480" aria-hidden="true"><clipPath id="${clip}"><rect x="-70" y="-150" width="340" height="466"/></clipPath><g clip-path="url(#${clip})"><g class="walker__rays" opacity="0">${wedges}</g></g></svg>`
 }
 
 /* ── the walker: every state at once, the script picks one ───────── */
@@ -610,7 +613,7 @@ function doors() {
         <circle cx="276" cy="265" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/><circle cx="316" cy="265" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
       </g>`,
     front: doorFront(),
-    note: note(0, { x: 176, y: 84, w: 150, rot: 4, arrow: 'M228 98q4 22 -16 36M212 134l2 -10M212 134l9 -4' }),
+    note: note(0, { x: 166, y: 84, w: 170, rot: 4, arrow: 'M228 98q4 22 -16 36M212 134l2 -10M212 134l9 -4' }),
   })
 }
 
@@ -624,7 +627,7 @@ function crack() {
       [0, '#b9d6ea'],
       [1, '#eaf3f2'],
     ],
-    back: '',
+    back: `${sun(86, 118, 11)}`,
     set: `
       <g class="watch" transform="translate(318 136) scale(.74)">
         <rect x="-7" y="-52" width="14" height="10" rx="3" fill="#cfc8d6" stroke="${I}" stroke-width="${L}"/>
@@ -660,7 +663,7 @@ function crack() {
  * The nest's front wall: a deep bowl of woven twigs. It stands in front of
  * the three, so they sit down in it up to their middles.
  */
-const nestFront = () => {
+const nestFront = (twigs = true) => {
   const weave = Array.from({ length: 13 }, (_, i) => {
     const x = 70 + i * 21
     const y = 226 + (i % 3) * 11 + (i % 2) * 4
@@ -672,7 +675,7 @@ const nestFront = () => {
       ${weave}
       <path d="M66 212Q200 234 334 212" fill="none" stroke="${TWIG_DEEP}" stroke-width="2.2" stroke-linecap="round"/>
       <path d="M60 204Q200 224 340 204" fill="none" stroke="${I}" stroke-width="${L}" stroke-linecap="round"/>
-      ${line('M62 206l-14 -10M70 214l-16 2M338 206l14 -12M332 214l18 0', 2.4, TWIG_DEEP)}
+      ${twigs ? line('M62 206l-14 -10M70 214l-16 2M338 206l14 -12M332 214l18 0', 2.4, TWIG_DEEP) : ''}
     </g>`
 }
 
@@ -700,7 +703,7 @@ function nest() {
         <path d="M250 114c-4 -6 -13 -1 -9 6l9 9l9 -9c4 -7 -5 -12 -9 -6z" fill="${P.pink}" stroke="${I}" stroke-width="2"/>
       </g>`,
     front: nestFront(),
-    note: note(2, { x: 68, y: 102, w: 134, rot: -4, arrow: 'M150 110q24 4 32 28M182 138l-9 -5M182 138l1 -10' }),
+    note: note(2, { x: 60, y: 102, w: 148, rot: -4, arrow: 'M150 110q24 4 32 28M182 138l-9 -5M182 138l1 -10' }),
   })
 }
 
@@ -715,9 +718,9 @@ function incubate() {
     <g class="proto proto--3">${line('M86 174v-12', 2)}<circle cx="86" cy="160" r="3.6" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/></g>`
   // a mentor with snacks and opinions, leaning in over the three
   const mentor = stand(
-    334,
+    336,
     FLOOR,
-    0.32,
+    0.26,
     `${legs()}${eggBody({ fill: SHELL.tan })}${face({ eyes: 'dot', mouth: 'smirk', look: [-9, 2], brows: 'one' })}
      <g fill="${P.sky}" fill-opacity=".38" stroke="${I}" stroke-width="${W.prop}"><rect x="56" y="119" width="34" height="28" rx="10"/><rect x="98" y="119" width="34" height="28" rx="10"/></g>
      ${line('M90 131q4 -4 8 0', W.fine)}
@@ -750,13 +753,13 @@ function incubate() {
       <path d="M36 216h78v8h-78z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
       ${line('M44 224v46M106 224v46', L)}
       ${cups}${proto}
-      <g class="mentor"><g transform="rotate(-9 334 270)">${mentor}</g></g>
-      <g transform="translate(336 160)"><g class="mentor__say">
+      <g class="mentor"><g transform="rotate(-9 336 270)">${mentor}</g></g>
+      <g transform="translate(332 176)"><g class="mentor__say">
         <path d="M-15 -12h30a6 6 0 0 1 6 6v12a6 6 0 0 1 -6 6h-14l-8 8l1 -8h-9a6 6 0 0 1 -6 -6v-12a6 6 0 0 1 6 -6z" fill="${P.cream}" stroke="${I}" stroke-width="2"/>
         <text y="5" text-anchor="middle" font-family="${MONO}" font-size="13" font-weight="500" fill="${I}">!?</text>
       </g></g>
       ${stool(142)}${stool(200)}${stool(258)}`,
-    note: note(3, { x: 62, y: 106, w: 104, rot: -5, arrow: 'M100 114q12 20 -6 42M94 156l-1 -10M94 156l9 -5' }),
+    note: note(3, { x: 58, y: 104, w: 140, rot: -5, arrow: 'M104 114q12 16 -6 32M98 146l-1 -10M98 146l9 -5' }),
   })
 }
 
@@ -769,7 +772,7 @@ function pizza() {
       [1, '#f9dcb6'],
     ],
     back: `
-      <g class="sc-sunset">${sun(46, 150, 15)}</g>
+      <g class="sc-sunset">${sun(100, 140, 15)}</g>
       ${cloud(112, 102, 0.7)}
       <path d="M34 252q80 -12 166 -4t166 0V270H34Z" fill="${mix(P.peachDeep, '#f4b56a', 0.3)}" opacity=".6"/>`,
     set: `
@@ -795,7 +798,7 @@ function pizza() {
         <path d="M226 260h74l4 10h-82z" fill="${mix(P.cream, WOOD, 0.25)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
         <g class="steam">${line('M254 198q-5 -7 0 -14q5 -7 0 -14', 2)}${line('M270 194q-5 -7 0 -14', 2)}</g>
       </g>`,
-    note: note(4, { x: 236, y: 112, w: 112, rot: 4, c: I, arrow: 'M282 126q-8 34 -18 62M264 188l-2 -10M264 188l8 -6' }),
+    note: note(4, { x: 226, y: 112, w: 124, rot: 4, c: I, arrow: 'M282 126q-8 34 -18 62M264 188l-2 -10M264 188l8 -6' }),
   })
 }
 
@@ -852,7 +855,7 @@ function hatch() {
       </g>
       <path d="M136 248h230v22h-230z" fill="${mix(P.lavDeep, I, 0.35)}" stroke="${I}" stroke-width="${L}"/>
       ${line('M144 256h214', 1.4, mix(P.lavDeep, '#ffffff', 0.25))}`,
-    note: note(5, { x: 274, y: 128, w: 80, rot: -4, c: P.cream, two: true, arrow: 'M276 158q-6 12 -18 16M258 174l9 1M258 174l4 -8' }),
+    note: note(5, { x: 268, y: 130, w: 88, rot: -4, c: P.cream, two: true, arrow: 'M274 160q-6 12 -18 16M256 176l9 1M256 176l4 -8' }),
   })
 }
 
@@ -932,7 +935,7 @@ export const sceneMarkup = (i: number) => SCENES[i]?.() ?? ''
 /** What stands in front of the cast, by step: the door frame, the nest's front wall. */
 const FRONTS: [number, () => string][] = [
   [0, doorFront],
-  [2, nestFront],
+  [2, () => nestFront(false)],
 ]
 /**
  * The fronts again, as overlays for the walking cast on wide screens: each
