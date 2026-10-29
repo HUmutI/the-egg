@@ -20,15 +20,34 @@ colours as you scroll, and the club clock in the nav goes from noon to past midn
 | Where | What | Code |
 | --- | --- | --- |
 | Hero | The finished illustration in `public/hero/` with hand-drawn notes on top (`#doodles`), a magazine-style masthead, the apply button with the essentials under it (free · every other Sunday · noon to midnight · METU) plus the next date from the app, and a slow "Built with love by people from…" logo strip (`public/logos/`) | `src/hero.ts`, `src/next.ts` |
-| Background + clock | Section colours (`data-bg`) and the scroll-driven clock | `src/sky.ts` |
+| Background + clock | Section colours (`data-bg`, painted through `--page` so the nav's backdrop band drifts with them) and the scroll-driven clock: the day section runs noon to 23:00, the rest of the page is the afterglow, midnight is the footer | `src/sky.ts` |
+| Live badge | The small egg in the corner that links to the commits; it says its line once, then on hover/focus, and steps aside while you scroll, over the hero's logos, the footer and the arcade | `src/badge.ts` |
 | What / Who comes / Why | "Who comes": a typeset guest list of disciplines, each with a one-line caption on hover/tap; hand-drawn strikethroughs | `src/story.ts` |
-| The day | Pinned horizontal timeline; an egg waddles along a ruler and hatches at 21:30 demos | `src/day.ts` |
-| Who shows up | A specimen plate of egg figures; pull one and it springs back, hover/tap for its quote | `src/flock.ts` |
+| The day | Pinned horizontal timeline on wide screens, a vertical rail below 900px; an egg in red sneakers walks the ruler and hatches the golden egg at 21:30 demos | `src/day.ts` |
+| Who shows up | A specimen plate of egg characters (the night-owl engineer, the designer, the hardware person…, and the dashed "you?"); pull one and it springs back, hover/tap for its quote | `src/flock.ts`, `src/figures.ts` |
 | Good questions | The FAQ: native `<details>` disclosures (cost, who can come, what to bring, where, language, food, selection, friends…) | markup only, `src/styles/story.css` |
 | Join | A ticket for the next Sunday, the apply button, what happens after you apply, and a bring-a-friend share (native share sheet, else WhatsApp; copy link). Applications live on app.the-egg.club | `src/next.ts`, `src/share.ts` |
-| Footer → game | Keep scrolling past the footer and the night opens into the arcade cabinet running **Night Shift** (scroll-driven, no scroll-jacking); the footer's "keep scrolling" note glides you there | `src/portal.ts`, `src/nightshift.ts` |
+| Footer → game | The rooftop over Ankara at night (`public/footer/`: the castle, Kocatepe, Atakule, Anıtkabir). Keep scrolling and the arcade cabinet running **Night Shift** rises out of the night (scroll-driven, no scroll-jacking); the footer's "keep scrolling" note glides you there | `src/portal.ts`, `src/nightshift.ts` |
 
 Everything respects `prefers-reduced-motion`.
+
+### Eggs and the brand mark
+
+Every egg on the page comes from one SVG character kit in `src/ink.ts`: the
+body (eggshell fills, soft shade, highlight, one ink weight), a face kit (eyes,
+mouths, blush) and shared hands. `src/figures.ts` dresses the plate's
+characters; the day walker and the statement's chips use the same family. The
+brand mark is the hero's golden egg with two dot eyes: the nav logo,
+the live badge, `public/favicon.svg`/`favicon.ico` and `public/icons/*`
+(apple-touch, 192, 512, maskable).
+
+### Sharing
+
+Link previews use `public/og/the-egg-club-og.jpg` (1200×630, small enough for
+WhatsApp); `public/og/the-egg-club-og-tr.jpg` is ready for a Turkish URL. The
+`<head>` also carries the manifest (`public/site.webmanifest`), JSON-LD for the
+club and its recurring Sunday, and a non-blocking Silkscreen load for the game.
+Unknown paths get the standalone `public/404.html`.
 
 ### The next Sunday
 

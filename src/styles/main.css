@@ -2330,7 +2330,7 @@ html:not(.js) .rule__fix,
 
 /* ── JOIN ────────────────────────────────────────────────────── */
 
-/* One line and the button: everything else lives on app.the-egg.club. */
+/* The close: ticket, steps and bring-a-friend live in story.css. */
 .join {
   display: flex;
   flex-direction: column;
@@ -2343,27 +2343,8 @@ html:not(.js) .rule__fix,
 .join .label {
   color: var(--ink);
 }
-.join__sub {
-  margin-top: 18px;
-  max-width: 30ch;
-  font-size: clamp(28px, 3.4vw, 52px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-}
 .join__btn {
   margin-top: 32px;
-}
-.join__next {
-  display: inline-block;
-  margin-top: 18px;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.join__next[hidden] {
-  display: none;
 }
 
 /* ── FOOTER + ARCADE ─────────────────────────────────────────── */
@@ -2833,6 +2814,16 @@ body.is-arcade .nav > * {
   color: var(--cream);
   text-shadow: 0 1px 0 #000;
   pointer-events: none;
+}
+/* the sides stay on one line; only the middle message may wrap, centred,
+   so a long Turkish label never drops onto the room's sign */
+.screen__hud > span {
+  white-space: nowrap;
+}
+.screen__hud > span:nth-child(2) {
+  white-space: normal;
+  text-align: center;
+  padding: 0 0.8em;
 }
 .screen__hud b {
   color: var(--yolk);

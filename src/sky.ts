@@ -90,7 +90,8 @@ export function initSky() {
       [0, 11 * 60 + 40],
       [Math.max(1, clockState.dayStart), 12 * 60],
       [clockState.dayEnd, 23 * 60 + 10],
-      [footTop, 24 * 60 + 30],
+      // rules, questions and the carton share the afterglow; midnight is the footer
+      [footTop, 23 * 60 + 58],
       [max, 24 * 60 + 59],
     ]
     for (let i = 0; i < keys.length - 1; i++) {
