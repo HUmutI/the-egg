@@ -20,20 +20,39 @@
   --sky: #d0e0ea;
   --tomato: #e2432a;
   --ink: #1f1722;
-  --ink-2: rgba(31, 23, 34, 0.64);
+  /* quiet text: 0.72 keeps it soft but ≥ 4.5:1 on every day colour, yolk included */
+  --ink-2: rgba(31, 23, 34, 0.72);
   --ink-3: rgba(31, 23, 34, 0.2);
   --night: #221624;
 
   --bg: var(--butter);
   --fg: var(--ink);
+  /* the current sky colour; sky.ts moves it through the day */
+  --page: var(--bg);
 
   --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --f-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
   --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --f-hand: 'Reenie Beanie', 'Bradley Hand', cursive;
 
-  --gut: clamp(16px, 4vw, 56px);
+  /* notch and home bar (only non-zero with viewport-fit=cover) */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+
+  --gut: max(clamp(16px, 4vw, 56px), var(--safe-l), var(--safe-r));
   --nav-h: 72px;
+  /* the nav's real footprint: its bar plus any notch above it */
+  --nav-top: calc(var(--nav-h) + var(--safe-t));
+
+  /* one spacing rhythm for every section: a new <section> gets the
+     standard padding; scenes that own a whole screen opt out */
+  --sec-y: clamp(80px, 9vw, 150px);
+  --sec-y-tight: clamp(56px, 6vw, 104px);
+  --sec-head: clamp(28px, 4vw, 56px);
+
+  --focus: var(--ink);
   --line: 1.5px;
   --radius: 22px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -50,12 +69,12 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  scroll-padding-top: calc(var(--nav-top) + 8px);
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--page);
   color: var(--fg);
   font-family: var(--f-sans);
   font-size: clamp(16px, 1.15vw, 18px);
@@ -91,10 +110,24 @@ p {
   color: var(--ink);
 }
 
+/* one focus ring everywhere: ink on the day's paper, yolk once it's night
+   (tomato fell under 3:1 on lavender, pink and yolk) */
 :focus-visible {
-  outline: 3px solid var(--tomato);
+  outline: 2.5px solid var(--focus);
   outline-offset: 3px;
   border-radius: 6px;
+}
+.foot,
+.stage,
+body.is-night {
+  --focus: var(--yolk);
+}
+
+@media (hover: none) {
+  a,
+  button {
+    -webkit-tap-highlight-color: rgba(244, 181, 42, 0.28);
+  }
 }
 
 .defs {
@@ -126,7 +159,7 @@ p {
   transition: top 0.2s;
 }
 .skip:focus {
-  top: 12px;
+  top: calc(12px + var(--safe-t));
 }
 
 /* ── type primitives ─────────────────────────────────────────── */
@@ -179,7 +212,7 @@ body::after {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: clamp(28px, 4vw, 56px);
+  margin-bottom: var(--sec-head);
   color: var(--ink-2);
 }
 .label span {
@@ -848,7 +881,7 @@ html:not(.js) .hero__art img {
 
 section {
   position: relative;
-  padding: clamp(80px, 9vw, 150px) var(--gut);
+  padding: var(--sec-y) var(--gut);
 }
 
 h2 {
@@ -984,7 +1017,7 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: calc(var(--nav-h) + 24px) 0 clamp(48px, 8vh, 96px);
+  padding: calc(var(--nav-top) + 24px) 0 clamp(48px, 8vh, 96px);
 }
 .who__head {
   padding-top: clamp(20px, 2vw, 28px);
@@ -1754,7 +1787,7 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: calc(var(--nav-h) + 24px);
+  padding-top: calc(var(--nav-top) + 24px);
   padding-bottom: clamp(40px, 6vh, 72px);
 }
 .rules .label {
