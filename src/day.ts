@@ -1,8 +1,25 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, clamp, clockState, lerp } from './util'
+import { $, $$, PALETTE, clamp, clockState, lerp } from './util'
 import { mix } from './ink'
-import { BURST, HAT, LIFT, MARK, MATE_LIFT, SEATED, SEAT_LEGS, mateSvg, renderScenes, walkerSvg } from './dayscenes'
+import {
+  BURST,
+  DOOR,
+  HAT,
+  HATCH_S,
+  LIFT,
+  MARK,
+  MATE_LIFT,
+  SEATED,
+  SEAT_LEGS,
+  SLOTS,
+  TEAM,
+  TURN,
+  frontOverlays,
+  mateSvg,
+  renderScenes,
+  walkerSvg,
+} from './dayscenes'
 
 const toMin = (s: string) => {
   const [h, m] = s.split(':').map(Number)
@@ -22,10 +39,18 @@ const afternoonAt = (u: number) => (u < 0.5 ? mix(AFTERNOON[0], AFTERNOON[1], u 
 /** Each step: a short walk to the next window, then a longer stay while its moment plays. */
 const WALK = 0.42
 const DWELL = 0.58
-/** Hatch is the poster moment and the walk home is the ending: both stay longer. */
-const STAY = [1, 1, 1, 1, 1, 1.7, 1.6]
+/** The arrival, the hatch (the poster moment) and the walk home (the ending) stay longer. */
+const STAY = [1.5, 1, 1, 1, 1, 1.7, 1.6]
 /** When the two on Crack's bench get up and join (through Crack's stay). */
 const JOIN = 0.82
+/** The nest: they hop in over its rim, and out again. */
+const NEST = 2
+/** Through the Doors stay: the door opens, it steps out of the doorway, it takes a coffee. */
+const OPEN = 0.3
+const IN = 0.62
+const COFFEE = 0.72
+/** The hatch's pop, through its stay. */
+const POP = 0.42
 
 const easeOut = (t: number) => 1 - (1 - t) * (1 - t)
 const easeIn = (t: number) => t * t
@@ -42,20 +67,23 @@ export function renderDay() {
   fill('walker', walkerSvg)
   fill('mateA', () => mateSvg('beanie'))
   fill('mateB', () => mateSvg('cap'))
+  fill('dayFronts', frontOverlays)
 }
 
 /**
  * "A day at the club": seven windows from 10:30 to 20:00. On wide screens the
  * section pins and the scroll plays the day as a story: our egg walks to the
  * middle of each window and stays while that hour happens — the door opens
- * and it takes a coffee; it pitches from a crate against a stopwatch until
- * the two on the bench hop down and fall in behind it; the three settle into
- * a nest as a flag goes up; the afternoon spins by at the workbench as the
- * build grows; pizza and a better idea arrive; on stage it wobbles, pops and
- * bursts out everything it carried that day; then the three sit down to the
- * group chat, get up and walk off past the darkening windows to the way to
- * apply. On phones (and with reduced motion) it's a picture book read top to
- * bottom, the cast drawn into every scene.
+ * on it standing in the doorway, it steps in and takes a coffee; it pitches
+ * from a crate against a stopwatch until the two on the bench hop down and
+ * fall in behind it; the three sit down in a nest as their flag goes up;
+ * they huddle round one laptop while the afternoon spins by and a mentor
+ * leans in; they pull a pizza apart as a better idea arrives; on stage it
+ * wobbles, pops and bursts out everything it carried that day while the
+ * other two cheer below; then the three sit down to the group chat, get up
+ * and walk off to the metro as the club's windows go dark and the city's
+ * come on. On phones (and with reduced motion) it's a picture book read top
+ * to bottom, the cast drawn into every scene.
  */
 export function initDay() {
   const section = $('#day')
@@ -102,9 +130,14 @@ export function initDay() {
     const clockH = q<SVGGElement>(incubate, '.clock__h')
     const clockM = q<SVGGElement>(incubate, '.clock__m')
     const noonSky = q<SVGStopElement>(incubate, '.sky-stop--0')
+    // the door frame and the nest's front wall, laid over the cast
+    const fronts = $$<SVGSVGElement>('.day__front', cast).map((el) => ({ el, i: Number(el.dataset.step) }))
+    const door = fronts.find((f) => f.i === 0)?.el
 
-    // GSAP owns the cast's centring, so its own x/y tweens never fight a CSS translate
+    // GSAP owns the cast's centring, so its own x/y tweens never fight a CSS translate;
+    // they scale and turn round on their feet (y 316 of the -150…330 view box)
     gsap.set([walker, ...mates], { xPercent: -50, yPercent: 2.92 })
+    gsap.set([walker, ...team.map((m) => m.svg)], { transformOrigin: '50% 97.08%' })
 
     // geometry, read fresh on every frame so a resize never goes stale
     const unit = () => (track.querySelector('.step__scene svg')?.getBoundingClientRect().width ?? 400) / 400
@@ -114,8 +147,8 @@ export function initDay() {
       return lerp(markX(i), markX(Math.min(i + 1, steps.length - 1)), pos - i)
     }
     const eggX = () => walker.offsetLeft
-    // at the end the camera follows the three right, until the note and the button sit beside them
-    const homeward = () => outro.offsetLeft - 0.16 * steps[0].offsetWidth - markX(steps.length - 1)
+    // at the end the camera follows the three out of the last window to the metro sign, x 144 of the way home
+    const homeward = () => outro.offsetLeft + 0.36 * steps[0].offsetWidth - markX(steps.length - 1)
 
     // the cast stands on the scenes' floor: y 270 of each 300-tall scene
     const place = () => {
@@ -136,14 +169,26 @@ export function initDay() {
     }
     tl.to({}, { duration: 0.3 }) // a breath before the section lets go
 
-    /** Hop between what they stand or sit on: down at the start of a walk, up at the end, in a small arc. */
+    /** Hop between what they stand or sit on, and over the nest's rim: down at the start of a walk, up at the end, in a small arc. */
     const liftAt = (lifts: number[], state: number, t: number) => {
       if (t <= 0) return lifts[state]
       const from = lifts[state]
       const to = lifts[state + 1] ?? 0
-      if (t < 0.2) return lerp(from, 0, easeOut(t / 0.2)) + (from > 4 ? Math.sin((Math.PI * t) / 0.2) * 10 : 0)
-      if (t > 0.8) return lerp(0, to, easeIn((t - 0.8) / 0.2)) + (to > 4 ? Math.sin((Math.PI * (t - 0.8)) / 0.2) * 14 : 0)
+      const off = from > 4 ? 10 : state === NEST ? 18 : 0
+      const on = to > 4 ? 14 : state + 1 === NEST ? 18 : 0
+      if (t < 0.2) return lerp(from, 0, easeOut(t / 0.2)) + Math.sin((Math.PI * t) / 0.2) * off
+      if (t > 0.8) return lerp(0, to, easeIn((t - 0.8) / 0.2)) + Math.sin((Math.PI * (t - 0.8)) / 0.2) * on
       return 0
+    }
+    /** Where a teammate stands in its window, moving into the next window's spot over the walk. */
+    const teamAt = (state: number, t: number, k: number) =>
+      t > 0 ? lerp(TEAM[state][k], TEAM[state + 1][k], easeInOut(t)) : TEAM[state][k]
+    /** How far round it has turned to face the hero: 1 facing it (mirrored), through edge-on, to 0 for the walk. */
+    const turnAt = (state: number, t: number, k: number) => {
+      const now = TURN[state][k] ? 1 : 0
+      if (t <= 0) return now
+      const next = TURN[state + 1][k] ? 1 : 0
+      return Math.max(now * (1 - band(t, 0, 0.14)), next * band(t, 0.86, 1))
     }
     /** How folded the legs are: sitting at a seated step, standing up to walk, sitting down on arrival. */
     const foldAt = (state: number, t: number, d: number) => {
@@ -171,22 +216,22 @@ export function initDay() {
     const hatchAt = (d: number) => {
       const wob = band(d, 0.05, 0.32)
       const rot = wob > 0 && wob < 1 ? Math.sin(wob * Math.PI * 6) * 6 * (0.6 + 0.4 * wob) : 0
-      const c = band(d, 0.32, 0.42)
+      const c = band(d, 0.32, POP)
       hero.whole.setAttribute('transform', `rotate(${rot.toFixed(2)} 100 262) translate(100 262) scale(1 ${(1 - 0.07 * c).toFixed(3)}) translate(-100 -262)`)
-      const popped = d >= 0.42
+      const popped = d >= POP
       walker.dataset.hatch = popped ? 'popped' : 'whole'
       steps[5].classList.toggle('is-popped', popped)
       cast.dataset.cheer = String(popped)
       // squash and stretch as it comes out: 0.9 → 1.12 → 1
-      const s1 = band(d, 0.42, 0.48)
+      const s1 = band(d, POP, 0.48)
       const s2 = band(d, 0.48, 0.58)
       const sy = !popped ? 1 : s2 > 0 ? lerp(1.12, 1, easeOut(s2)) : lerp(0.9, 1.12, easeOut(s1))
       hero.golden.setAttribute('transform', `translate(100 262) scale(${(2 - sy).toFixed(3)} ${sy.toFixed(3)}) translate(-100 -262)`)
-      const flare = band(d, 0.42, 0.7)
+      const flare = band(d, POP, 0.7)
       hero.rays.setAttribute('opacity', (flare > 0 && flare < 1 ? 1 - flare : 0).toFixed(2))
       hero.rays.setAttribute('transform', `translate(100 150) scale(${(0.6 + 0.8 * easeOut(flare)).toFixed(3)}) translate(-100 -150)`)
       // the cap: kicked off on the pop, up and spinning, then down onto the head
-      const u = band(d, 0.42, 0.8)
+      const u = band(d, POP, 0.8)
       const k1 = easeOut(Math.min(u / 0.4, 1))
       const k2 = easeIn(Math.max((u - 0.4) / 0.6, 0))
       const kick = popped ? 60 : 0
@@ -197,7 +242,7 @@ export function initDay() {
       hero.top.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) translate(100 178) rotate(${r.toFixed(1)}) scale(${s.toFixed(3)}) translate(-100 -178)`)
       // everything it carried today bursts out with the shell, past the arch like the poster
       hero.burst.forEach((g, i) => {
-        const b = band(d, 0.42 + i * 0.012, 0.9)
+        const b = band(d, POP + i * 0.012, 0.9)
         if (b <= 0.02 || b >= 1) return g.setAttribute('opacity', '0')
         const o = BURST[i]
         const ang = (o.a * Math.PI) / 180
@@ -283,12 +328,36 @@ export function initDay() {
 
       // the camera keeps the egg's window in the middle, and at the end follows the three home
       const home = state === last && t === 0 ? easeInOut(band(d, 0.56, 0.95)) : 0
-      gsap.set(track, { x: eggX() - markAt(story.pos) - home * homeward() })
+      const trackX = eggX() - markAt(story.pos) - home * homeward()
+      gsap.set(track, { x: trackX })
+      // what stands in front of the cast rides along with its window, and swings with it
+      fronts.forEach((f) => {
+        gsap.set(f.el, { x: trackX + steps[f.i].offsetLeft })
+        f.el.style.setProperty('--d', steps[f.i].style.getPropertyValue('--d'))
+      })
 
-      // the walk: legs and a waddle only while moving, a small hop onto crates, nests, stools and benches
-      const walked = markAt(story.pos) - markX(0) + home * homeward()
-      const fold = foldAt(state, t, d)
+      // the arrival: the door opens on it standing in the doorway (framed, a step back);
+      // it steps out in front of the door and walks to its mark
+      let ax = 0
+      let ay = 0
+      let sc = 1
       let a = Math.sin(Math.PI * t)
+      const inDoor = state === 0 && t === 0
+      if (inDoor) {
+        const p = band(d, OPEN, IN)
+        const out = easeOut(Math.min(p / 0.3, 1))
+        ax = lerp(DOOR.x - MARK, 0, easeInOut(p))
+        ay = lerp(270 - DOOR.feet, 0, out)
+        sc = lerp(DOOR.s, 1, out)
+        a = p > 0 && p < 1 ? 1 : 0
+      }
+      if (door) door.style.opacity = inDoor && band(d, OPEN, IN) < 0.06 ? '1' : '0'
+      // hatched, it stands taller: up on the pop, back to size on the way off stage
+      if (state === 5) sc = t > 0 ? lerp(HATCH_S, 1, easeInOut(band(t, 0, 0.5))) : lerp(1, HATCH_S, easeOut(band(d, POP, POP + 0.14)))
+
+      // the walk: legs and a waddle only while moving, a small hop onto crates, stools, the stage and benches, and into the nest
+      const walked = markAt(story.pos) - markX(0) + home * homeward() + ax * u
+      const fold = foldAt(state, t, d)
       let dangle = fold > 0.6 && t === 0 ? Math.sin(d * Math.PI * 7) * 9 : 0
       if (state === last && t === 0) {
         a = home > 0 && home < 1 ? 1 : 0
@@ -298,30 +367,40 @@ export function initDay() {
         cast.dataset.cheer = String(d > 0.94)
       }
       cast.classList.toggle('is-walking', a > 0.05)
-      gsap.set(walker, { y: -lerp(0, liftAt(LIFT, state, t), state === last && t === 0 ? fold : 1) * u })
+      const sit = state === last && t === 0 ? fold : 1
+      gsap.set(walker, { x: ax * u, y: -(lerp(0, liftAt(LIFT, state, t), sit) + ay) * u, scale: sc })
       pose(hero.legs, hero.body, walked / 32, a, fold, dangle)
+      // the team walks in its own formation, falling back or passing behind the hero to reach its next spots
       team.forEach((m, k) => {
-        gsap.set(m.svg, { y: -lerp(0, liftAt(MATE_LIFT, state, t), state === last && t === 0 ? fold : 1) * u })
+        gsap.set(m.svg, { x: (teamAt(state, t, k) - SLOTS[k]) * u, y: -lerp(0, liftAt(MATE_LIFT, state, t), sit) * u, scaleX: 1 - 2 * turnAt(state, t, k) })
         pose(m.legs, m.body, walked / 32 - (k + 1) * 0.9, a, fold, dangle ? Math.sin(d * Math.PI * 7 + k + 1) * 9 : 0)
       })
 
-      // what it's doing: the coffee partway into Doors; on the bench three bubbles, a wink, then a wave goodbye
+      // what it's doing: a coffee once it's in; on the bench three bubbles, a wink, then a wave goodbye
       walker.dataset.beat = String(
-        state === last && t === 0
-          ? d < 0.1
-            ? 0
-            : d < 0.2
-              ? 1
-              : d < 0.3
-                ? 2
-                : d < 0.4
-                  ? 3
-                  : d < 0.94
-                    ? 4
-                    : 5
-          : Math.min(4, Math.floor((t > 0 ? 1 : d) * 5)),
+        t > 0
+          ? 4
+          : state === 0
+            ? d < COFFEE
+              ? 0
+              : 3
+            : state === last
+              ? d < 0.1
+                ? 0
+                : d < 0.2
+                  ? 1
+                  : d < 0.3
+                    ? 2
+                    : d < 0.4
+                      ? 3
+                      : d < 0.94
+                        ? 4
+                        : 5
+              : Math.min(4, Math.floor(d * 5)),
       )
       if (state === 5) hatchAt(t > 0 ? 1 : d)
+      // the cheering stops when they walk off stage
+      if (state === 5 && t > 0) cast.dataset.cheer = 'false'
 
       // the clock: each stay runs most of its hour, the walk finishes it; it stops at lights out
       const span = times[state + 1] - times[state]
@@ -334,8 +413,9 @@ export function initDay() {
       const noon = state > 3 ? 1 : state === 3 ? (t > 0 ? 1 : d) : 0
       noonSky.setAttribute('stop-color', afternoonAt(noon))
 
-      // the page drifts through the day with it
-      const sky = skyAt(state + t)
+      // the page drifts through the day with it, and flashes cream on the pop
+      let sky = skyAt(state + t)
+      if (state === 5 && t === 0 && d >= POP) sky = mix(sky, PALETTE.cream, 0.9 * (1 - easeOut(band(d, POP, POP + 0.18))))
       section.dataset.sky = sky
       if (root.dataset.sky === 'day') gsap.set(root, { '--page': sky })
     }
@@ -365,7 +445,7 @@ export function initDay() {
       clockState.dayMinutes = null
       current = -1
       joined = false
-      gsap.set([track, walker, cast, ...team.map((m) => m.svg)], { clearProps: 'transform,opacity' })
+      gsap.set([track, walker, cast, ...team.map((m) => m.svg), ...fronts.map((f) => f.el)], { clearProps: 'transform,opacity' })
       team.forEach((m) => (gsap.killTweensOf(m.el), gsap.set(m.el, { clearProps: 'all' })))
       ;[...hero.legs, hero.body, hero.whole, hero.top, hero.golden, ...team.flatMap((m) => [...m.legs, m.body])].forEach((g) => g.removeAttribute('transform'))
       section.style.removeProperty('--out')

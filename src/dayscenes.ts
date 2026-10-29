@@ -12,9 +12,12 @@ import { I, SHELL, W, eggBody, face, hand, ink, mix, nextId } from './ink'
  *
  * Scenes live on a 400 × 300 stage; the floor is y = 270 everywhere, so the
  * windows join into one building. The hero stands at x = MARK in every
- * window, its team at SLOTS behind it, so sets keep the middle of the floor
- * clear and put their props to the sides or up in the sky. Each scene keeps
+ * window and its team stands where TEAM puts it, so sets build round those
+ * spots and put their props to the sides or up in the sky. Each scene keeps
  * a clear patch of sky, at least 10 units inside the arch, for its note.
+ * What has to be in front of the cast (the door frame, the nest's front
+ * wall) is a scene's `front`: drawn over the stills, and laid over the
+ * walking cast as an overlay.
  *
  * Eggs are drawn at full kit size (centred on x 100, egg on y 262, feet on
  * y 316) and scaled into place, so their line weight scales with them.
@@ -22,17 +25,46 @@ import { I, SHELL, W, eggBody, face, hand, ink, mix, nextId } from './ink'
 
 const P = PALETTE
 const FLOOR = 270
-/** Where the hero stands in each window, and its team behind it. */
+/** Where the hero stands in each window. */
 export const MARK = 200
-export const SLOTS = [136, 72] as const
 /**
- * What each step puts under them: a crate, the nest, stools at the
- * workbench, the stage, the bench. Seated steps rest the egg on the seat
- * with the shins folded short.
+ * Where its team stands, step by step, as [beanie, cap]: behind it until
+ * Nest, then gathered round it (the beanie on its far side, turned to face
+ * it), down in front of the stage as its audience, and on the bench.
  */
-export const LIFT = [0, 34, 7, 9, 0, 22, 13]
-export const MATE_LIFT = [0, 0, 10, 12, 0, 22, 16]
-export const SEATED = [false, false, true, true, false, false, true]
+export const TEAM: [number, number][] = [
+  [136, 72],
+  [136, 72],
+  [272, 128],
+  [258, 142],
+  [320, 112],
+  [96, 44],
+  [136, 72],
+]
+/** Which of them are turned round (drawn mirrored) to face the hero. */
+export const TURN: [boolean, boolean][] = [
+  [false, false],
+  [false, false],
+  [true, false],
+  [true, false],
+  [true, false],
+  [false, false],
+  [false, false],
+]
+/** Where the page lays the team out before the script moves them (the first step's spots). */
+export const SLOTS = TEAM[0]
+/**
+ * What each step puts under them: a crate, stools round the workbench, the
+ * stage, the bench. (In the nest they stand on the floor, behind its front
+ * wall.) Seated steps rest the egg on the seat with the shins folded short.
+ */
+export const LIFT = [0, 34, 0, 9, 0, 22, 13]
+export const MATE_LIFT = [0, 0, 0, 12, 0, 0, 16]
+export const SEATED = [false, false, false, true, false, false, true]
+/** The doorway it's standing in when the doors open: smaller, a step back. */
+export const DOOR = { x: 90, feet: 266, s: 0.8 }
+/** How much bigger it stands once it has hatched: the poster moment. */
+export const HATCH_S = 1.25
 /** How long the shins look when sitting (legs fold towards you). */
 export const SEAT_LEGS = 0.5
 /** Scene scale of the eggs: the hero is 80 units wide, the team 69. */
@@ -131,6 +163,16 @@ const slice = (x: number, y: number, r = 0) => `
     <circle cx="${x + 44}" cy="${y + 12}" r="5" fill="${P.tomato}" stroke="${I}" stroke-width="2.6"/>
   </g>`
 
+/**
+ * The cheese that won't let go: from the crust of the hero's slice to the
+ * crust of the beanie's, which stands turned round at TEAM[4] (kit units of
+ * the hero, so it hangs between their hands).
+ */
+const cheese = () => {
+  const d = 'M198 188C214 232 252 236 274 206'
+  return `<g class="cheese">${line(d, 8)}${line(d, 4.4, P.yolk)}</g>`
+}
+
 const phone = (x: number, y: number, r = 0) => `
   <g transform="rotate(${r} ${x} ${y})">
     <rect x="${x - 15}" y="${y - 26}" width="30" height="50" rx="7" fill="${I}"/>
@@ -194,6 +236,16 @@ const armsUp = (fill: string, spread = 1) => `
   ${line(`M44 168L${8 - 4 * spread} 92`, 7)}${line(`M156 168L${192 + 4 * spread} 92`, 7)}
   ${hand(6 - 4 * spread, 86, fill, -30)}${hand(194 + 4 * spread, 86, fill, 30)}`
 
+/**
+ * A teammate's cheer: arms from behind the shell, mittens up high and wide
+ * so the cap's brim and the beanie never hide them (drawn after the hat).
+ */
+const cheerArms = () => `${line('M40 170L0 62', 7)}${line('M160 170L200 62', 7)}`
+const cheerMitts = (fill: string) => `${hand(-2, 54, fill, -30)}${hand(202, 54, fill, 30)}`
+
+/** Where the stage mic sits: below and to the right of the mouth, a mitten round the handle. */
+const MIC = [150, 172] as const
+
 /** The hero's shell: whole until it hatches, then split along a zigzag. */
 const ZIG = '6,178 26,162 46,186 66,160 86,188 106,160 126,186 146,160 166,184 186,164 196,172'
 const CRACK = `fill="none" stroke="${I}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"`
@@ -254,14 +306,15 @@ const bubbles = () => `
 
 /**
  * The hatch burst: everything it carried today, and jagged shards of shell
- * (white outside, yolk inside). Props fly out of the open top; shards come
- * off the crack line, each with its own way out.
+ * (white outside, yolk inside). Props come up out of the open top from
+ * behind the golden egg; shards come off the crack line in front of it,
+ * each with its own way out.
  */
 export const BURST = [
-  { a: -152, x: 100, y: 140, far: 520 },
-  { a: -118, x: 100, y: 140, far: 500 },
-  { a: -62, x: 100, y: 140, far: 500 },
-  { a: -28, x: 100, y: 140, far: 520 },
+  { a: -152, x: 100, y: 60, far: 520 },
+  { a: -118, x: 100, y: 60, far: 480 },
+  { a: -62, x: 100, y: 60, far: 480 },
+  { a: -28, x: 100, y: 60, far: 520 },
   { a: -40, x: 150, y: 176, far: 340 },
   { a: -12, x: 176, y: 176, far: 360 },
   { a: 22, x: 186, y: 180, far: 320 },
@@ -278,16 +331,17 @@ const shard = (k: number) => {
     ${line('M-13 13h22', 2.6, P.yolk)}
   </g>`
 }
-const burst = () => {
-  const props = [
+const burstProps = () =>
+  [
     `<g transform="translate(-158 -180)">${coffee(158, 196)}</g>`,
     `<g transform="translate(-150 -170)">${mic(146, 146, false)}</g>`,
     `<g transform="translate(-154 -214)">${laptop()}</g>`,
     `<g transform="translate(-170 -200)">${slice(146, 206, -18)}</g>`,
   ]
-  const shards = Array.from({ length: 8 }, (_, k) => shard(k))
-  return [...props, ...shards].map((g, i) => `<g class="wburst" data-i="${i}" opacity="0">${g}</g>`).join('')
-}
+    .map((g, i) => `<g class="wburst" data-i="${i}" opacity="0">${g}</g>`)
+    .join('')
+const burstShards = () =>
+  Array.from({ length: 8 }, (_, k) => `<g class="wburst" data-i="${k + 4}" opacity="0">${shard(k)}</g>`).join('')
 
 /** A ring of rays that flares behind the golden egg as it comes out. */
 const rays = () =>
@@ -314,6 +368,7 @@ export function walkerSvg() {
         ${rays()}
         <g class="walker__legs">${legs()}</g>
         <g class="wprop wprop--arms">${armsUp(P.yolk)}</g>
+        <g class="walker__burst">${burstProps()}</g>
         <g class="walker__golden">
           ${golden()}
           <g class="gface gface--joy">${goldJoy()}</g>
@@ -328,12 +383,12 @@ export function walkerSvg() {
         <g class="walker__top">${h.top}</g>
         <g class="walker__hands"><g class="whand whand--l">${hand(30, 204, SHELL.white, -20)}</g><g class="whand whand--r">${hand(168, 204, SHELL.white, 20)}</g></g>
         <g class="wprop wprop--0">${coffee(158, 196)}</g>
-        <g class="wprop wprop--1">${mic(146, 146)}</g>
+        <g class="wprop wprop--1">${mic(...MIC)}</g>
         <g class="wprop wprop--2">${spark(-14, 40, 1.1, P.yolk)}${spark(204, 18, 0.8)}</g>
         <g class="wprop wprop--3">${laptopOpen(SHELL.white)}${SWEAT}</g>
-        <g class="wprop wprop--4">${slice(146, 206, -18)}</g>
+        <g class="wprop wprop--4">${slice(146, 206, -18)}${cheese()}</g>
         <g class="wprop wprop--6">${hand(36, 214, P.yolk, -20)}${hand(166, 214, P.yolk, 20)}${phone(170, 196, 14)}${bubbles()}</g>
-        <g class="walker__burst">${burst()}</g>
+        <g class="walker__burst">${burstShards()}</g>
       </g></g>
     </svg>`
 }
@@ -342,29 +397,35 @@ export function walkerSvg() {
 export function mateSvg(kind: 'beanie' | 'cap') {
   const fill = kind === 'beanie' ? BEANIE_SHELL : CAP_SHELL
   const hat = kind === 'beanie' ? beanie() : cap()
-  const faces = [
-    face({ eyes: 'happy', mouth: 'smile', blush: true }),
-    face({ eyes: 'dot', mouth: 'line', look: [0, 6] }),
-    face({ eyes: 'happy', mouth: 'tongue', blush: true }),
-    face({ eyes: 'happy', mouth: 'grin', blush: true }),
-    face({ eyes: 'closed', mouth: 'smile', blush: true }),
-  ]
   return `
     <svg class="mate__svg" viewBox="-70 -150 340 480" aria-hidden="true">
       <g class="mate__body"><g class="breathe">
         <ellipse cx="104" cy="318" rx="70" ry="9" fill="${I}" opacity=".14"/>
         <g class="walker__legs">${legs()}</g>
-        <g class="mhands mhands--up">${armsUp(fill, 0)}</g>
+        <g class="mhands mhands--up">${cheerArms()}</g>
         ${eggBody({ fill, ground: false })}
         ${hat}
-        ${faces.map((f, i) => `<g class="mface mface--${i}">${f}</g>`).join('')}
+        ${MATE_FACES.map((f, i) => `<g class="mface mface--${i}">${f()}</g>`).join('')}
+        <g class="mhands mhands--up">${cheerMitts(fill)}</g>
         <g class="mhands mhands--down">${hand(30, 204, fill, -20)}${hand(168, 204, fill, 20)}</g>
         <g class="mprop mprop--slice">${slice(146, 206, -18)}</g>
         <g class="mprop mprop--phone">${phone(166, 196, 12)}</g>
-        <g class="mprop mprop--laptop">${laptopOpen(fill)}</g>
       </g></g>
     </svg>`
 }
+
+/**
+ * A teammate's face through the day (from Crack, where it joins): glad to
+ * be picked, watching the laptop (eyes on the hero; turned round, the
+ * mirror takes them the other way), pizza, the hatch, a happy tired one.
+ */
+const MATE_FACES = [
+  () => face({ eyes: 'happy', mouth: 'smile', blush: true }),
+  () => face({ eyes: 'dot', mouth: 'line', look: [8, 5] }),
+  () => face({ eyes: 'happy', mouth: 'tongue', blush: true }),
+  () => face({ eyes: 'happy', mouth: 'grin', blush: true }),
+  () => face({ eyes: 'closed', mouth: 'smile', blush: true }),
+]
 
 /* ── stills: the cast drawn into each scene, for phones ──────────── */
 
@@ -376,11 +437,11 @@ export function heroStill(state: number) {
     state === 0
       ? coffee(158, 196)
       : state === 1
-        ? mic(146, 146)
+        ? mic(...MIC)
         : state === 3
           ? laptopOpen(SHELL.white) + SWEAT
           : state === 4
-            ? slice(146, 206, -18)
+            ? slice(146, 206, -18) + cheese()
             : state === 6
               ? phone(170, 196, 14) + bubbles()
               : ''
@@ -404,25 +465,30 @@ export function heroStill(state: number) {
 function mateStill(kind: 'beanie' | 'cap', state: number) {
   const fill = kind === 'beanie' ? BEANIE_SHELL : CAP_SHELL
   const hat = kind === 'beanie' ? beanie() : cap()
-  const mood = [
-    face({ eyes: 'happy', mouth: 'smile', blush: true }),
-    face({ eyes: 'dot', mouth: 'line', look: [0, 6] }),
-    face({ eyes: 'happy', mouth: 'tongue', blush: true }),
-    face({ eyes: 'happy', mouth: 'grin', blush: true }),
-    face({ eyes: 'closed', mouth: 'smile', blush: true }),
-  ][Math.max(0, state - 2)]
-  const arms = state === 5 || state === 3 ? '' : hand(30, 204, fill, -20) + hand(168, 204, fill, 20)
-  const prop = state === 4 ? slice(146, 206, -18) : state === 6 ? phone(166, 196, 12) : state === 3 ? laptopOpen(fill) : ''
-  return `${legs(SEATED[state])}${state === 5 ? armsUp(fill, 0) : ''}${eggBody({ fill })}${hat}${mood}${arms}${prop}`
+  const mood = MATE_FACES[Math.max(0, state - 2)]()
+  const cheer = state === 5
+  const arms = cheer ? cheerMitts(fill) : hand(30, 204, fill, -20) + hand(168, 204, fill, 20)
+  const prop = state === 4 ? slice(146, 206, -18) : state === 6 ? phone(166, 196, 12) : ''
+  return `${legs(SEATED[state])}${cheer ? cheerArms() : ''}${eggBody({ fill })}${hat}${mood}${arms}${prop}`
 }
 
-/** The cast of a step as phones see it: hero at the mark, team behind (from Nest; at Crack they're still on the bench). */
+/** Mirror a still about its own x, for the teammate who's turned round. */
+const turned = (x: number, inner: string) => `<g transform="translate(${2 * x} 0) scale(-1 1)">${inner}</g>`
+
+/** The cast of a step as phones see it: hero at the mark, team round it (from Nest; at Crack they're still on the bench). */
 const cast = (state: number) => {
   const team =
     state >= 2
-      ? (['beanie', 'cap'] as const).map((k, i) => stand(SLOTS[i], FLOOR - MATE_LIFT[state], MATE_S, mateStill(k, state))).reverse().join('')
+      ? (['beanie', 'cap'] as const)
+          .map((k, i) => {
+            const x = TEAM[state][i]
+            const m = stand(x, FLOOR - MATE_LIFT[state], MATE_S, mateStill(k, state))
+            return TURN[state][i] ? turned(x, m) : m
+          })
+          .reverse()
+          .join('')
       : ''
-  return `${team}${stand(MARK, FLOOR - LIFT[state], HERO_S, heroStill(state))}`
+  return `${team}${stand(MARK, FLOOR - LIFT[state], HERO_S * (state === 5 ? HATCH_S : 1), heroStill(state))}`
 }
 
 /* ── the seven scenes ───────────────────────────────────────────── */
@@ -431,10 +497,12 @@ interface Frame {
   sky: [number, string][]
   back: string
   set: string
+  /** what stands in front of the cast */
+  front?: string
   note?: string
 }
 
-/** A window: its sky (with a printed halftone, like the poster), its set, the floor, the cast (phones), its note. */
+/** A window: its sky (with a printed halftone, like the poster), its set, the floor, the cast (phones), what's in front of it, its note. */
 function frame(slug: string, step: number, f: Frame) {
   const g = nextId('sk')
   const c = nextId('ac')
@@ -457,6 +525,7 @@ function frame(slug: string, step: number, f: Frame) {
       ${line(`M0 ${FLOOR}H400`, L)}
       ${ticks}
       <g class="scene__cast">${cast(step)}</g>
+      ${f.front ? `<g class="scene__front">${f.front}</g>` : ''}
       ${f.note ?? ''}
     </svg>`
 }
@@ -465,7 +534,29 @@ function frame(slug: string, step: number, f: Frame) {
 const beanieEgg = (look = 0) => `${eggBody({ fill: BEANIE_SHELL })}${beanie()}${face({ eyes: 'happy', mouth: 'smile', blush: true, look: [look, 0] })}`
 const capEgg = (look = 0) => `${eggBody({ fill: CAP_SHELL })}${cap()}${face({ eyes: 'dot', mouth: 'smile', look: [look, 0] })}`
 
+/**
+ * The club's door, front on, at the left of the first window: its frame and
+ * the leaf that swings open on its left hinge. It stands in front of the
+ * cast, so when the doors open the egg is there in the doorway, framed.
+ */
+const doorFront = () => `
+  <path d="M46 270V124H134V270H124V134H56V270Z" fill="${WOOD}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+  <g class="door__leaf">
+    <path d="M56 134H124V270H56Z" fill="${P.peachDeep}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+    <path d="M66 146h48v48h-48zM66 206h48v52h-48z" fill="${mix(P.peachDeep, '#ffffff', 0.2)}" stroke="${I}" stroke-width="${L * 0.7}"/>
+    <circle cx="116" cy="202" r="3.8" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
+  </g>`
+
 function doors() {
+  // a wall of sticky notes that fills up as people arrive (opinions mandatory)
+  const stickies = Array.from({ length: 12 }, (_, k) => {
+    const row = Math.floor(k / 4)
+    const x = 268 + (k % 4) * 18 + (row % 2) * 5
+    const y = 108 + row * 18
+    const c = [P.yolk, P.pink, P.mint, P.sky, P.peach][(k * 3) % 5]
+    const scrawl = k % 3 === 1 ? line(`M${x + 3} ${y + 6}h8M${x + 3} ${y + 10}h5`, 1.3, I, 'opacity=".55"') : ''
+    return `<g class="sticky" style="--k:${(k * 5) % 12}" transform="rotate(${((k * 37) % 11) - 5} ${x + 7.5} ${y + 7.5})"><rect x="${x}" y="${y}" width="15" height="15" fill="${c}" stroke="${I}" stroke-width="1.4"/>${scrawl}</g>`
+  }).join('')
   return frame('doors', 0, {
     sky: [
       [0, '#f8cf6a'],
@@ -473,44 +564,32 @@ function doors() {
       [1, '#fdf1cf'],
     ],
     back: `
-      ${sun(90, 162, 18)}
+      ${sun(140, 58, 12)}
       <path d="M34 248q60 -18 120 -6t130 -4t82 6V270H34Z" fill="${mix('#fbe3a3', WOOD, 0.35)}" opacity=".55"/>`,
     set: `
-      <rect x="256" y="118" width="80" height="152" rx="4" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-      <rect x="268" y="130" width="56" height="140" fill="#3a2a38"/>
-      <rect class="door__glow" x="268" y="130" width="56" height="140" fill="${P.yolk}" opacity="0"/>
-      <g class="door__leaf">
-        <path d="M268 130H324V270H268Z" fill="${P.peachDeep}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <path d="M278 144h36v46h-36zM278 204h36v50h-36z" fill="${mix(P.peachDeep, '#ffffff', 0.2)}" stroke="${I}" stroke-width="${L * 0.7}"/>
-        <circle cx="317" cy="204" r="3.6" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
-      </g>
-      <g transform="translate(296 100)">
+      <rect x="56" y="134" width="68" height="136" fill="#3a2a38"/>
+      <rect class="door__glow" x="56" y="134" width="68" height="136" fill="${mix(P.yolk, P.cream, 0.45)}" opacity="0"/>
+      <rect x="50" y="266" width="80" height="6" rx="2" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/>
+      <g transform="translate(90 108)">
         <rect x="-36" y="-11" width="72" height="22" rx="5" fill="${P.cream}" stroke="${I}" stroke-width="${L}"/>
         <path d="M-24 -6c4 0 6.5 5 6.5 8.5c0 3.4 -2.6 5.4 -6.5 5.4s-6.5 -2 -6.5 -5.4c0 -3.5 2.5 -8.5 6.5 -8.5Z" fill="${P.yolk}" stroke="${I}" stroke-width="1.6"/>
         <text x="7" y="4.6" text-anchor="middle" font-family="${MONO}" font-size="13" font-weight="500" letter-spacing="1.5" fill="${I}">ODTÜ</text>
       </g>
-      <g stroke="${I}" stroke-width="1.6">
-        <rect x="341" y="128" width="14" height="14" fill="${P.yolk}" transform="rotate(-6 348 135)"/>
-        <rect x="343" y="150" width="14" height="14" fill="${P.pink}" transform="rotate(5 350 157)"/>
-        <rect x="340" y="172" width="14" height="14" fill="${P.mint}" transform="rotate(-3 347 179)"/>
-      </g>
-      <g transform="rotate(7 344 268)">
-        <rect x="338" y="206" width="12" height="62" rx="6" fill="${P.lavDeep}" stroke="${I}" stroke-width="${L * 0.9}"/>
-        ${line('M344 214v46', 1.6, P.cream)}
-        <circle cx="352" cy="216" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/><circle cx="352" cy="256" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
-      </g>
-      <rect x="260" y="266" width="72" height="6" rx="2" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/>
+      <g class="sticky-wall">${stickies}</g>
       <g>
-        <path d="M48 226h64v6h-64z" fill="${WOOD}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        ${line('M54 232v38M106 232v38', L)}
-        <path d="M58 190h24v34h-24z" fill="#cfc8d6" stroke="${I}" stroke-width="${L}"/>
-        <path d="M82 204h6v8h-6" fill="none" stroke="${I}" stroke-width="${L * 0.8}"/>
-        <rect x="55" y="186" width="30" height="6" rx="2" fill="${I}"/>
-        <path d="M92 214h8l-1 12h-6z" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
-        <path d="M100 214h8l-1 12h-6z" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
-        <g class="steam">${line('M66 180q-5 -7 0 -14q5 -7 0 -14', 2)}${line('M74 182q-5 -7 0 -14', 2)}</g>
+        <path d="M256 228h80v6h-80z" fill="${WOOD}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+        ${line('M262 234v36M330 234v36', L)}
+        <path d="M266 194h24v32h-24z" fill="#cfc8d6" stroke="${I}" stroke-width="${L}"/>
+        <path d="M290 206h6v8h-6" fill="none" stroke="${I}" stroke-width="${L * 0.8}"/>
+        <rect x="263" y="190" width="30" height="6" rx="2" fill="${I}"/>
+        <path d="M302 216h8l-1 12h-6z" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
+        <path class="cup--take" d="M313 216h8l-1 12h-6z" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
+        <g class="steam">${line('M274 184q-4 -6 0 -12q4 -6 0 -12', 2)}${line('M282 186q-4 -6 0 -12', 2)}</g>
+        <rect x="266" y="255" width="60" height="6" rx="3" fill="${P.lavDeep}" stroke="${I}" stroke-width="${L * 0.8}"/>
+        <circle cx="276" cy="265" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/><circle cx="316" cy="265" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
       </g>`,
-    note: note(0, { x: 108, y: 64, w: 184, arrow: 'M198 72q12 20 2 54M200 126l-8 -7M200 126l6 -8' }),
+    front: doorFront(),
+    note: note(0, { x: 176, y: 84, w: 150, rot: 4, arrow: 'M228 98q4 22 -16 36M212 134l2 -10M212 134l9 -4' }),
   })
 }
 
@@ -556,63 +635,83 @@ function crack() {
   })
 }
 
-function nest() {
-  const twigs = Array.from({ length: 10 }, (_, i) => {
-    const y = 244 + (i % 3) * 8
-    const x = 44 + i * 21
-    return line(`M${x - 18} ${y}q16 ${-8 + (i % 2) * 14} 36 ${-2}`, 1.8, TWIG_DEEP)
+/**
+ * The nest's front wall: a deep bowl of woven twigs. It stands in front of
+ * the three, so they sit down in it up to their middles.
+ */
+const nestFront = () => {
+  const weave = Array.from({ length: 13 }, (_, i) => {
+    const x = 70 + i * 21
+    const y = 226 + (i % 3) * 11 + (i % 2) * 4
+    return line(`M${x - 16} ${y}q14 ${i % 2 ? 9 : -7} 32 ${i % 2 ? -3 : 2}`, 1.9, TWIG_DEEP)
   }).join('')
+  return `
+    <g class="nest">
+      <path d="M60 204Q200 224 340 204C344 238 330 270 290 270H110C70 270 56 238 60 204Z" fill="${TWIG}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+      ${weave}
+      <path d="M66 212Q200 234 334 212" fill="none" stroke="${TWIG_DEEP}" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M60 204Q200 224 340 204" fill="none" stroke="${I}" stroke-width="${L}" stroke-linecap="round"/>
+      ${line('M62 206l-14 -10M70 214l-16 2M338 206l14 -12M332 214l18 0', 2.4, TWIG_DEEP)}
+    </g>`
+}
+
+function nest() {
   return frame('nest', 2, {
     sky: [
       [0, '#a9cde3'],
       [1, '#e6f1ef'],
     ],
     back: `
-      ${sun(150, 60, 14)}
-      ${line('M290 140q8 -8 16 0q8 -8 16 0', 2.4)}${line('M322 120q6 -6 12 0q6 -6 12 0', 2)}`,
+      ${sun(288, 60, 13)}
+      ${line('M212 86q7 -7 14 0q7 -7 14 0', 2.2)}${line('M238 70q5 -5 10 0q5 -5 10 0', 1.8)}`,
     set: `
-      <g class="nest">
-        <path d="M28 238q112 -10 224 0q-6 32 -112 34q-106 -2 -112 -34z" fill="${TWIG}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <path d="M34 240q106 10 212 0" fill="none" stroke="${I}" stroke-width="${L * 0.8}"/>
-        ${twigs}
-        ${line('M26 236l-8 -8M254 236l12 -10', 2.2, TWIG_DEEP)}
-      </g>
       <g class="team-flag">
-        ${line('M250 238V150', L)}
-        <g class="team-flag__cloth"><path d="M250 152l42 12l-42 14z" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
-          <path d="M262 160c2.6 0 4.6 3.6 4.6 6.4c0 2.6 -2 4.2 -4.6 4.2s-4.6 -1.6 -4.6 -4.2c0 -2.8 2 -6.4 4.6 -6.4Z" fill="${P.cream}" stroke="${I}" stroke-width="1.4"/></g>
+        ${line('M322 228V106', L)}
+        <g class="team-flag__cloth"><path d="M322 108l36 12l-36 13z" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
+          <path d="M333 114c2.6 0 4.6 3.6 4.6 6.4c0 2.6 -2 4.2 -4.6 4.2s-4.6 -1.6 -4.6 -4.2c0 -2.8 2 -6.4 4.6 -6.4Z" fill="${P.cream}" stroke="${I}" stroke-width="1.4"/></g>
+      </g>
+      <g class="nest nest--back">
+        <path d="M60 204Q200 184 340 204Q200 224 60 204Z" fill="${mix(TWIG_DEEP, I, 0.25)}"/>
+        <path d="M60 204Q200 184 340 204L328 207Q200 192 72 207Z" fill="${TWIG}" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
       </g>
       <g class="hearts">
-        <path d="M58 122c-6 -8 -18 -2 -12 8l12 12l12 -12c6 -10 -6 -16 -12 -8z" fill="${P.tomato}" stroke="${I}" stroke-width="2"/>
-        <path d="M100 104c-4 -6 -13 -1 -9 6l9 9l9 -9c4 -7 -5 -12 -9 -6z" fill="${P.pink}" stroke="${I}" stroke-width="2"/>
+        <path d="M112 128c-6 -8 -18 -2 -12 8l12 12l12 -12c6 -10 -6 -16 -12 -8z" fill="${P.tomato}" stroke="${I}" stroke-width="2"/>
+        <path d="M250 114c-4 -6 -13 -1 -9 6l9 9l9 -9c4 -7 -5 -12 -9 -6z" fill="${P.pink}" stroke="${I}" stroke-width="2"/>
       </g>`,
-    note: note(2, { x: 204, y: 112, w: 138, rot: -4, arrow: 'M206 118q-26 2 -48 22M158 140l4 -10M158 140l10 -2' }),
+    front: nestFront(),
+    note: note(2, { x: 68, y: 102, w: 134, rot: -4, arrow: 'M150 110q24 4 32 28M182 138l-9 -5M182 138l1 -10' }),
   })
 }
 
 function incubate() {
   const stool = (x: number) => `<path d="M${x - 22} 236h44v6h-44z" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line(`M${x - 16} 242l-4 28M${x + 16} 242l4 28`, L * 0.9)}`
-  const sticky = Array.from({ length: 12 }, (_, k) => {
-    const col = k % 3
-    const row = Math.floor(k / 3)
-    const c = [P.yolk, P.pink, P.mint, P.sky, P.peach][k % 5]
-    const x = 284 + col * 15
-    const y = 70 + row * 15
-    return `<rect class="sticky" style="--k:${k}" x="${x}" y="${y}" width="12" height="12" fill="${c}" stroke="${I}" stroke-width="1.4" transform="rotate(${((k * 37) % 9) - 4} ${x + 6} ${y + 6})"/>`
-  }).join('')
-  const cups = Array.from({ length: 5 }, (_, k) => `<path class="cup" style="--k:${k}" d="M${276} ${214 - k * 10}h16l-2 10h-12z" fill="${P.cream}" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/>`).join('')
+  // coffee cups pile up on the workbench as the afternoon goes
+  const cups = Array.from({ length: 5 }, (_, k) => `<path class="cup" style="--k:${k}" d="M${41} ${206 - k * 10}h16l-2 10h-12z" fill="${P.cream}" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/>`).join('')
+  // and the build grows beside them: a box, a head, an antenna that lights up
   const proto = `
-    <g class="proto proto--1"><rect x="304" y="194" width="34" height="24" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line('M310 204h12M310 210h18', 1.4, WOOD_DEEP)}</g>
-    <g class="proto proto--2"><rect x="310" y="176" width="22" height="18" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/><circle cx="317" cy="185" r="2.2" fill="${I}"/><circle cx="325" cy="185" r="2.2" fill="${I}"/></g>
-    <g class="proto proto--3">${line('M321 176v-12', 2)}<circle cx="321" cy="162" r="3.6" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/></g>`
+    <g class="proto proto--1"><rect x="66" y="192" width="38" height="24" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line('M72 202h12M72 208h20', 1.4, WOOD_DEEP)}</g>
+    <g class="proto proto--2"><rect x="74" y="174" width="24" height="18" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/><circle cx="81" cy="183" r="2.2" fill="${I}"/><circle cx="90" cy="183" r="2.2" fill="${I}"/></g>
+    <g class="proto proto--3">${line('M86 174v-12', 2)}<circle cx="86" cy="160" r="3.6" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/></g>`
+  // a mentor with snacks and opinions, leaning in over the three
+  const mentor = stand(
+    334,
+    FLOOR,
+    0.32,
+    `${legs()}${eggBody({ fill: SHELL.tan })}${face({ eyes: 'dot', mouth: 'smirk', look: [-9, 2], brows: 'one' })}
+     <g fill="${P.sky}" fill-opacity=".38" stroke="${I}" stroke-width="${W.prop}"><rect x="56" y="119" width="34" height="28" rx="10"/><rect x="98" y="119" width="34" height="28" rx="10"/></g>
+     ${line('M90 131q4 -4 8 0', W.fine)}
+     <circle cx="160" cy="148" r="12" fill="${WOOD}" stroke="${I}" stroke-width="3.6"/><circle cx="188" cy="146" r="12" fill="#e7a45f" stroke="${I}" stroke-width="3.6"/>
+     <path d="M136 158h80l-5 9h-70z" fill="#cfc8d6" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
+     ${hand(176, 172, SHELL.tan, 16)}${hand(28, 204, SHELL.tan, -20)}`,
+  )
   return frame('incubate', 3, {
     sky: [
       [0, '#9cc7e2'],
       [1, '#e2eff2'],
     ],
-    back: `${sun(206, 32, 13)}`,
+    back: `${sun(186, 40, 12)}`,
     set: `
-      <g class="clock" transform="translate(100 72) scale(.8)">
+      <g class="clock" transform="translate(300 80) scale(.9)">
         <circle r="25" fill="${P.cream}" stroke="${I}" stroke-width="${L}"/>
         ${Array.from({ length: 12 }, (_, i) => line(`M0 -21v${i % 3 ? 2 : 5}`, i % 3 ? 1.4 : 2.2, I, `transform="rotate(${i * 30})"`)).join('')}
         <g class="clock__h">${line('M0 2V-12', 3.2)}</g>
@@ -620,25 +719,21 @@ function incubate() {
         <circle r="3" fill="${I}"/>
       </g>
       <g class="lamp">
-        <path class="lamp__beam" d="M242 100L146 236H262Z" fill="${P.yolk}" opacity=".14"/>
-        ${line('M250 44V82', 2.4)}
-        <path d="M232 82h36l8 14h-52z" fill="${P.tomato}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <circle class="lamp__bulb" cx="250" cy="99" r="5" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
+        <path class="lamp__beam" d="M226 104L142 236H300Z" fill="${P.yolk}" opacity=".14"/>
+        ${line('M236 17V84', 2.4)}
+        <path d="M218 84h36l8 14h-52z" fill="${P.tomato}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+        <circle class="lamp__bulb" cx="236" cy="101" r="5" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
       </g>
-      <g class="sticky-wall">${sticky}</g>
-      <g class="mentor">
-        ${placed(300, 222, 0.28, `${eggBody({ fill: SHELL.tan })}${face({ eyes: 'dot', mouth: 'smirk', look: [-8, 0], brows: 'one' })}
-          <g fill="${P.sky}" fill-opacity=".38" stroke="${I}" stroke-width="${W.prop}"><rect x="62" y="119" width="34" height="28" rx="10"/><rect x="104" y="119" width="34" height="28" rx="10"/></g>
-          ${line('M96 131q4 -4 8 0', W.fine)}
-          <path d="M-30 150h80l-4 8h-72z" fill="#cfc8d6" stroke="${I}" stroke-width="${W.prop}"/>
-          <circle cx="-8" cy="140" r="11" fill="${WOOD}" stroke="${I}" stroke-width="3.6"/><circle cx="22" cy="138" r="11" fill="#e7a45f" stroke="${I}" stroke-width="3.6"/>
-          ${hand(30, 160, SHELL.tan, -20)}`)}
-      </g>
-      <path d="M266 218h100v8h-100z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-      ${line('M274 226v44M358 226v44', L)}
+      <path d="M36 216h78v8h-78z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
+      ${line('M44 224v46M106 224v46', L)}
       ${cups}${proto}
-      ${stool(72)}${stool(136)}${stool(200)}`,
-    note: note(3, { x: 238, y: 156, w: 118, rot: -3, arrow: 'M252 164q2 16 -6 30M246 194l-6 -8M246 194l7 -6' }),
+      <g class="mentor"><g transform="rotate(-9 334 270)">${mentor}</g></g>
+      <g transform="translate(336 160)"><g class="mentor__say">
+        <path d="M-15 -12h30a6 6 0 0 1 6 6v12a6 6 0 0 1 -6 6h-14l-8 8l1 -8h-9a6 6 0 0 1 -6 -6v-12a6 6 0 0 1 6 -6z" fill="${P.cream}" stroke="${I}" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="${MONO}" font-size="13" font-weight="500" fill="${I}">!?</text>
+      </g></g>
+      ${stool(142)}${stool(200)}${stool(258)}`,
+    note: note(3, { x: 62, y: 106, w: 104, rot: -5, arrow: 'M100 114q12 20 -6 42M94 156l-1 -10M94 156l9 -5' }),
   })
 }
 
@@ -651,11 +746,11 @@ function pizza() {
       [1, '#f9dcb6'],
     ],
     back: `
-      <g class="sc-sunset">${sun(350, 178, 22)}</g>
-      ${cloud(92, 122, 0.6)}
+      <g class="sc-sunset">${sun(62, 172, 18)}</g>
+      ${cloud(112, 102, 0.7)}
       <path d="M34 252q80 -12 166 -4t166 0V270H34Z" fill="${mix(P.peachDeep, '#f4b56a', 0.3)}" opacity=".6"/>`,
     set: `
-      <g class="bulb bulb--idea" transform="translate(222 56)">
+      <g class="bulb bulb--idea" transform="translate(200 62)">
         <circle class="bulb__glow" r="34" fill="${P.cream}" opacity="0"/>
         <path d="M0 -22c13 0 20 9 20 20c0 8 -6 12 -8 18h-24c-2 -6 -8 -10 -8 -18c0 -11 7 -20 20 -20Z" fill="${P.cream}" stroke="${I}" stroke-width="${L}"/>
         <path class="bulb__on" d="M0 -22c13 0 20 9 20 20c0 8 -6 12 -8 18h-24c-2 -6 -8 -10 -8 -18c0 -11 7 -20 20 -20Z" fill="${P.yolk}" stroke="${I}" stroke-width="${L}" opacity="0"/>
@@ -663,27 +758,21 @@ function pizza() {
         ${line('M-5 4l5 7l5 -7', 2)}
         <g class="bulb__rays">${line('M-32 -16l-8 -6M32 -16l8 -6M0 -32v-8', 2)}</g>
       </g>
-      ${Array.from({ length: 6 }, (_, i) => `<g transform="translate(${318 + (i % 2) * 4} ${256 - i * 13})"><path d="M0 0h44v13h-44z" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.9}" stroke-linejoin="round"/>${line('M6 6.5h12', 2, P.tomato)}</g>`).join('')}
+      ${Array.from({ length: 4 }, (_, i) => `<g transform="translate(${38 + (i % 2) * 3} ${257 - i * 13})"><path d="M0 0h40v13h-40z" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.9}" stroke-linejoin="round"/>${line('M6 6.5h12', 2, P.tomato)}</g>`).join('')}
       <g class="pie">
-        <path d="M246 254l8 -56h58l4 56z" fill="${P.cream}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <g transform="translate(282 226)">
-          <ellipse rx="12" ry="9" fill="none" stroke="${P.tomato}" stroke-width="2.2"/>
-          <path d="M0 -6c3 0 5 3 5 5.5c0 2.4 -2 4 -5 4s-5 -1.6 -5 -4c0 -2.5 2 -5.5 5 -5.5Z" fill="${P.yolk}" stroke="${I}" stroke-width="1.2"/>
+        <path d="M236 258l5 -52h44l5 52z" fill="${mix(P.cream, WOOD, 0.12)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+        <g transform="translate(263 226)">
+          <ellipse rx="11" ry="8.4" fill="none" stroke="${P.tomato}" stroke-width="2.2"/>
+          <path d="M0 -5.6c3 0 5 3 5 5.4c0 2.4 -2 4 -5 4s-5 -1.6 -5 -4c0 -2.4 2 -5.4 5 -5.4Z" fill="${P.yolk}" stroke="${I}" stroke-width="1.2"/>
         </g>
-        <path d="M238 254h88l6 16h-100z" fill="${mix(P.cream, WOOD, 0.25)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <ellipse cx="282" cy="254" rx="40" ry="8.5" fill="#e7a45f" stroke="${I}" stroke-width="${L}"/>
-        <ellipse cx="282" cy="253.6" rx="33" ry="5.6" fill="${P.tomato}" opacity=".85"/>
-        <ellipse cx="282" cy="253.4" rx="30" ry="4.4" fill="${P.yolk}"/>
-        ${pep(264, 253)}${pep(282, 252)}${pep(298, 254)}
-        <g class="pie__slice">
-          <path class="pie__cheese" d="M300 252q4 -12 -2 -22M308 253q7 -10 3 -22" fill="none" stroke="${P.yolk}" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M292 230l32 -9l-5 21z" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
-          <path d="M324 221l-5 21" stroke="#e7a45f" stroke-width="4.4" stroke-linecap="round"/>
-          ${pep(310, 230)}
-        </g>
-        <g class="steam">${line('M266 190q-5 -7 0 -14q5 -7 0 -14', 2)}${line('M282 186q-5 -7 0 -14', 2)}</g>
+        <ellipse cx="263" cy="258" rx="31" ry="6.4" fill="#e7a45f" stroke="${I}" stroke-width="${L * 0.9}"/>
+        <ellipse cx="263" cy="257.6" rx="25" ry="4.4" fill="${P.tomato}" opacity=".85"/>
+        <ellipse cx="263" cy="257.4" rx="22" ry="3.4" fill="${P.yolk}"/>
+        ${pep(251, 256.4)}${pep(274, 256)}
+        <path d="M226 260h74l4 10h-82z" fill="${mix(P.cream, WOOD, 0.25)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+        <g class="steam">${line('M254 198q-5 -7 0 -14q5 -7 0 -14', 2)}${line('M270 194q-5 -7 0 -14', 2)}</g>
       </g>`,
-    note: note(4, { x: 206, y: 128, w: 138, rot: 3, c: I, arrow: 'M290 136q8 28 -2 56M288 192l-7 -7M288 192l7 -6' }),
+    note: note(4, { x: 236, y: 112, w: 112, rot: 4, c: I, arrow: 'M282 126q-8 34 -18 62M264 188l-2 -10M264 188l8 -6' }),
   })
 }
 
@@ -726,7 +815,7 @@ function hatch() {
       ${flags}
       <g class="confettis">${confetti}</g>`,
     set: `
-      <path class="spot" d="M78 58L148 248H256Z" fill="${P.cream}" opacity="0"/>
+      <path class="spot" d="M78 58L144 248H256Z" fill="${P.cream}" opacity="0"/>
       <g transform="translate(68 46) rotate(-38)">
         ${line('M0 -22v10', 2.4)}
         <path d="M-11 -12h22l4 26h-30z" fill="#3a3340" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
@@ -738,20 +827,22 @@ function hatch() {
         <path d="M-13 -2l9 9l18 -20" fill="none" stroke="${P.mintDeep}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
         ${line('M0 16v24M-12 40h24', L)}
       </g>
-      <path d="M40 248h328v22h-328z" fill="${mix(P.lavDeep, I, 0.35)}" stroke="${I}" stroke-width="${L}"/>
-      ${line('M48 256h312', 1.4, mix(P.lavDeep, '#ffffff', 0.25))}`,
+      <path d="M136 248h230v22h-230z" fill="${mix(P.lavDeep, I, 0.35)}" stroke="${I}" stroke-width="${L}"/>
+      ${line('M144 256h214', 1.4, mix(P.lavDeep, '#ffffff', 0.25))}`,
     note: note(5, { x: 106, y: 64, w: 188, rot: -3, c: P.cream, arrow: 'M198 72q10 12 4 24M202 96l-7 -5M202 96l5 -7' }),
   })
 }
 
 function afterglow() {
-  const lit = Array.from({ length: 12 }, (_, i) => {
-    const x = 250 + ((i * 29) % 96)
-    const y = 204 + ((i * 11) % 22)
-    return `<rect class="win" style="--i:${i}" x="${x}" y="${y}" width="4" height="5" fill="${P.yolk}"/>`
+  // the city's windows: some lit already, the rest coming on as the club goes dark
+  const lit = Array.from({ length: 22 }, (_, i) => {
+    const x = 240 + ((i * 37) % 118)
+    const y = 200 + ((i * 13) % 30)
+    const late = i % 2 === 1
+    return `<rect class="win${late ? ' win--late' : ''}" style="--i:${i};--j:${(i * 3) % 11}" x="${x}" y="${y}" width="4" height="5" fill="${P.yolk}"/>`
   }).join('')
   const kocatepe = `
-    <g transform="translate(268 236) scale(1.25)" fill="#1a1220">
+    <g transform="translate(286 236) scale(1.6)" fill="#1a1220">
       <path d="M-26 0V-14h52V0z"/>
       <path d="M-15 -14a15 15 0 0 1 30 0z"/>
       <path d="M-24 -14a6 6 0 0 1 12 0zM12 -14a6 6 0 0 1 12 0z"/>
@@ -759,22 +850,22 @@ function afterglow() {
       <rect class="win" style="--i:2" x="-6" y="-8" width="12" height="3" fill="${P.yolk}"/>
     </g>`
   const atakule = `
-    <g transform="translate(326 236) scale(1.2)" fill="#1a1220">
+    <g transform="translate(346 236) scale(1.45)" fill="#1a1220">
       <path d="M-3 0L-2 -72h4L3 0z"/>
       <ellipse cy="-78" rx="9" ry="6"/>
       <rect class="win" style="--i:5" x="-7" y="-80" width="14" height="2.4" fill="${P.yolk}"/>
       <path d="M-0.8 -84v-14h1.6v14z"/>
       <circle class="atakule__light" cy="-100" r="2" fill="${P.tomato}"/>
     </g>`
-  // a park bench: slatted back, a seat with depth, armrests
+  // a park bench for three: slatted back, a seat with depth, armrests
   const bench = `
     <path d="M42 188h188v6h-188z" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.9}"/>
-    ${Array.from({ length: 9 }, (_, k) => `<rect x="${48 + k * 21}" y="194" width="9" height="34" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.7}"/>`).join('')}
-    <path d="M38 226h196l8 6h-212z" fill="${mix(WOOD, '#ffffff', 0.15)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-    <path d="M30 232h212v8h-212z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-    ${line('M40 240v30M232 240v30', L * 1.1)}
-    <path d="M26 206h14v26M246 206h-14v26" fill="none" stroke="${I}" stroke-width="${L * 1.2}" stroke-linejoin="round"/>
-    <path d="M22 204h22v6h-22zM228 204h22v6h-22z" fill="${WOOD_DEEP}" stroke="${I}" stroke-width="${L * 0.8}"/>`
+    ${Array.from({ length: 8 }, (_, k) => `<rect x="${49 + k * 23}" y="194" width="9" height="34" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.7}"/>`).join('')}
+    <path d="M40 226h192l8 6h-208z" fill="${mix(WOOD, '#ffffff', 0.15)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+    <path d="M34 232h208v8h-208z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
+    ${line('M44 240v30M232 240v30', L * 1.1)}
+    <path d="M30 206h14v26M246 206h-14v26" fill="none" stroke="${I}" stroke-width="${L * 1.2}" stroke-linejoin="round"/>
+    <path d="M26 204h22v6h-22zM228 204h22v6h-22z" fill="${WOOD_DEEP}" stroke="${I}" stroke-width="${L * 0.8}"/>`
   return frame('afterglow', 6, {
     sky: [
       [0, P.night],
@@ -785,30 +876,49 @@ function afterglow() {
       ${stars([
         [70, 84, 0.5],
         [130, 50, 0.35],
-        [196, 34, 0.45],
-        [244, 52, 0.4],
-        [340, 124, 0.4],
+        [160, 112, 0.3],
+        [316, 108, 0.35],
+        [312, 40, 0.4],
       ])}
-      <g class="moon"><circle cx="290" cy="80" r="19" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}"/><circle cx="300" cy="73" r="17" fill="${P.night}"/></g>
+      <g class="moon"><circle cx="262" cy="70" r="17" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}"/><circle cx="271" cy="64" r="15" fill="${P.night}"/></g>
       <path d="M34 234q40 -18 80 -8t70 -6t66 4t60 -12t56 8V270H34Z" fill="#2d1d33"/>
       ${kocatepe}${atakule}
       ${lit}`,
     set: `
-      <g transform="translate(356 202)">
-        ${line('M0 0V68', L)}
-        <circle r="11" fill="${P.tomato}" stroke="${I}" stroke-width="${L}"/>
-        <path d="M-5.5 4.5V-4.5l5.5 6l5.5 -6V4.5" fill="none" stroke="${P.cream}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
-      </g>
+      <g class="metro">${metroSign(330, 206, 0.85)}</g>
       ${bench}
       <path d="M262 258h40v12h-40z" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.9}"/>
       ${line('M268 264h12', 2, P.tomato)}`,
   })
 }
 
+/** The metro's sign on its post: the way home. */
+const metroSign = (x: number, y: number, s = 1) => `
+  <g transform="translate(${x} ${y}) scale(${s})">
+    ${line(`M0 0V${n((FLOOR - y) / s)}`, L / s)}
+    <circle r="13" fill="${P.tomato}" stroke="${I}" stroke-width="${L / s}"/>
+    <path d="M-6.5 5V-5l6.5 7l6.5 -7V5" fill="none" stroke="${P.cream}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  </g>`
+
 const SCENES = [doors, crack, nest, incubate, pizza, hatch, afterglow]
 
 /** One scene's markup, by step. */
 export const sceneMarkup = (i: number) => SCENES[i]?.() ?? ''
+
+/** What stands in front of the cast, by step: the door frame, the nest's front wall. */
+const FRONTS: [number, () => string][] = [
+  [0, doorFront],
+  [2, nestFront],
+]
+/**
+ * The fronts again, as overlays for the walking cast on wide screens: each
+ * one a scene-sized layer that day.ts keeps over its window.
+ */
+export const frontOverlays = () =>
+  FRONTS.map(
+    ([i, draw]) =>
+      `<svg class="scene day__front" data-step="${i}" style="--k:${i}" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${draw()}</svg>`,
+  ).join('')
 
 /* ── the edges of the day: the way in, and the way home ─────────── */
 
@@ -824,6 +934,17 @@ const introSvg = () => `
     <g transform="translate(36 270)">
       <path d="M0 0c-4 -16 10 -26 20 -18c4 -14 24 -12 26 2c12 -4 20 8 14 16z" fill="${P.mint}" stroke="${I}" stroke-width="${L * 0.9}" stroke-linejoin="round"/>
     </g>
+  </svg>`
+
+/**
+ * The way home, sized like a scene: the metro sign the three walk off to
+ * (wide screens). They stop with the hero at x 144, the sign beside it.
+ */
+const metroSvg = () => `
+  <svg class="edge__metro" viewBox="0 0 400 300" preserveAspectRatio="xMinYMax meet" aria-hidden="true">
+    ${metroSign(222, 182)}
+    <rect x="206" y="204" width="32" height="12" rx="3" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.7}"/>
+    <text x="222" y="213" text-anchor="middle" font-family="${MONO}" font-size="8" font-weight="500" letter-spacing="1" fill="${I}">METRO</text>
   </svg>`
 
 const outroSvg = () => `
@@ -852,5 +973,5 @@ export function renderScenes(root: ParentNode = document) {
   const intro = root.querySelector<HTMLElement>('.day__edge--in')
   const outro = root.querySelector<HTMLElement>('.day__edge--out .edge__note')
   if (intro && !intro.childElementCount) intro.innerHTML = introSvg()
-  if (outro && !outro.childElementCount) outro.innerHTML = outroSvg()
+  if (outro && !outro.childElementCount) outro.innerHTML = metroSvg() + outroSvg()
 }

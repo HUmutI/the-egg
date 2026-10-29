@@ -1669,7 +1669,7 @@ h2 {
   color: var(--ink-2);
   transition: color 0.4s;
 }
-.step.is-now :is(.step__time, h3, p) {
+.step.is-now .step__cap :is(.step__time, h3, p) {
   color: var(--ink);
 }
 .step--hatch.is-now h3 {
@@ -1712,8 +1712,21 @@ h2 {
 .day__edge--in .edge__art {
   right: 0;
 }
-.day__edge--out .edge__art {
+/* the way home is wide enough for the three to stand on it, by the metro,
+   with the floor running on to the edge of the screen */
+.day__edge--out {
+  width: calc(50vw + var(--scene-w) * 0.36);
+}
+.edge__metro {
+  position: absolute;
   left: 0;
+  bottom: 0;
+  width: var(--scene-w);
+  height: calc(var(--scene-w) * 0.75);
+  overflow: visible;
+}
+.day__edge--out .edge__art {
+  left: calc(var(--scene-w) * 0.6);
 }
 /* the way home ends on the way in: apply for the next one */
 .edge__note {
@@ -1722,8 +1735,8 @@ h2 {
 }
 .day__apply {
   position: absolute;
-  left: calc(var(--scene-w) * 0.26);
-  bottom: calc(var(--scene-w) * 0.13);
+  left: calc(var(--scene-w) * 0.96);
+  bottom: calc(var(--scene-w) * 0.12);
   opacity: 0;
   visibility: hidden;
   translate: 0 12px;
@@ -1738,14 +1751,15 @@ h2 {
   translate: 0 0;
   transition-delay: 0.9s, 0.9s, 0s;
 }
-/* lights out at 20:00: as the three walk off, the windows go dark one by one */
+/* lights out at 20:00: as the three walk off, the club's windows go dark one
+   by one (the last window is the city outside, which comes on instead) */
 .step[data-step='1'] { --k: 1; }
 .step[data-step='2'] { --k: 2; }
 .step[data-step='3'] { --k: 3; }
 .step[data-step='4'] { --k: 4; }
 .step[data-step='5'] { --k: 5; }
-.step[data-step='6'] { --k: 6; }
-.day .step__scene svg {
+.step[data-step='6'] { --k: 99; }
+.day :is(.step__scene svg, .day__front) {
   filter: brightness(calc(1 - 0.42 * clamp(0, calc(var(--out, 0) * 7 - var(--k, 0)), 1)));
 }
 
@@ -1785,6 +1799,17 @@ h2 {
   display: block;
   width: 100%;
   height: auto;
+  overflow: visible;
+}
+/* what stands in front of them (the door frame, the nest's front wall): a
+   scene-sized layer on the floor line, kept over its window by day.ts */
+.day__front {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--scene-w) * -0.075);
+  width: var(--scene-w);
+  height: auto;
+  aspect-ratio: 4 / 3;
   overflow: visible;
 }
 /* standing still, they breathe */
@@ -1834,6 +1859,16 @@ h2 {
 .walker[data-state='6'][data-beat='4'] .gface--calm,
 .walker[data-state='1'] .whand--r,
 .walker[data-state='3'] .walker__hands {
+  display: none;
+}
+/* at Pizza, the slices come apart on a string of cheese (not while walking) */
+.walker .cheese {
+  display: none;
+}
+.walker[data-state='4']:is([data-beat='2'], [data-beat='3'], [data-beat='4']) .cheese {
+  display: inline;
+}
+.day__cast.is-walking .walker[data-state] .cheese {
   display: none;
 }
 /* the wave goodbye beside the way to apply */
@@ -1935,32 +1970,49 @@ h2 {
 .mate[data-state='6'] .mface--4,
 .day__cast[data-cheer='true'] .mhands--up,
 .mate[data-state='4'] .mprop--slice,
-.mate[data-state='6'] .mprop--phone,
-.mate[data-state='3'] .mprop--laptop {
+.mate[data-state='6'] .mprop--phone {
   display: inline;
 }
-.day__cast[data-cheer='true'] .mhands--down,
-.mate[data-state='3'] .mhands--down {
+/* cheering takes both hands: whatever they held goes down */
+.day__cast[data-cheer='true'] :is(.mhands--down, .mprop) {
   display: none;
 }
 .mate__body {
   transform-box: view-box;
   transform-origin: 100px 316px;
 }
+/* a cheer is a jump: crouch, spring up tall, land squashed, settle */
 .day__cast[data-cheer='true'] .mate__body {
-  animation: cheer 0.48s ease-in-out infinite alternate;
+  animation: cheer 0.9s infinite;
 }
 .day__cast[data-cheer='true'] .mate--b .mate__body {
-  animation-delay: 0.24s;
+  animation-delay: 0.3s;
 }
 @keyframes cheer {
-  to {
-    transform: translateY(-34px);
+  0%,
+  100% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  16% {
+    transform: scale(1.1, 0.88);
+    animation-timing-function: ease-out;
+  }
+  44% {
+    transform: translateY(-38px) scale(0.94, 1.08);
+    animation-timing-function: ease-in;
+  }
+  70% {
+    transform: scale(1.12, 0.86);
+    animation-timing-function: ease-out;
+  }
+  84% {
+    transform: scale(0.98, 1.02);
   }
 }
 
 /* ── each window's moment, scrubbed by its --d ── */
-.scene :is(.sc-rays, .watch__hand, .nest, .sc-star, .pie__slice, .confetti, .door__leaf, .sc-sunset, .mentor, .hearts path) {
+.scene :is(.sc-rays, .watch__hand, .sc-star, .confetti, .door__leaf, .sc-sunset, .mentor, .mentor__say, .hearts path) {
   transform-box: fill-box;
 }
 .scene .sc-rays,
@@ -2031,13 +2083,24 @@ h2 {
   stroke-dashoffset: 0;
 }
 
-/* 10:30 doors: it swings open on warm light */
+/* 10:30 doors: it swings open on warm light, on the egg standing there
+   (day.ts walks it out); then the wall fills up with sticky notes, it takes
+   one of the cups, and the note gets written */
 .scene .door__leaf {
   transform-origin: left center;
-  transform: scaleX(calc(1 - 0.7 * clamp(0, var(--d) * 2.4, 1))) skewY(calc(clamp(0, var(--d) * 2.4, 1) * -7deg));
+  transform: scaleX(calc(1 - 0.72 * clamp(0, var(--d) * 3.4, 1))) skewY(calc(clamp(0, var(--d) * 3.4, 1) * -8deg));
 }
 .scene .door__glow {
-  opacity: clamp(0, calc(var(--d) * 2.4 * 0.85), 0.85);
+  opacity: clamp(0, calc(var(--d) * 3.4 * 0.85), 0.85);
+}
+.scene--doors .sticky {
+  opacity: clamp(0, calc((var(--d) - 0.3) * 17 - var(--k)), 1);
+}
+.scene--doors .cup--take {
+  opacity: calc(1 - clamp(0, calc((var(--d) - 0.72) * 40), 1));
+}
+.scene--doors .note {
+  opacity: clamp(0, calc((var(--d) - 0.62) * 12), 1);
 }
 
 /* 11:00 crack: sixty seconds on the clock, the idea switches on at the end */
@@ -2073,26 +2136,9 @@ h2 {
   opacity: 0;
 }
 
-/* 11:30 nest: the three settle in and the team flag goes up */
+/* 11:30 nest: the three sit down in it and the team flag goes up */
 .scene .team-flag__cloth {
   transform: translateY(calc((1 - clamp(0, calc(var(--d) * 1.6), 1)) * 76px));
-}
-.scene .nest {
-  transform-origin: 50% 100%;
-}
-.step.is-now .scene .nest {
-  animation: nestRock 2.2s ease-in-out infinite;
-}
-@keyframes nestRock {
-  0%, 100% {
-    transform: rotate(0);
-  }
-  30% {
-    transform: rotate(-1.4deg);
-  }
-  70% {
-    transform: rotate(1.4deg);
-  }
 }
 .scene .hearts path {
   opacity: 0;
@@ -2118,11 +2164,9 @@ h2 {
   }
 }
 
-/* 12:00 incubate: the lamp warms up and the build grows through the
-   afternoon (the clock and the sky are day.ts's) */
-.scene .sticky {
-  opacity: clamp(0, calc(var(--d) * 13 - var(--k)), 1);
-}
+/* 12:00 incubate: the lamp warms up, the cups pile up and the build grows
+   through the afternoon, and the mentor has an opinion (the clock and the
+   sky are day.ts's) */
 .scene .cup {
   opacity: clamp(0, calc(var(--d) * 6 - var(--k)), 1);
 }
@@ -2142,23 +2186,22 @@ h2 {
   transform-origin: 50% 100%;
 }
 .step.is-now .scene .mentor {
-  animation: pace 5s ease-in-out infinite;
+  animation: leanIn 3.2s ease-in-out infinite;
 }
-@keyframes pace {
-  0%, 100% {
-    transform: translateX(0);
-  }
+@keyframes leanIn {
   50% {
-    transform: translateX(-16px);
+    transform: rotate(-4deg) translateX(-3px);
   }
+}
+.scene .mentor__say {
+  transform-origin: 30% 100%;
+  opacity: clamp(0, calc((var(--d) - 0.5) * 10), 1);
+  transform: scale(calc(0.6 + 0.4 * clamp(0, calc((var(--d) - 0.5) * 10), 1)));
 }
 
-/* 18:00 pizza: the sun goes down, a slice comes up */
+/* 18:00 pizza: the sun goes down behind the empty boxes */
 .scene .sc-sunset {
-  transform: translateY(calc(var(--d) * 30px));
-}
-.scene .pie__slice {
-  transform: translateY(calc(clamp(0, (var(--d) - 0.2) * 3, 1) * -12px));
+  transform: translateY(calc(var(--d) * 42px));
 }
 
 /* 19:00 hatch: the spot finds the egg, flares on the pop, then confetti;
@@ -2206,8 +2249,19 @@ h2 {
   }
 }
 
-/* 20:00 afterglow: the city winks, Atakule blinks */
-.step.is-now .scene .win {
+/* 20:00 afterglow: the city comes on as the club goes dark (wide screens
+   scrub it with --out; the picture book shows it lit), its windows wink and
+   Atakule blinks */
+.scene--afterglow {
+  --city: clamp(0, calc(var(--out, 0) * 1.4), 1);
+}
+.scene .win {
+  fill-opacity: calc(0.5 + 0.5 * var(--city, 1));
+}
+.scene .win--late {
+  opacity: clamp(0, calc(var(--city, 1) * 12 - var(--j)), 1);
+}
+.step.is-now .scene .win:not(.win--late) {
   animation: winkle 3s ease-in-out infinite;
   animation-delay: calc(var(--i) * -0.41s);
 }
@@ -2227,7 +2281,8 @@ h2 {
 
 /* wide screens with motion: the walker is the hero, the scenes keep their sets */
 @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
-  .scene__cast {
+  .scene__cast,
+  .scene--afterglow .metro {
     display: none;
   }
 }
@@ -2286,8 +2341,12 @@ h2 {
   }
   .day__edge--in,
   .day__cast,
+  .edge__metro,
   .scene .note {
     display: none;
+  }
+  .scene--afterglow {
+    --city: 1;
   }
   /* each window's aside, legible, as a scribbled line above its picture
      (.step p would otherwise set it as body copy) */
@@ -2354,6 +2413,12 @@ h2 {
   }
   .step__note {
     grid-column: 1 / -1;
+  }
+  .step:nth-child(odd) .step__note {
+    justify-self: end;
+    text-align: right;
+    margin: 0 6px -4px 0;
+    transform-origin: right bottom;
   }
 }
 
