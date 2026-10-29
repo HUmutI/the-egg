@@ -20,20 +20,39 @@
   --sky: #d0e0ea;
   --tomato: #e2432a;
   --ink: #1f1722;
-  --ink-2: rgba(31, 23, 34, 0.64);
+  /* quiet text: 0.72 keeps it soft but ≥ 4.5:1 on every day colour, yolk included */
+  --ink-2: rgba(31, 23, 34, 0.72);
   --ink-3: rgba(31, 23, 34, 0.2);
   --night: #221624;
 
   --bg: var(--butter);
   --fg: var(--ink);
+  /* the current sky colour; sky.ts moves it through the day */
+  --page: var(--bg);
 
   --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --f-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
   --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --f-hand: 'Reenie Beanie', 'Bradley Hand', cursive;
 
-  --gut: clamp(16px, 4vw, 56px);
+  /* notch and home bar (only non-zero with viewport-fit=cover) */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+
+  --gut: max(clamp(16px, 4vw, 56px), var(--safe-l), var(--safe-r));
   --nav-h: 72px;
+  /* the nav's real footprint: its bar plus any notch above it */
+  --nav-top: calc(var(--nav-h) + var(--safe-t));
+
+  /* one spacing rhythm for every section: a new <section> gets the
+     standard padding; scenes that own a whole screen opt out */
+  --sec-y: clamp(80px, 9vw, 150px);
+  --sec-y-tight: clamp(56px, 6vw, 104px);
+  --sec-head: clamp(28px, 4vw, 56px);
+
+  --focus: var(--ink);
   --line: 1.5px;
   --radius: 22px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -50,12 +69,12 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  scroll-padding-top: calc(var(--nav-top) + 8px);
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--page);
   color: var(--fg);
   font-family: var(--f-sans);
   font-size: clamp(16px, 1.15vw, 18px);
@@ -91,10 +110,24 @@ p {
   color: var(--ink);
 }
 
+/* one focus ring everywhere: ink on the day's paper, yolk once it's night
+   (tomato fell under 3:1 on lavender, pink and yolk) */
 :focus-visible {
-  outline: 3px solid var(--tomato);
+  outline: 2.5px solid var(--focus);
   outline-offset: 3px;
   border-radius: 6px;
+}
+.foot,
+.stage,
+body.is-night {
+  --focus: var(--yolk);
+}
+
+@media (hover: none) {
+  a,
+  button {
+    -webkit-tap-highlight-color: rgba(244, 181, 42, 0.28);
+  }
 }
 
 .defs {
@@ -126,7 +159,7 @@ p {
   transition: top 0.2s;
 }
 .skip:focus {
-  top: 12px;
+  top: calc(12px + var(--safe-t));
 }
 
 /* ── type primitives ─────────────────────────────────────────── */
@@ -179,7 +212,7 @@ body::after {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: clamp(28px, 4vw, 56px);
+  margin-bottom: var(--sec-head);
   color: var(--ink-2);
 }
 .label span {
@@ -301,12 +334,40 @@ body::after {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
-  height: var(--nav-h);
-  padding: 0 var(--gut);
+  height: var(--nav-top);
+  padding: var(--safe-t) var(--gut) 0;
   pointer-events: none;
 }
 .nav > * {
   pointer-events: auto;
+}
+/* once the page moves, a band of the current sky slides in behind the
+   pills so headings never scroll straight into them */
+.nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--page) 84%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 1px 0 var(--ink-3);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out);
+  pointer-events: none;
+}
+.nav.is-scrolled::before {
+  opacity: 1;
+  transform: none;
+}
+body.is-night .nav::before {
+  box-shadow: 0 1px 0 rgba(253, 248, 239, 0.14);
+}
+@supports not (background: color-mix(in srgb, red 50%, transparent)) {
+  .nav::before {
+    background: var(--page);
+  }
 }
 
 .nav__logo,
@@ -397,9 +458,23 @@ body::after {
   padding: 8px 10px;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
   text-decoration: none;
   border-radius: 999px;
   transition: background 0.25s;
+}
+/* small laptops and tablets in landscape: the links need more than a
+   third of the bar, so the clock centres in what's left */
+@media (min-width: 861px) and (max-width: 1180px) {
+  .nav {
+    grid-template-columns: auto 1fr auto;
+  }
+  .nav__clock {
+    justify-self: center;
+  }
+  .nav__links a:not(.btn) {
+    padding: 8px 8px;
+  }
 }
 .nav__links a:not(.btn):hover {
   background: var(--butter);
@@ -429,32 +504,93 @@ body::after {
   border-color: var(--ink-2);
 }
 
+/* phones: one compact bar — egg, clock, language, seat — every target 44px */
 @media (max-width: 860px) {
+  :root {
+    --nav-h: 60px;
+  }
   .nav {
     grid-template-columns: auto 1fr auto;
+    gap: 8px;
+  }
+  .nav__logo,
+  .nav__clock,
+  .nav__links {
+    height: 44px;
   }
   .nav__clock {
     justify-self: center;
+    gap: 8px;
+    padding: 0 14px 0 10px;
+  }
+  .clock__arc {
+    width: 28px;
   }
   .nav__links a:not(.btn) {
     display: none;
   }
   .nav__links {
-    padding: 4px;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
   }
   .nav__logo span {
     display: none;
   }
   .nav__logo {
-    padding: 0 12px;
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+  }
+  .lang-toggle {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border-color: var(--ink);
+    background: var(--cream);
+  }
+  .nav__links .btn {
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--ink);
+  }
+  /* the ink button would vanish into the night band: it turns yolk */
+  body.is-night .nav__links .btn {
+    --b-bg: var(--yolk);
+    --b-fg: var(--ink);
+  }
+  body.is-night .nav__links .btn::before {
+    background: var(--cream);
   }
   .clock__label {
     min-width: 0;
   }
 }
-@media (max-width: 420px) {
+@media (max-width: 440px) {
   .clock__label {
     display: none;
+  }
+}
+@media (max-width: 374px) {
+  .nav {
+    gap: 6px;
+  }
+  .nav__clock {
+    padding: 0 10px 0 8px;
+  }
+  .clock__arc {
+    width: 22px;
+  }
+  .nav__links .btn {
+    padding: 0 12px;
+  }
+}
+/* landscape phones: the screen is short, so the bar is too */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --nav-h: 56px;
   }
 }
 
@@ -464,7 +600,7 @@ body::after {
    (--butter), so the image has no edges — it just sits on the paper. */
 .hero {
   position: relative;
-  padding: calc(var(--nav-h) + 18px) var(--gut) clamp(18px, 3vw, 32px);
+  padding: calc(var(--nav-top) + 18px) var(--gut) clamp(18px, 3vw, 32px);
   display: grid;
   grid-template-rows: auto 1fr auto;
 }
@@ -535,7 +671,7 @@ body::after {
 .hero__frame {
   position: relative;
   /* as large as the screen allows, never upscaled past the original */
-  width: min(100%, 1660px, calc((100svh - var(--nav-h) - 264px) * 1.7511));
+  width: min(100%, 1660px, calc((100svh - var(--nav-top) - 264px) * 1.7511));
 }
 .hero__art img {
   display: block;
@@ -740,7 +876,7 @@ html:not(.js) .hero__art img {
 .hero__next {
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--ink-2);
+  color: var(--ink);
 }
 .hero__built {
   position: relative;
@@ -805,9 +941,22 @@ html:not(.js) .hero__art img {
     transform: translateX(-50%);
   }
 }
+/* no marquee: the real logos sit still and centred, without the
+   repeats and the edge fade that only make sense while moving */
 @media (prefers-reduced-motion: reduce) {
   .built__track {
     animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 0;
+  }
+  .built__logo[data-clone] {
+    display: none;
+  }
+  .built__window {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 
@@ -816,23 +965,87 @@ html:not(.js) .hero__art img {
   .hide-sm {
     display: none;
   }
+  .hero {
+    padding-top: calc(var(--nav-top) + 10px);
+  }
   /* full-bleed on phones: the illustration carries its own margins */
   .hero__art {
-    margin: 18px calc(var(--gut) * -1) 6px;
+    margin: clamp(14px, 3.4vh, 32px) calc(var(--gut) * -1) clamp(10px, 2.4vh, 24px);
   }
   .hero__frame {
     width: 100%;
   }
-  .hero__built {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
+  /* the masthead keeps its strapline on phones, as a second line */
   .hero__meta {
     grid-template-columns: 1fr auto;
+    row-gap: 6px;
   }
-  .hero__meta .hide-sm,
+  .hero__meta .mh__title.hide-sm {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    padding-top: 8px;
+    border-top: 1px solid var(--ink-3);
+    font-size: 15px;
+    line-height: 1.3;
+  }
   .mh__place .mono {
     display: none;
+  }
+  /* one clear action, then the date underneath it */
+  .hero__cta {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .hero__cta .btn {
+    min-width: min(100%, 300px);
+    min-height: 54px;
+    font-size: 17px;
+  }
+  .hero__next {
+    font-size: 12px;
+    text-align: center;
+    text-wrap: balance;
+  }
+  /* the logos run edge to edge instead of being cut at the gutter */
+  .hero__built {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 14px;
+    margin-top: clamp(20px, 3.4vh, 32px);
+    padding-top: 16px;
+  }
+  .built__label {
+    font-size: 16px;
+  }
+  .built__window {
+    justify-self: stretch;
+    margin: 0 calc(var(--gut) * -1);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .built__logo {
+    padding: 0 28px;
+  }
+  .built__logo--odtu img {
+    height: 34px;
+  }
+  .built__logo--tk img {
+    height: 15px;
+  }
+}
+/* landscape phones: the poster has to fit under the bar, not the width;
+   the masthead goes back to one line to give it the room */
+@media (max-width: 960px) and (max-height: 500px) and (orientation: landscape) {
+  .hero__meta .mh__title.hide-sm {
+    display: none;
+  }
+  .hero__art {
+    margin: 8px 0 14px;
+  }
+  .hero__frame {
+    width: min(100%, calc((100svh - var(--nav-top) - 80px) * 1.7511));
   }
 }
 
@@ -855,7 +1068,7 @@ html:not(.js) .hero__art img {
 
 section {
   position: relative;
-  padding: clamp(80px, 9vw, 150px) var(--gut);
+  padding: var(--sec-y) var(--gut);
 }
 
 h2 {
@@ -881,17 +1094,18 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: calc(var(--nav-h) + 24px) 0 clamp(48px, 8vh, 96px);
+  padding: calc(var(--nav-top) + 24px) 0 clamp(48px, 8vh, 96px);
 }
 .what__stage .label {
   position: absolute;
-  top: calc(var(--nav-h) + 28px);
+  top: calc(var(--nav-top) + 28px);
   left: 0;
 }
 .what__cue {
   position: absolute;
   left: 0;
-  bottom: clamp(24px, 5vh, 48px);
+  /* clear of the live badge in the corner */
+  bottom: max(72px, 8vh);
   color: var(--ink-2);
 }
 .what__cue::after {
@@ -907,13 +1121,33 @@ h2 {
 .js .statement .hl {
   --p: 0%;
 }
+/* sized by the screen's height as well as its width, so the sentence
+   fills its scene instead of floating in it */
 .statement {
-  max-width: 17em;
-  font-size: clamp(36px, 5.8vw, 104px);
+  max-width: 15em;
+  font-size: clamp(36px, min(6.8vw, 11.6vh), 132px);
   font-weight: 420;
   line-height: 1.04;
   letter-spacing: -0.03em;
   text-wrap: balance;
+}
+/* phones: the scene is in the page's flow, not a whole empty screen */
+@media (max-width: 860px) {
+  .what__stage {
+    min-height: 0;
+    padding: var(--sec-y) 0 calc(var(--sec-y) * 0.8);
+  }
+  .what__stage .label,
+  .what__cue {
+    position: static;
+  }
+  .what__cue {
+    margin-top: 32px;
+  }
+  .statement {
+    font-size: clamp(34px, min(10.2vw, 13vh), 60px);
+    overflow-wrap: break-word;
+  }
 }
 
 .chip {
@@ -998,7 +1232,7 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: calc(var(--nav-h) + 24px) 0 clamp(48px, 8vh, 96px);
+  padding: calc(var(--nav-top) + 24px) 0 clamp(48px, 8vh, 96px);
 }
 .who__head {
   padding-top: clamp(20px, 2vw, 28px);
@@ -1220,19 +1454,23 @@ h2 {
 .why {
   padding-top: clamp(40px, 6vw, 96px);
 }
+/* a pull quote between two scenes: set large and balanced so it holds
+   the space on desktop instead of drifting in it */
 .why--mini {
-  padding-bottom: clamp(24px, 4vw, 56px);
+  padding-top: var(--sec-y);
+  padding-bottom: var(--sec-y);
 }
 .why__mini {
-  max-width: 52ch;
+  max-width: 21ch;
   margin: 0 auto;
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-weight: 460;
-  font-size: clamp(22px, 2.4vw, 32px);
-  line-height: 1.25;
+  font-weight: 440;
+  font-size: clamp(28px, 4.4vw, 76px);
+  line-height: 1.08;
   text-align: center;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 .why__mini em {
   color: var(--tomato);
@@ -1335,7 +1573,7 @@ h2 {
 .day__pin {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--nav-h) + 40px) 0 0;
+  padding: calc(var(--nav-top) + 40px) 0 0;
   display: grid;
   /* heading, programme and egg sit together, centred in the screen,
      instead of the programme being pushed down to the floor */
@@ -1379,32 +1617,45 @@ h2 {
   width: max-content;
   will-change: transform;
 }
-/* a quiet programme: a hairline, a small time, an italic title */
+/* a quiet programme: a hairline, a small time, an italic title.
+   The step under the egg is inked in; the others stay readable, just
+   softer (quiet ink, never faded below AA). */
 .step {
   position: relative;
   width: clamp(260px, 23vw, 360px);
   padding: 26px clamp(28px, 3vw, 56px) 0 0;
   border-top: 1px solid var(--ink-3);
-  opacity: 0.36;
-  transition: opacity 0.5s var(--ease-out);
 }
-.step.is-now {
-  opacity: 1;
+.step::after {
+  /* the stretch of the line you're in, drawn in ink */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1.5px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+.step.is-now::after {
+  transform: scaleX(1);
 }
 .step__node {
   position: absolute;
   left: 0;
-  top: -7px;
-  width: 10px;
-  height: 13px;
-  border: 1px solid var(--ink);
+  top: -9px;
+  width: 13px;
+  height: 17px;
+  border: 1.5px solid var(--ink);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--lav);
+  background: var(--cream);
   transition: background 0.4s, transform 0.5s var(--ease-spring);
 }
 .step.is-now .step__node {
   background: var(--yolk);
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 .step--hatch.is-now .step__node {
   background: var(--tomato);
@@ -1431,6 +1682,11 @@ h2 {
   letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 14px;
+  color: var(--ink-2);
+  transition: color 0.4s;
+}
+.step.is-now h3 {
+  color: var(--ink);
 }
 .step p {
   max-width: 28ch;
@@ -1572,30 +1828,93 @@ h2 {
   animation: eggBlink 5s 1.2s infinite;
 }
 
+/* below 900px the day is a printed programme: a vertical line with an
+   egg on it at every time, read top to bottom (no pin) */
 @media (max-width: 899px) {
   .day__pin {
     min-height: 0;
-    padding: clamp(96px, 13vw, 160px) 0 clamp(64px, 10vw, 120px);
+    padding: var(--sec-y) 0;
     display: block;
   }
   .day__head {
     flex-direction: column-reverse;
     align-items: start;
+    gap: 0;
   }
   .day__head .label {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .day__viewport {
+    padding: clamp(32px, 6vw, 56px) 0 0;
   }
   .day__track {
+    --rail: 6px;
     flex-direction: column;
     width: auto;
+    will-change: auto;
   }
   .step {
     width: auto;
-    padding: 24px 0 30px;
-    opacity: 1;
+    padding: 0 0 clamp(28px, 6vw, 40px) 36px;
+    border-top: 0;
+  }
+  /* the line: each step draws the stretch down to the next one */
+  .step::after {
+    left: var(--rail);
+    right: auto;
+    top: 6px;
+    bottom: -6px;
+    width: 1.5px;
+    height: auto;
+    background: var(--ink-3);
+    transform: none;
+  }
+  .step:last-child::after {
+    display: none;
+  }
+  .step__node {
+    left: calc(var(--rail) - 6px);
+    top: -2px;
+  }
+  .step__time {
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .step h3 {
+    font-size: clamp(32px, 8.6vw, 44px);
+    margin-bottom: 10px;
+  }
+  .step p {
+    max-width: 40ch;
   }
   .day__ground {
     display: none;
+  }
+}
+/* tablets: the time gets its own column, like a printed schedule */
+@media (min-width: 600px) and (max-width: 899px) {
+  .day__track {
+    --rail: 118px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    column-gap: 72px;
+    align-items: start;
+    padding-left: 0;
+  }
+  .step__time {
+    grid-row: 1 / span 2;
+    margin: 0;
+    font-size: 13px;
+    text-align: right;
+  }
+  .step h3 {
+    margin-top: -6px;
+  }
+  .step h3,
+  .step p {
+    grid-column: 2;
   }
 }
 
@@ -1841,7 +2160,7 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: calc(var(--nav-h) + 24px);
+  padding-top: calc(var(--nav-top) + 24px);
   padding-bottom: clamp(40px, 6vh, 72px);
 }
 .rules .label {
@@ -1933,6 +2252,11 @@ h2 {
 .rule--first p {
   /* room for the hand-written correction above "do not" */
   padding-top: 0.3em;
+}
+/* in Turkish the struck word wraps onto the second line, so the
+   correction needs room between the lines, not just above them */
+:lang(tr) .rule--first p {
+  line-height: 1.42;
 }
 /* the second rule is said louder */
 .rule--second strong {
@@ -2143,8 +2467,22 @@ html:not(.js) .rule__fix,
   align-items: baseline;
   flex-wrap: wrap;
   gap: 8px 24px;
-  padding: 10px var(--gut) 26px;
-  color: rgba(253, 248, 239, 0.5);
+  padding: 10px var(--gut) calc(26px + var(--safe-b));
+  color: rgba(253, 248, 239, 0.66);
+}
+/* phones: every footer link is a full finger tall */
+@media (max-width: 700px) {
+  .foot__cols ul {
+    gap: 0;
+  }
+  .foot__cols .mono {
+    margin-bottom: 2px;
+  }
+  .foot__cols a {
+    display: inline-block;
+    padding: 11px 0;
+    background-position: 0 calc(100% - 9px);
+  }
 }
 /* the hint for the hidden game: big, handwritten, impossible to miss */
 .foot__hint {
@@ -2321,9 +2659,11 @@ html:not(.js) .rule__fix,
 }
 
 /* The game lives below the footer. Scrolling into it opens the portal. */
+/* tall enough to rise into and settle, short enough that it never reads
+   as an empty screen after the footer */
 .stage {
   position: relative;
-  height: 210svh;
+  height: 185svh;
   padding: 0;
   background: var(--night);
   color: var(--cream);
@@ -2334,9 +2674,15 @@ html:not(.js) .rule__fix,
   height: 100svh;
   display: grid;
   place-items: center;
-  padding: calc(var(--nav-h) * 0.5) clamp(12px, 3vw, 40px) clamp(12px, 2vw, 24px);
+  padding: calc(var(--nav-h) * 0.5 + var(--safe-t)) max(clamp(12px, 3vw, 40px), var(--safe-r), var(--safe-l))
+    max(clamp(12px, 2vw, 24px), var(--safe-b));
   overflow: hidden;
   perspective: 1400px;
+}
+@media (max-width: 700px) {
+  .stage {
+    height: 160svh;
+  }
 }
 .js .stage .cabinet {
   opacity: 0;
@@ -2720,6 +3066,41 @@ body.is-arcade .nav > * {
     border-radius: 8px;
   }
 }
+/* landscape phones: there's no height for a deck under the screen, so
+   the controls stand beside it and the screen takes the full height */
+@media (max-height: 500px) and (orientation: landscape) {
+  .stage__sticky {
+    padding: 8px max(12px, var(--safe-r), var(--safe-l)) max(8px, var(--safe-b));
+  }
+  .cabinet {
+    --p: 10px;
+    --deck: 124px;
+    display: flex;
+    width: auto;
+    max-width: 100%;
+    border-radius: 18px;
+  }
+  .screen {
+    width: auto;
+    height: min(calc(100svh - 16px - 2 * var(--p)), calc((100vw - 24px - var(--deck) - 2 * var(--p)) * 0.6));
+    border-radius: 8px;
+  }
+  .cabinet__deck {
+    flex: none;
+    flex-direction: column;
+    justify-content: center;
+    width: var(--deck);
+    padding: var(--p) var(--p) var(--p) 0;
+    text-align: center;
+  }
+  .cabinet__name {
+    font-size: 11px;
+    white-space: normal;
+  }
+  .cabinet__help {
+    display: none;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .crt--scan {
@@ -2762,16 +3143,21 @@ body.is-arcade .nav > * {
   }
 }
 
-/* ── LIVE BADGE: a small floating tell that the site rebuilds itself ── */
+/* ── LIVE BADGE: a small floating tell that the site rebuilds itself ──
+   Just the egg and its pulse in the corner; it says its line once when
+   it first appears and again on hover or focus. badge.ts keeps it out of
+   the way: away while you scroll, over the hero's logos, the footer and
+   the arcade. */
 .live-badge {
   position: fixed;
-  left: 18px;
-  bottom: 18px;
+  left: calc(12px + var(--safe-l));
+  bottom: calc(12px + var(--safe-b));
   z-index: 60;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px 7px 8px;
+  gap: 6px;
+  height: 38px;
+  padding: 0 11px 0 9px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--cream);
@@ -2780,8 +3166,29 @@ body.is-arcade .nav > * {
   transform: rotate(-2deg);
   box-shadow: 0 6px 16px -10px rgba(31, 23, 34, 0.35);
   transition:
-    transform 0.3s var(--ease-spring),
+    transform 0.45s var(--ease-spring),
+    opacity 0.3s var(--ease-out),
     box-shadow 0.3s var(--ease-out);
+}
+/* a 48px target around the small chip */
+.live-badge::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+}
+.live-badge.is-away {
+  opacity: 0;
+  transform: translateY(calc(100% + 14px)) rotate(-2deg);
+  pointer-events: none;
+  transition:
+    transform 0.4s var(--ease-out),
+    opacity 0.25s var(--ease-out);
+}
+.live-badge:focus-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 .live-badge:hover {
   transform: rotate(0deg) translateY(-2px);
@@ -2799,17 +3206,44 @@ body.is-arcade .nav > * {
 .live-badge__text {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 .live-badge__dot {
+  flex: none;
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--mint-deep);
   animation: liveBadgePulse 1.8s ease-in-out infinite;
+}
+.live-badge__text > span:not(.live-badge__dot) {
+  display: block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-width 0.5s var(--ease-out),
+    margin 0.5s var(--ease-out),
+    opacity 0.25s var(--ease-out);
+}
+.live-badge.is-peek .live-badge__text > span:not(.live-badge__dot),
+.live-badge:focus-visible .live-badge__text > span:not(.live-badge__dot) {
+  max-width: 300px;
+  margin-left: 7px;
+  opacity: 1;
+  transition:
+    max-width 0.6s var(--ease-out),
+    margin 0.6s var(--ease-out),
+    opacity 0.4s var(--ease-out) 0.1s;
+}
+@media (hover: hover) {
+  .live-badge:hover .live-badge__text > span:not(.live-badge__dot) {
+    max-width: 300px;
+    margin-left: 7px;
+    opacity: 1;
+  }
 }
 @keyframes liveBadgePulse {
   0%, 100% {
@@ -2819,14 +3253,6 @@ body.is-arcade .nav > * {
   50% {
     opacity: 1;
     transform: scale(1.2);
-  }
-}
-@media (max-width: 640px) {
-  .live-badge__text span:not(.live-badge__dot) {
-    display: none;
-  }
-  .live-badge {
-    padding: 7px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
