@@ -19,27 +19,43 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px 0;
+  gap: 6px 1.4em;
   margin: 0;
   padding: 0;
   list-style: none;
   color: var(--ink);
   letter-spacing: 0.08em;
 }
+/* each fact leads with a tiny egg, so a wrapped line never ends on a dangling separator */
 .hero__facts li {
-  white-space: nowrap;
-}
-.hero__facts li:not(:last-child)::after {
-  content: '·';
-  content: '·' / '';
-  margin: 0 0.7em;
-  color: var(--ink-2);
-}
-.hero__info .hero__next {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.6em;
+  white-space: nowrap;
+}
+.hero__facts li::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 9px;
+  border: 1.2px solid var(--ink);
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  background: var(--cream);
+}
+.hero__info .hero__next {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px 10px;
   color: var(--ink);
+}
+/* the status rides in a pill, so on a narrow phone it drops to its own line cleanly */
+.hero__pill {
+  padding: 3px 9px 2px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  white-space: nowrap;
 }
 .hero__info .hero__next[hidden] {
   display: none;
@@ -59,7 +75,8 @@
     justify-items: start;
     text-align: left;
   }
-  .hero__facts {
+  .hero__facts,
+  .hero__info .hero__next {
     justify-content: flex-start;
   }
 }
