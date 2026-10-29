@@ -2,6 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { applyI18n, initLangToggle } from './i18n'
 import { initHero } from './hero'
+import { initLiveBadge } from './badge'
 import { initSky } from './sky'
 import { initReveals, initRules, initStatement } from './story'
 import { initDay } from './day'
@@ -18,6 +19,7 @@ initNextSunday()
 // The hero is a picture, not measured text: show it as soon as it decodes
 // instead of waiting on the fonts below.
 initHero()
+initLiveBadge()
 
 const start = () => {
   initReveals()

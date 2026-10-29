@@ -3043,16 +3043,21 @@ body.is-arcade .nav > * {
   }
 }
 
-/* ── LIVE BADGE: a small floating tell that the site rebuilds itself ── */
+/* ── LIVE BADGE: a small floating tell that the site rebuilds itself ──
+   Just the egg and its pulse in the corner; it says its line once when
+   it first appears and again on hover or focus. badge.ts keeps it out of
+   the way: away while you scroll, over the hero's logos, the footer and
+   the arcade. */
 .live-badge {
   position: fixed;
-  left: 18px;
-  bottom: 18px;
+  left: calc(12px + var(--safe-l));
+  bottom: calc(12px + var(--safe-b));
   z-index: 60;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px 7px 8px;
+  gap: 6px;
+  height: 38px;
+  padding: 0 11px 0 9px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--cream);
@@ -3061,8 +3066,29 @@ body.is-arcade .nav > * {
   transform: rotate(-2deg);
   box-shadow: 0 6px 16px -10px rgba(31, 23, 34, 0.35);
   transition:
-    transform 0.3s var(--ease-spring),
+    transform 0.45s var(--ease-spring),
+    opacity 0.3s var(--ease-out),
     box-shadow 0.3s var(--ease-out);
+}
+/* a 48px target around the small chip */
+.live-badge::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+}
+.live-badge.is-away {
+  opacity: 0;
+  transform: translateY(calc(100% + 14px)) rotate(-2deg);
+  pointer-events: none;
+  transition:
+    transform 0.4s var(--ease-out),
+    opacity 0.25s var(--ease-out);
+}
+.live-badge:focus-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 .live-badge:hover {
   transform: rotate(0deg) translateY(-2px);
@@ -3091,17 +3117,44 @@ body.is-arcade .nav > * {
 .live-badge__text {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 .live-badge__dot {
+  flex: none;
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--mint-deep);
   animation: liveBadgePulse 1.8s ease-in-out infinite;
+}
+.live-badge__text > span:not(.live-badge__dot) {
+  display: block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-width 0.5s var(--ease-out),
+    margin 0.5s var(--ease-out),
+    opacity 0.25s var(--ease-out);
+}
+.live-badge.is-peek .live-badge__text > span:not(.live-badge__dot),
+.live-badge:focus-visible .live-badge__text > span:not(.live-badge__dot) {
+  max-width: 300px;
+  margin-left: 7px;
+  opacity: 1;
+  transition:
+    max-width 0.6s var(--ease-out),
+    margin 0.6s var(--ease-out),
+    opacity 0.4s var(--ease-out) 0.1s;
+}
+@media (hover: hover) {
+  .live-badge:hover .live-badge__text > span:not(.live-badge__dot) {
+    max-width: 300px;
+    margin-left: 7px;
+    opacity: 1;
+  }
 }
 @keyframes liveBadgeCrack {
   0%, 20% {
@@ -3122,14 +3175,6 @@ body.is-arcade .nav > * {
   50% {
     opacity: 1;
     transform: scale(1.2);
-  }
-}
-@media (max-width: 640px) {
-  .live-badge__text span:not(.live-badge__dot) {
-    display: none;
-  }
-  .live-badge {
-    padding: 7px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
