@@ -692,7 +692,8 @@ export function createNightShift(opts: {
     const fedLabel = lang === 'tr' ? 'beslenen' : 'fed'
     const handsFree = lang === 'tr' ? 'eller boş' : 'hands free'
     const sliceLabel = lang === 'tr' ? '<b>● dilim</b>' : '<b>● slice</b>'
-    hud.innerHTML = `<span>${fedLabel} <b>${fed}/8</b></span><span>${mid}</span><span>${carrying ? sliceLabel : handsFree}${golden ? ' · <b>★</b>' : ''}</span>`
+    // "hands free" is the resting state, so narrow screens (which hide <i>) skip it
+    hud.innerHTML = `<span>${fedLabel} <b>${fed}/8</b></span><span>${mid}</span><span>${carrying ? sliceLabel : `<i>${handsFree}</i>`}${golden ? ' · <b>★</b>' : ''}</span>`
   }
 
   // ── dialog ──
@@ -739,24 +740,24 @@ export function createNightShift(opts: {
       lang === 'tr'
         ? won
           ? `<h3>Demo zamanı</h3>
-             <p>Tüm takımlar yayına girdi. Herkes ${fmt(minutes)}’e kadar beslendi${golden ? ', ve altın yumurtayı buldun' : ''}.</p>
+             <p>Tüm takımlar yayına girdi. Herkes doydu, saat daha ${fmt(minutes)}${golden ? ' ve altın yumurtayı da buldun' : ''}.</p>
              <ul>${shipped}</ul>
-             <p>The Egg Club’da bir Pazar böyle hissettirir. Gelip gerçeğini inşa et.</p>
-             <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Yerini ayır</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Tekrar oyna</button></div>`
+             <p>The Egg Club’da bir pazar böyle hissettirir. Gel, gerçeğini yap.</p>
+             <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Başvur</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Tekrar oyna</button></div>`
           : `<h3>Gece yarısı</h3>
-             <p>Demolar ${8 - fed} açlıktan bitmiş inşacıyla başladı. Seni affederler. Muhtemelen.</p>
+             <p>Demolara ${8 - fed} kişi aç karnına çıktı. Seni affederler. Muhtemelen.</p>
              ${shipped ? `<ul>${shipped}</ul>` : ''}
-             <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Tekrar dene</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Yerini ayır</button></div>`
+             <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Tekrar dene</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Başvur</button></div>`
         : won
           ? `<h3>Demo time</h3>
              <p>Every team shipped. Everyone fed by ${fmt(minutes)}${golden ? ', and you found the golden egg' : ''}.</p>
              <ul>${shipped}</ul>
              <p>This is what a Sunday at The Egg Club feels like. Come build the real thing.</p>
-             <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Save a seat</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Play again</button></div>`
+             <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Apply for a seat</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Play again</button></div>`
           : `<h3>Midnight</h3>
              <p>Demos started with ${8 - fed} hungry builder${8 - fed === 1 ? '' : 's'}. They’ll forgive you. Probably.</p>
              ${shipped ? `<ul>${shipped}</ul>` : ''}
-             <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Try again</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Save a seat</button></div>`
+             <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Try again</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Apply for a seat</button></div>`
     renderHud()
     card.querySelector<HTMLButtonElement>('.pxbtn')?.focus({ preventScroll: true })
   }
@@ -781,7 +782,7 @@ export function createNightShift(opts: {
     state = 'play'
     hint.innerHTML =
       lang === 'tr'
-        ? 'Saat 23:00. Demolar gece yarısı. Pizza tezgahta — <b>8 inşacının hepsini besle</b>.'
+        ? 'Saat 23:00. Demolar gece yarısı. Pizza tezgahta — <b>8 kişinin hepsini doyur</b>.'
         : 'It’s 23:00. Demos at midnight. Pizza’s on the counter — <b>feed all 8 builders</b>.'
     renderHud()
   }
