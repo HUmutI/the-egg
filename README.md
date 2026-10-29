@@ -1,7 +1,7 @@
 # The Egg Club
 
-Landing page for The Egg Club — a Sunday build club, starting in Ankara.
-Doors at noon, pizza at six, demos before midnight.
+Landing page for The Egg Club — a free build club every other Sunday at ODTÜ
+(METU), Ankara. Doors at noon, pizza at six, demos at 21:30, done before midnight.
 
 ```bash
 npm install
@@ -19,15 +19,37 @@ colours as you scroll, and the club clock in the nav goes from noon to past midn
 
 | Where | What | Code |
 | --- | --- | --- |
-| Hero | The finished illustration in `public/hero/` with hand-drawn notes on top (`#doodles`), a magazine-style masthead, and a slow "Built with love by people from…" logo strip (`public/logos/`) | `src/hero.ts` |
+| Hero | The finished illustration in `public/hero/` with hand-drawn notes on top (`#doodles`), a magazine-style masthead, the apply button with the essentials under it (free · every other Sunday · noon to midnight · METU) plus the next date from the app, and a slow "Built with love by people from…" logo strip (`public/logos/`) | `src/hero.ts`, `src/next.ts` |
 | Background + clock | Section colours (`data-bg`) and the scroll-driven clock | `src/sky.ts` |
 | What / Who comes / Why | "Who comes": a typeset guest list of disciplines, each with a one-line caption on hover/tap; hand-drawn strikethroughs | `src/story.ts` |
 | The day | Pinned horizontal timeline; an egg waddles along a ruler and hatches at 21:30 demos | `src/day.ts` |
 | Who shows up | A specimen plate of egg figures; pull one and it springs back, hover/tap for its quote | `src/flock.ts` |
-| Join | Links out to app.the-egg.club, where applications live; the next Sunday's date comes from the app's `/api/next-event` | `src/next.ts` |
+| Good questions | The FAQ: native `<details>` disclosures (cost, who can come, what to bring, where, language, food, selection, friends…) | markup only, `src/styles/story.css` |
+| Join | A ticket for the next Sunday, the apply button, what happens after you apply, and a bring-a-friend share (native share sheet, else WhatsApp; copy link). Applications live on app.the-egg.club | `src/next.ts`, `src/share.ts` |
 | Footer → game | Keep scrolling past the footer and the night opens into the arcade cabinet running **Night Shift** (scroll-driven, no scroll-jacking); the footer's "keep scrolling" note glides you there | `src/portal.ts`, `src/nightshift.ts` |
 
 Everything respects `prefers-reduced-motion`.
+
+### The next Sunday
+
+`src/next.ts` reads the app's `/api/next-event` (4 s timeout) and fills in the
+masthead, the hero's next-date line, the Join ticket, and points every
+`a[data-apply]` at that Sunday's page. Each element ships with complete,
+date-free copy, so if the app is slow, down, or has nothing scheduled the page
+just stays general. Copy for each state (`live`, `open` — applications open,
+`soon` — not yet, `next` — unknown) lives on the element as `data-<state>`
+templates (`{n}`, `{short}`, `{long}`, `{time}`, `{place}`), translated like any
+other attribute.
+
+### Languages
+
+English is the source text in `index.html`; Turkish sits next to it in
+`data-i18n-tr` (text), `data-i18n-tr-html` (inline markup) and
+`data-i18n-tr-attr-<name>` (attributes, including the `data-*` templates
+above), applied by `src/i18n.ts`. With no saved choice, the page follows the
+browser: the first of `navigator.languages` that is Turkish or English wins, so
+a phone set to Turkish opens in Turkish. The EN/TR toggle saves the choice.
+Every visible string needs both.
 
 ### Night Shift (the hidden game)
 
@@ -40,7 +62,14 @@ anyone off-screen. There's a golden egg hidden somewhere.
 
 ## Before launch
 
-- **Placeholder content**: the social links in the footer.
+- **No social links yet**: the placeholder Instagram / X / Luma links were removed (they went to
+  those sites' home pages). When the club has real accounts, add a column to `.foot__cols` in the
+  footer, with an EN and TR heading.
+- **Confirmations must carry the room**: the FAQ and Join promise that the exact room (and anything
+  needed to get onto the ODTÜ campus) comes with your confirmation. The app only shows the status
+  ("you're in ✓") and sends no email yet, so make sure approved people get that message.
+- **Dietary needs go to the club inbox**: the food answer asks people to email
+  theeggclubb@gmail.com before Sunday; someone has to read it.
 
 ## Logos in the hero strip
 
