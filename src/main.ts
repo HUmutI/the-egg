@@ -8,6 +8,9 @@ import { initDay } from './day'
 import { initFlock } from './flock'
 import { initPortal } from './portal'
 import { initNextSunday } from './next'
+import { initShare } from './share'
+// hero facts, FAQ, join ticket and share: new UI, kept out of main.css
+import './styles/story.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,6 +18,7 @@ gsap.registerPlugin(ScrollTrigger)
 applyI18n()
 initLangToggle()
 initNextSunday()
+initShare()
 // The hero is a picture, not measured text: show it as soon as it decodes
 // instead of waiting on the fonts below.
 initHero()

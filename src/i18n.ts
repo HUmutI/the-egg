@@ -2,12 +2,23 @@ export type Lang = 'en' | 'tr'
 
 const KEY = 'eggclub:lang'
 
+/**
+ * A saved choice from the toggle wins. Without one, follow the browser:
+ * walk the visitor's preferred languages and take the first we speak, so a
+ * phone set to Turkish lands in Turkish and everyone else gets English.
+ */
 export function getLang(): Lang {
   try {
     const v = localStorage.getItem(KEY)
     if (v === 'tr' || v === 'en') return v
   } catch {
     /* storage unavailable */
+  }
+  const prefs = navigator.languages?.length ? navigator.languages : [navigator.language]
+  for (const p of prefs) {
+    const code = (p ?? '').toLowerCase()
+    if (code.startsWith('tr')) return 'tr'
+    if (code.startsWith('en')) return 'en'
   }
   return 'en'
 }
@@ -33,8 +44,8 @@ export const lang: Lang = getLang()
  *   attributes like `placeholder`, `aria-label`, or even `data-note`
  */
 export function applyI18n() {
+  document.documentElement.lang = lang
   if (lang !== 'tr') return
-  document.documentElement.lang = 'tr'
 
   document.querySelectorAll<HTMLElement>('[data-i18n-tr]').forEach((el) => {
     el.textContent = el.dataset.i18nTr ?? ''
@@ -54,7 +65,11 @@ export function applyI18n() {
 export function initLangToggle() {
   const btn = document.getElementById('langToggle')
   if (!btn) return
-  btn.textContent = lang === 'tr' ? 'EN' : 'TR'
-  btn.setAttribute('aria-label', lang === 'tr' ? 'Switch to English' : 'Türkçeye geç')
-  btn.addEventListener('click', () => setLang(lang === 'tr' ? 'en' : 'tr'))
+  const other: Lang = lang === 'tr' ? 'en' : 'tr'
+  btn.textContent = other.toUpperCase()
+  // The label is written in the language it switches to, so tell screen
+  // readers which voice to read it in.
+  btn.lang = other
+  btn.setAttribute('aria-label', other === 'en' ? 'Switch to English' : 'Türkçeye geç')
+  btn.addEventListener('click', () => setLang(other))
 }
