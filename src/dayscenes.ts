@@ -36,7 +36,7 @@ export const TEAM: [number, number][] = [
   [136, 72],
   [122, 60],
   [272, 128],
-  [258, 142],
+  [278, 124],
   [320, 124],
   [114, 66],
   [136, 72],
@@ -332,16 +332,16 @@ export const BURST = [
   { a: -12, x: 176, y: 176, far: 200 },
   { a: 22, x: 186, y: 180, far: 180 },
   { a: 58, x: 160, y: 182, far: 160 },
-  { a: -140, x: 50, y: 176, far: 190 },
-  { a: -168, x: 24, y: 176, far: 200 },
-  { a: 158, x: 14, y: 180, far: 180 },
-  { a: 122, x: 40, y: 182, far: 160 },
+  { a: -140, x: 50, y: 176, far: 100 },
+  { a: -168, x: 24, y: 176, far: 110 },
+  { a: 158, x: 14, y: 180, far: 100 },
+  { a: 122, x: 40, y: 182, far: 90 },
 ]
 const shard = (k: number) => {
   const s = 1.4 + (k % 3) * 0.25
   return `<g transform="scale(${s})">
-    <path d="M-16 6l5 -12l6 8l6 -12l6 9l5 -7v14h-28z" fill="${SHELL.white}" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"/>
-    ${line('M-13 13h22', 2.6, P.yolk)}
+    <path d="M-16 3l5 -9l6 6l6 -10l6 8l6 -6q3 11 -6 17q-10 5 -19 0q-6 -4 -4 -6z" fill="${SHELL.white}" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"/>
+    ${line('M-10 10q8 4 16 -1', 2.4, P.yolk)}
   </g>`
 }
 const burstProps = () =>
@@ -710,12 +710,12 @@ function nest() {
 function incubate() {
   const stool = (x: number) => `<path d="M${x - 22} 236h44v6h-44z" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line(`M${x - 16} 242l-4 28M${x + 16} 242l4 28`, L * 0.9)}`
   // coffee cups pile up on the workbench as the afternoon goes
-  const cups = Array.from({ length: 5 }, (_, k) => `<path class="cup" style="--k:${k}" d="M${41} ${206 - k * 10}h16l-2 10h-12z" fill="${P.cream}" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/>`).join('')
+  const cups = Array.from({ length: 5 }, (_, k) => `<path class="cup" style="--k:${k}" d="M${38} ${206 - k * 10}h16l-2 10h-12z" fill="${P.cream}" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/>`).join('')
   // and the build grows beside them: a box, a head, an antenna that lights up
   const proto = `
-    <g class="proto proto--1"><rect x="66" y="192" width="38" height="24" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line('M72 202h12M72 208h20', 1.4, WOOD_DEEP)}</g>
-    <g class="proto proto--2"><rect x="74" y="174" width="24" height="18" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/><circle cx="81" cy="183" r="2.2" fill="${I}"/><circle cx="90" cy="183" r="2.2" fill="${I}"/></g>
-    <g class="proto proto--3">${line('M86 174v-12', 2)}<circle cx="86" cy="160" r="3.6" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/></g>`
+    <g class="proto proto--1"><rect x="56" y="192" width="38" height="24" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line('M62 202h12M62 208h20', 1.4, WOOD_DEEP)}</g>
+    <g class="proto proto--2"><rect x="64" y="174" width="24" height="18" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/><circle cx="71" cy="183" r="2.2" fill="${I}"/><circle cx="80" cy="183" r="2.2" fill="${I}"/></g>
+    <g class="proto proto--3">${line('M76 174v-12', 2)}<circle cx="76" cy="160" r="3.6" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/></g>`
   // a mentor with snacks and opinions, leaning in over the three
   const mentor = stand(
     336,
@@ -758,8 +758,8 @@ function incubate() {
         <path d="M-15 -12h30a6 6 0 0 1 6 6v12a6 6 0 0 1 -6 6h-14l-8 8l1 -8h-9a6 6 0 0 1 -6 -6v-12a6 6 0 0 1 6 -6z" fill="${P.cream}" stroke="${I}" stroke-width="2"/>
         <text y="5" text-anchor="middle" font-family="${MONO}" font-size="13" font-weight="500" fill="${I}">!?</text>
       </g></g>
-      ${stool(142)}${stool(200)}${stool(258)}`,
-    note: note(3, { x: 58, y: 104, w: 140, rot: -5, arrow: 'M104 114q12 16 -6 32M98 146l-1 -10M98 146l9 -5' }),
+      ${stool(124)}${stool(200)}${stool(278)}`,
+    note: note(3, { x: 58, y: 104, w: 140, rot: -5, arrow: 'M150 110q22 14 22 72M172 182l-7 -7M172 182l4 -9' }),
   })
 }
 

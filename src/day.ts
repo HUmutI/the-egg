@@ -260,7 +260,7 @@ export function initDay() {
       hero.top.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) translate(100 178) rotate(${r.toFixed(1)}) scale(${s.toFixed(3)}) translate(-100 -178)`)
       // everything it carried today bursts out with the shell, past the arch like the poster
       hero.burst.forEach((g, i) => {
-        const b = band(d, POP + i * 0.012, 0.7)
+        const b = band(d, POP + i * 0.012, 0.6)
         if (b <= 0.02 || b >= 1) return g.setAttribute('opacity', '0')
         const o = BURST[i]
         const ang = (o.a * Math.PI) / 180

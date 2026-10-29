@@ -1737,13 +1737,14 @@ h2 {
 }
 .day__apply {
   position: absolute;
-  left: calc(var(--scene-w) * 0.7);
+  /* centred under the note's arrow, whichever language it's in */
+  left: calc(var(--scene-w) * 0.955);
   bottom: calc(var(--scene-w) * 0.1);
   padding: 20px 34px;
   font-size: 18px;
   opacity: 0;
   visibility: hidden;
-  translate: 0 12px;
+  translate: -50% 12px;
   transition:
     opacity 0.4s var(--ease-out),
     translate 0.5s var(--ease-spring),
@@ -1752,7 +1753,7 @@ h2 {
 .day[data-end='true'] .day__apply {
   opacity: 1;
   visibility: visible;
-  translate: 0 0;
+  translate: -50% 0;
   transition-delay: 0.25s, 0.25s, 0s;
 }
 /* lights out at 20:00: as the three walk off, the club's windows go dark one
