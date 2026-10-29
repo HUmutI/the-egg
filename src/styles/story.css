@@ -231,3 +231,244 @@
     font-size: 17px;
   }
 }
+
+/* ── JOIN · the confident close ───────────────────────────────
+   A ticket for the next Sunday (filled in by src/next.ts), the
+   button, what happens after you apply, and bring-a-friend.
+   One column on phones; two from 861px. main.css centres .join,
+   so the grid takes the full width and sets its own alignment. */
+
+.join__grid {
+  display: grid;
+  gap: 56px;
+  width: 100%;
+  max-width: 1240px;
+  text-align: left;
+}
+.join__main {
+  display: grid;
+  justify-items: start;
+}
+.join__title {
+  font-size: clamp(42px, 5.4vw, 92px);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+.join__main .join__btn {
+  width: 100%;
+  max-width: 440px;
+  margin-top: 28px;
+}
+
+/* the ticket: printed, a little crooked, with a perforated stub */
+.ticket {
+  width: 100%;
+  max-width: 440px;
+  margin-top: 28px;
+  padding: 18px 20px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 18px;
+  background: var(--cream);
+  box-shadow: 5px 6px 0 var(--ink);
+  transform: rotate(-1.2deg);
+}
+.ticket__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ink-2);
+}
+.ticket__no {
+  color: var(--ink);
+}
+.ticket__no[hidden] {
+  display: none;
+}
+.ticket__date {
+  margin-top: 10px;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-weight: 460;
+  font-size: clamp(30px, 3vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+/* doors / pizza / demos, set like the times on a printed ticket */
+.ticket__times {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  column-gap: clamp(20px, 6vw, 36px);
+  margin: 14px 0 0;
+}
+.ticket__times dt {
+  color: var(--ink-2);
+}
+.ticket__times dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.ticket__meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.ticket__meta span + span::before {
+  content: '·';
+  content: '·' / '';
+  margin: 0 0.7em;
+  color: var(--ink-2);
+}
+.ticket__status {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--ink-3);
+  font-size: 15px;
+}
+.ticket__status a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.ticket__status::before {
+  content: '';
+  flex: none;
+  align-self: center;
+  width: 9px;
+  height: 11px;
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  background: var(--yolk);
+  box-shadow: 0 0 0 1.5px var(--ink);
+}
+.ticket[data-state='none'] .ticket__status::before {
+  display: none;
+}
+.ticket[data-state='open'] .ticket__status::before {
+  background: var(--mint-deep);
+}
+.ticket[data-state='live'] .ticket__status::before {
+  background: var(--tomato);
+  animation: ticket-live 1.6s ease-in-out infinite;
+}
+@keyframes ticket-live {
+  50% {
+    transform: scale(1.35);
+  }
+}
+
+/* after you apply */
+.join__side {
+  display: grid;
+  gap: 48px;
+}
+.join__h {
+  margin-bottom: 14px;
+  color: var(--ink);
+}
+.join__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  border-top: 1px solid var(--ink);
+}
+.join__steps li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  column-gap: 14px;
+  row-gap: 2px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ink);
+  counter-increment: step;
+}
+.join__steps li::before {
+  content: counter(step);
+  content: counter(step) / '';
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 32px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  font-family: var(--f-mono);
+  font-size: 12px;
+}
+.join__steps strong {
+  font-family: var(--f-display);
+  font-variation-settings: 'SOFT' 100;
+  font-weight: 520;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+.join__steps span {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* bring a friend */
+.share__title {
+  font-family: var(--f-display);
+  font-variation-settings: 'SOFT' 100;
+  font-weight: 480;
+  font-size: clamp(30px, 2.8vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.share__deck {
+  margin-top: 8px;
+  font-size: 15px;
+}
+/* the text they'll get, as a chat bubble */
+.share__bubble {
+  max-width: 440px;
+  margin: 16px 0 0;
+  padding: 14px 16px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 20px 20px 20px 6px;
+  background: var(--cream);
+}
+.share__msg {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.share__link {
+  margin-top: 8px;
+  color: var(--ink-2);
+  text-transform: none;
+}
+.share__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+/* .btn sets display, which would beat the hidden attribute */
+.share__btns [hidden] {
+  display: none;
+}
+.share__status {
+  min-height: 1.6em;
+  margin-top: 12px;
+  color: var(--ink);
+}
+
+@media (min-width: 861px) {
+  .join__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(48px, 7vw, 140px);
+    align-items: start;
+  }
+  .join__side {
+    padding-top: 6px;
+  }
+}
