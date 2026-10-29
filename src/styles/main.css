@@ -821,25 +821,17 @@ html:not(.js) .hero__art img {
   }
 }
 
-/* ── shared egg drawing (day walker, join, anywhere a plain egg appears) ── */
-.shell {
-  fill: var(--cream);
-  stroke: var(--ink);
-  stroke-width: 3.4;
-  stroke-linejoin: round;
-  filter: url(#wobble);
-}
+/* ── shared egg drawing (the day walker): one clean ink line, like the flock ── */
 .shell-line {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 3.4;
+  stroke-width: 7.5;
   stroke-linejoin: round;
-  filter: url(#wobble);
 }
 .crack {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 3.4;
+  stroke-width: 6;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
@@ -1487,15 +1479,14 @@ h2 {
 .roller .crack--1,
 .roller .crack--2,
 .roller .crack--3 {
-  stroke-width: 3;
   stroke-dasharray: 80;
   stroke-dashoffset: 80;
   transition: stroke-dashoffset 0.4s var(--ease-out);
 }
 .roller .crack--edge {
   opacity: 0;
-  stroke-dasharray: 260;
-  stroke-dashoffset: 260;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
   transition: stroke-dashoffset 0.5s var(--ease-out);
 }
 .roller[data-stage='1'] .crack--1,
@@ -1514,8 +1505,9 @@ h2 {
 .roller[data-stage='4'] .crack--3 {
   opacity: 0;
 }
+/* the cap pops off to the side, clear of the programme text above */
 .roller[data-stage='4'] .roller__top {
-  transform: translate(70px, -150px) rotate(38deg);
+  transform: translate(118px, -40px) rotate(56deg);
 }
 .roller[data-stage='4'] .roller__chick {
   opacity: 1;
@@ -1535,10 +1527,27 @@ h2 {
   transform-box: view-box;
 }
 .leg--l {
-  transform-origin: 82px 246px;
+  transform-origin: 80px 244px;
 }
 .leg--r {
-  transform-origin: 118px 246px;
+  transform-origin: 120px 244px;
+}
+/* its face follows the day: calm at the door, busy, uh-oh, then joy */
+.walker__face {
+  display: none;
+}
+.roller:not([data-stage]) .walker__face--calm,
+.roller[data-stage='0'] .walker__face--calm,
+.roller[data-stage='1'] .walker__face--busy,
+.roller[data-stage='2'] .walker__face--busy,
+.roller[data-stage='3'] .walker__face--uhoh,
+.roller[data-stage='4'] .walker__face--joy {
+  display: inline;
+}
+.roller .egg__eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: eggBlink 5s 1.2s infinite;
 }
 
 @media (max-width: 899px) {

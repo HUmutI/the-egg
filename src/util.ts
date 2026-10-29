@@ -9,9 +9,9 @@ export const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNod
 export const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-/** The one egg silhouette used everywhere, in a 200×260 box. */
-export const EGG_PATH = 'M100 4C150 4 196 92 196 162c0 58-42 94-96 94S4 220 4 162C4 92 50 4 100 4Z'
-export const CRACK_POINTS = '0,128 22,112 40,132 62,108 84,134 104,110 126,136 146,112 166,132 186,114 200,124'
+/** The egg silhouette (the day walker's), in a 200×260 box; ink.ts draws the rest of the family. */
+export const EGG_PATH = 'M100 6C149.9 6 196 66 196 156C196 212 153.8 256 100 256C46.2 256 4 212 4 156C4 66 50.1 6 100 6Z'
+export const CRACK_POINTS = '0,100 22,86 40,106 62,82 84,108 104,84 126,110 146,86 166,106 186,88 200,98'
 
 export const PALETTE = {
   butter: '#fdf3d7',
