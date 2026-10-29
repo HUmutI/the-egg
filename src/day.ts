@@ -201,8 +201,9 @@ export function initDay() {
       }
       markStep(state, here, d >= LATE[state])
 
-      // the camera keeps the egg's plate in the first column; the programme line inks up to it
-      gsap.set(track, { x: -pos * colW })
+      // the camera keeps the egg's plate in the first column, until the last walk: then it holds,
+      // so the day ends on Hatch, Afterglow and the way to Apply; the programme line inks up to the egg
+      gsap.set(track, { x: -Math.min(pos, last - 1) * colW })
       const along = MARK + PLATE * pos
       progress.style.transform = `scaleX(${(along / (PLATE * steps.length)).toFixed(4)})`
 

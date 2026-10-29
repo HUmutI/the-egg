@@ -333,8 +333,7 @@ function hatch() {
 /** 20:00 Afterglow: the metro home, and a group chat that carries on without them. */
 function afterglow() {
   return `
-    ${rule(STAIRS - 48, 532, STAIRS - 48, 600, 3.4)}
-    ${rule(STAIRS - 48, 532, STAIRS + 72, 616, 3.4)}
+    ${metroEntrance()}
     ${rule(762, 600, 762, 340, 4.4)}
     ${print(circle(762, 300, 40), PALETTE.cream, [722, 260, 80, 80])}
     <text x="762" y="317" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="46" fill="${I}">M</text>
@@ -345,6 +344,25 @@ function afterglow() {
       ${mono(420, 240, tr ? 'grup sohbeti' : 'group chat', T)}
       ${mono(420, 270, tr ? '214 okunmamış' : '214 unread', T, 'class="chat__n"')}
     </g>`
+}
+
+/** The metro entrance the three walk into: a canopy on two posts over the steps down into the dark. */
+function metroEntrance() {
+  const x0 = STAIRS - 72
+  const x1 = STAIRS + 72
+  const top = 340
+  // the steps' nosings, catching the light as they go down
+  const steps = Array.from({ length: 8 }, (_, k) => {
+    const y = 600 - 22 - k * 28
+    const inset = 22 + k * 5
+    return `<path d="M${x0 + inset} ${y} H${x1 - inset}" stroke="${PALETTE.lav}" stroke-width="3" stroke-linecap="round" opacity="${(0.9 - k * 0.09).toFixed(2)}"/>`
+  }).join('')
+  return `
+    ${print(`M${x0 + 12} 600 V${top + 6} H${x1 - 12} V600 Z`, PALETTE.night, [x0 + 12, top + 6, x1 - x0 - 24, 600 - top - 6], { shade: 0.45, outline: false })}
+    ${steps}
+    ${rule(x0 + 12, top, x0 + 12, 600, 3.8)}
+    ${rule(x1 - 12, top, x1 - 12, 600, 3.8)}
+    ${print(`M${x0 - 16} ${top} H${x1 + 16} L${x1 + 4} ${top - 24} H${x0 - 4} Z`, PALETTE.cream, [x0 - 16, top - 24, x1 - x0 + 32, 24], { sw: 3.8 })}`
 }
 
 const PLATES = [doors, crack, nest, incubate, pizza, hatch, afterglow]
