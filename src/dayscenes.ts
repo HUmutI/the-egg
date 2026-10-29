@@ -7,14 +7,14 @@ import { I, SHELL, W, eggBody, face, hand, ink, mix, nextId } from './ink'
  * with its own hour of the sky — one sun crossing the building, low at the
  * door, overhead at noon, setting behind the pizza, then the moon — and a set
  * built around the spot where the cast stands. The cast — our egg and the two
- * who hear its pitch at Crack and join it at Nest — comes from the same egg
+ * who hear its pitch at Crack and join it there — comes from the same egg
  * kit as the specimen plate.
  *
  * Scenes live on a 400 × 300 stage; the floor is y = 270 everywhere, so the
  * windows join into one building. The hero stands at x = MARK in every
  * window, its team at SLOTS behind it, so sets keep the middle of the floor
  * clear and put their props to the sides or up in the sky. Each scene keeps
- * a clear patch of sky for its handwritten note.
+ * a clear patch of sky, at least 10 units inside the arch, for its note.
  *
  * Eggs are drawn at full kit size (centred on x 100, egg on y 262, feet on
  * y 316) and scaled into place, so their line weight scales with them.
@@ -25,9 +25,14 @@ const FLOOR = 270
 /** Where the hero stands in each window, and its team behind it. */
 export const MARK = 200
 export const SLOTS = [136, 72] as const
-/** What each step puts under their feet: a crate, the stage, the bench (sitting: barely lifted, shins dangling). */
-export const LIFT = [0, 34, 0, 0, 0, 22, 1]
-export const MATE_LIFT = [0, 0, 0, 0, 0, 22, 4]
+/**
+ * What each step puts under them: a crate, the nest, stools at the
+ * workbench, the stage, the bench. Seated steps rest the egg on the seat
+ * with the shins folded short.
+ */
+export const LIFT = [0, 34, 7, 9, 0, 22, 13]
+export const MATE_LIFT = [0, 0, 10, 12, 0, 22, 16]
+export const SEATED = [false, false, true, true, false, false, true]
 /** How long the shins look when sitting (legs fold towards you). */
 export const SEAT_LEGS = 0.5
 /** Scene scale of the eggs: the hero is 80 units wide, the team 69. */
@@ -37,6 +42,7 @@ const MATE_S = 0.4
 const ARCH = 'M34 270V150A166 136 0 0 1 366 150V270Z'
 const WOOD = '#e0a15a'
 const WOOD_DEEP = '#a8643a'
+const CARD = '#d9a56a'
 const TWIG = '#b98756'
 const TWIG_DEEP = '#7d5434'
 const SCREEN = '#e4e0ec'
@@ -46,6 +52,18 @@ const L = 2.6 // a scene's line weight, matching an egg drawn at ~0.45 scale
 const MONO = 'DM Mono, ui-monospace, monospace'
 const HAND = 'Reenie Beanie, cursive'
 const tr = lang === 'tr'
+
+/** Each window's handwritten aside (phones show it as a line above the picture). */
+export const NOTES: ({ en: string; tr: string } | null)[] = [
+  { en: 'name tag? optional', tr: 'yaka kartı? keyfine' },
+  { en: '60 sec. go!', tr: '60 sn. başla!' },
+  { en: 'co-founders now', tr: 'artık ortaklar' },
+  { en: 'it compiles?!', tr: 'derlendi mi?!' },
+  { en: 'pineapple: no.', tr: 'ananas: hayır.' },
+  { en: 'it works! (mostly)', tr: 'çalışıyor! (sayılır)' },
+  null,
+]
+const noteText = (i: number) => (NOTES[i] ? (tr ? NOTES[i]!.tr : NOTES[i]!.en) : '')
 
 const n = (v: number) => +v.toFixed(1)
 const line = (d: string, w = L, c: string = I, extra = '') => ink(d, w, c, extra)
@@ -71,8 +89,8 @@ const stars = (pts: [number, number, number][]) =>
  * poster. It fits its clear patch of sky (`w` wide) in either language, and
  * writes itself on when its step comes round.
  */
-const note = (o: { x: number; y: number; w: number; rot?: number; en: string; tr: string; arrow: string; c?: string }) => {
-  const text = tr ? o.tr : o.en
+const note = (step: number, o: { x: number; y: number; w: number; rot?: number; arrow: string; c?: string }) => {
+  const text = noteText(step)
   const size = Math.min(27, o.w / (text.length * 0.44))
   const c = o.c ?? P.tomato
   return `
@@ -141,10 +159,21 @@ const mic = (x: number, y: number, held = true) => `
     <g class="sound">${line(`M${x + 24} ${y - 12}q8 10 0 22`, 3.4)}${line(`M${x + 36} ${y - 20}q12 18 0 38`, 3.4)}</g>
   </g>`
 
+/** A closed laptop, carried (or flung). */
 const laptop = () => `
   <g class="prop prop--laptop" transform="rotate(-10 150 210)">
     <rect x="112" y="186" width="84" height="54" rx="7" fill="${SCREEN}" stroke="${I}" stroke-width="${W.prop}"/>
     <path d="M154 202c4 0 7 6 7 11c0 4.5-3 7-7 7s-7-2.5-7-7c0-5 3-11 7-11Z" fill="${P.yolk}" stroke="${I}" stroke-width="2.6"/>
+  </g>`
+
+/** An open laptop on the lap, seen from behind its lid. */
+const laptopOpen = (skin: string) => `
+  <g class="prop prop--laptop-open">
+    <path d="M44 236h112l14 16h-140z" fill="${mix(SCREEN, I, 0.12)}" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
+    <rect x="52" y="176" width="96" height="62" rx="7" fill="${SCREEN}" stroke="${I}" stroke-width="${W.prop}"/>
+    <path d="M100 194c4.4 0 7.6 6.4 7.6 11.4c0 4.6-3.2 7.4-7.6 7.4s-7.6-2.8-7.6-7.4c0-5 3.2-11.4 7.6-11.4Z" fill="${P.yolk}" stroke="${I}" stroke-width="2.6"/>
+    <path class="lap__glow" d="M56 176q44 -14 88 0" fill="none" stroke="${P.sky}" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+    ${hand(40, 236, skin, -10)}${hand(160, 236, skin, 10)}
   </g>`
 
 const SWEAT = `<path d="M168 92q8 12 0 18q-8 -6 0 -18z" fill="${P.sky}" stroke="${I}" stroke-width="3"/>`
@@ -202,7 +231,7 @@ const SHELL_FACES = [
   () => face({ eyes: 'dot', mouth: 'smile', blush: true }),
   () => face({ eyes: 'wide', mouth: 'o', brows: 'up' }),
   () => face({ eyes: 'happy', mouth: 'grin', blush: true }),
-  () => face({ eyes: 'dot', mouth: 'flat', brows: 'worried', look: [5, 3] }),
+  () => face({ eyes: 'dot', mouth: 'flat', brows: 'worried', look: [0, 6] }),
   () => face({ eyes: 'happy', mouth: 'tongue', blush: true }),
   () => face({ eyes: 'wide', mouth: 'flat', brows: 'worried' }),
 ]
@@ -217,11 +246,11 @@ const goldWink = () => `
     <path d="M90 140q10 9 20 -1" fill="none" stroke="${I}" stroke-width="3.6" stroke-linecap="round"/>
   </g>`
 
-/** Group-chat bubbles that rise from the phone on the way home. */
+/** Group-chat bubbles that rise from the phone on the way home (to the left of the moon). */
 const bubbles = () => `
-  <g class="wbub wbub--1"><rect x="150" y="-34" width="70" height="32" rx="16" fill="${P.cream}" stroke="${I}" stroke-width="3.4"/>${line('M168 -18h3M184 -18h3M200 -18h3', 5)}</g>
-  <g class="wbub wbub--2"><rect x="110" y="-84" width="60" height="32" rx="16" fill="${P.yolk}" stroke="${I}" stroke-width="3.4"/><path d="M140 -72c-5 -6 -15 -1 -10 6l10 9l10 -9c5 -7 -5 -12 -10 -6z" fill="${P.tomato}" stroke="${I}" stroke-width="2.4"/></g>
-  <g class="wbub wbub--3"><rect x="168" y="-130" width="80" height="32" rx="16" fill="${P.mint}" stroke="${I}" stroke-width="3.4"/>${line('M186 -114h44', 4, P.mintDeep)}</g>`
+  <g class="wbub wbub--1"><rect x="90" y="-34" width="70" height="32" rx="16" fill="${P.cream}" stroke="${I}" stroke-width="3.4"/>${line('M108 -18h3M124 -18h3M140 -18h3', 5)}</g>
+  <g class="wbub wbub--2"><rect x="40" y="-84" width="60" height="32" rx="16" fill="${P.yolk}" stroke="${I}" stroke-width="3.4"/><path d="M70 -72c-5 -6 -15 -1 -10 6l10 9l10 -9c5 -7 -5 -12 -10 -6z" fill="${P.tomato}" stroke="${I}" stroke-width="2.4"/></g>
+  <g class="wbub wbub--3"><rect x="96" y="-130" width="80" height="32" rx="16" fill="${P.mint}" stroke="${I}" stroke-width="3.4"/>${line('M114 -114h44', 4, P.mintDeep)}</g>`
 
 /**
  * The hatch burst: everything it carried today, and jagged shards of shell
@@ -260,6 +289,15 @@ const burst = () => {
   return [...props, ...shards].map((g, i) => `<g class="wburst" data-i="${i}" opacity="0">${g}</g>`).join('')
 }
 
+/** A ring of rays that flares behind the golden egg as it comes out. */
+const rays = () =>
+  `<g class="walker__rays" opacity="0">${Array.from({ length: 14 }, (_, i) => {
+    const a = (i / 14) * Math.PI * 2
+    const r0 = 128
+    const r1 = i % 2 ? 176 : 196
+    return line(`M${n(100 + Math.cos(a) * r0)} ${n(150 + Math.sin(a) * r0)}L${n(100 + Math.cos(a) * r1)} ${n(150 + Math.sin(a) * r1)}`, 9, i % 2 ? P.cream : P.yolk)
+  }).join('')}</g>`
+
 /* ── the walker: every state at once, the script picks one ───────── */
 
 /**
@@ -273,6 +311,7 @@ export function walkerSvg() {
     <svg class="walker__svg" viewBox="-70 -150 340 480" aria-hidden="true">
       <g class="walker__body"><g class="breathe">
         <ellipse class="walker__shadow" cx="104" cy="318" rx="74" ry="9" fill="${I}" opacity=".14"/>
+        ${rays()}
         <g class="walker__legs">${legs()}</g>
         <g class="wprop wprop--arms">${armsUp(P.yolk)}</g>
         <g class="walker__golden">
@@ -291,7 +330,7 @@ export function walkerSvg() {
         <g class="wprop wprop--0">${coffee(158, 196)}</g>
         <g class="wprop wprop--1">${mic(146, 146)}</g>
         <g class="wprop wprop--2">${spark(-14, 40, 1.1, P.yolk)}${spark(204, 18, 0.8)}</g>
-        <g class="wprop wprop--3">${laptop()}${SWEAT}</g>
+        <g class="wprop wprop--3">${laptopOpen(SHELL.white)}${SWEAT}</g>
         <g class="wprop wprop--4">${slice(146, 206, -18)}</g>
         <g class="wprop wprop--6">${hand(36, 214, P.yolk, -20)}${hand(166, 214, P.yolk, 20)}${phone(170, 196, 14)}${bubbles()}</g>
         <g class="walker__burst">${burst()}</g>
@@ -299,13 +338,13 @@ export function walkerSvg() {
     </svg>`
 }
 
-/** A teammate who walks behind the hero from Nest on. */
+/** A teammate who walks behind the hero once they've joined at Crack. */
 export function mateSvg(kind: 'beanie' | 'cap') {
   const fill = kind === 'beanie' ? BEANIE_SHELL : CAP_SHELL
   const hat = kind === 'beanie' ? beanie() : cap()
   const faces = [
     face({ eyes: 'happy', mouth: 'smile', blush: true }),
-    face({ eyes: 'dot', mouth: 'line', look: [6, 2] }),
+    face({ eyes: 'dot', mouth: 'line', look: [0, 6] }),
     face({ eyes: 'happy', mouth: 'tongue', blush: true }),
     face({ eyes: 'happy', mouth: 'grin', blush: true }),
     face({ eyes: 'closed', mouth: 'smile', blush: true }),
@@ -322,7 +361,7 @@ export function mateSvg(kind: 'beanie' | 'cap') {
         <g class="mhands mhands--down">${hand(30, 204, fill, -20)}${hand(168, 204, fill, 20)}</g>
         <g class="mprop mprop--slice">${slice(146, 206, -18)}</g>
         <g class="mprop mprop--phone">${phone(166, 196, 12)}</g>
-        <g class="mprop mprop--laptop">${laptop()}</g>
+        <g class="mprop mprop--laptop">${laptopOpen(fill)}</g>
       </g></g>
     </svg>`
 }
@@ -339,7 +378,7 @@ export function heroStill(state: number) {
       : state === 1
         ? mic(146, 146)
         : state === 3
-          ? laptop() + SWEAT
+          ? laptopOpen(SHELL.white) + SWEAT
           : state === 4
             ? slice(146, 206, -18)
             : state === 6
@@ -352,8 +391,14 @@ export function heroStill(state: number) {
     : `${shellWhole(state)}${SHELL_FACES[state]()}`
   const skin = hatched ? P.yolk : SHELL.white
   const hands =
-    state === 5 ? '' : state === 6 ? hand(36, 214, skin, -20) + hand(166, 214, skin, 20) : state === 1 ? hand(30, 204, skin, -20) : hand(30, 204, skin, -20) + hand(168, 204, skin, 20)
-  return `<g class="hero hero--still">${legs(state === 6)}${body}${hands}${prop}</g>`
+    state === 5 || state === 3
+      ? ''
+      : state === 6
+        ? hand(36, 214, skin, -20) + hand(166, 214, skin, 20)
+        : state === 1
+          ? hand(30, 204, skin, -20)
+          : hand(30, 204, skin, -20) + hand(168, 204, skin, 20)
+  return `<g class="hero hero--still">${legs(SEATED[state])}${body}${hands}${prop}</g>`
 }
 
 function mateStill(kind: 'beanie' | 'cap', state: number) {
@@ -361,17 +406,17 @@ function mateStill(kind: 'beanie' | 'cap', state: number) {
   const hat = kind === 'beanie' ? beanie() : cap()
   const mood = [
     face({ eyes: 'happy', mouth: 'smile', blush: true }),
-    face({ eyes: 'dot', mouth: 'line', look: [6, 2] }),
+    face({ eyes: 'dot', mouth: 'line', look: [0, 6] }),
     face({ eyes: 'happy', mouth: 'tongue', blush: true }),
     face({ eyes: 'happy', mouth: 'grin', blush: true }),
     face({ eyes: 'closed', mouth: 'smile', blush: true }),
   ][Math.max(0, state - 2)]
-  const arms = state === 5 ? '' : hand(30, 204, fill, -20) + hand(168, 204, fill, 20)
-  const prop = state === 4 ? slice(146, 206, -18) : state === 6 ? phone(166, 196, 12) : state === 3 && kind === 'beanie' ? laptop() : ''
-  return `${legs(state === 6)}${state === 5 ? armsUp(fill, 0) : ''}${eggBody({ fill })}${hat}${mood}${arms}${prop}`
+  const arms = state === 5 || state === 3 ? '' : hand(30, 204, fill, -20) + hand(168, 204, fill, 20)
+  const prop = state === 4 ? slice(146, 206, -18) : state === 6 ? phone(166, 196, 12) : state === 3 ? laptopOpen(fill) : ''
+  return `${legs(SEATED[state])}${state === 5 ? armsUp(fill, 0) : ''}${eggBody({ fill })}${hat}${mood}${arms}${prop}`
 }
 
-/** The cast of a step as phones see it: hero at the mark, team behind. */
+/** The cast of a step as phones see it: hero at the mark, team behind (from Nest; at Crack they're still on the bench). */
 const cast = (state: number) => {
   const team =
     state >= 2
@@ -416,7 +461,7 @@ function frame(slug: string, step: number, f: Frame) {
     </svg>`
 }
 
-/** The two from Crack's bench, before they join: in the nest, or listening. */
+/** The two from Crack's bench: a brown egg in a beanie and a tan one in a cap. */
 const beanieEgg = (look = 0) => `${eggBody({ fill: BEANIE_SHELL })}${beanie()}${face({ eyes: 'happy', mouth: 'smile', blush: true, look: [look, 0] })}`
 const capEgg = (look = 0) => `${eggBody({ fill: CAP_SHELL })}${cap()}${face({ eyes: 'dot', mouth: 'smile', look: [look, 0] })}`
 
@@ -445,16 +490,16 @@ function doors() {
         <text x="7" y="4.6" text-anchor="middle" font-family="${MONO}" font-size="13" font-weight="500" letter-spacing="1.5" fill="${I}">ODTÜ</text>
       </g>
       <g stroke="${I}" stroke-width="1.6">
-        <rect x="341" y="150" width="14" height="14" fill="${P.yolk}" transform="rotate(-6 348 157)"/>
-        <rect x="343" y="172" width="14" height="14" fill="${P.pink}" transform="rotate(5 350 179)"/>
-        <rect x="340" y="194" width="14" height="14" fill="${P.mint}" transform="rotate(-3 347 201)"/>
+        <rect x="341" y="128" width="14" height="14" fill="${P.yolk}" transform="rotate(-6 348 135)"/>
+        <rect x="343" y="150" width="14" height="14" fill="${P.pink}" transform="rotate(5 350 157)"/>
+        <rect x="340" y="172" width="14" height="14" fill="${P.mint}" transform="rotate(-3 347 179)"/>
+      </g>
+      <g transform="rotate(7 344 268)">
+        <rect x="338" y="206" width="12" height="62" rx="6" fill="${P.lavDeep}" stroke="${I}" stroke-width="${L * 0.9}"/>
+        ${line('M344 214v46', 1.6, P.cream)}
+        <circle cx="352" cy="216" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/><circle cx="352" cy="256" r="3.6" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
       </g>
       <rect x="260" y="266" width="72" height="6" rx="2" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/>
-      <g transform="rotate(-9 247 268)">
-        <rect x="241" y="198" width="13" height="70" rx="6.5" fill="${P.lavDeep}" stroke="${I}" stroke-width="${L * 0.9}"/>
-        ${line('M247 208v50', 1.6, P.cream)}
-        <circle cx="238" cy="212" r="4" fill="${P.cream}" stroke="${I}" stroke-width="1.8"/><circle cx="238" cy="254" r="4" fill="${P.cream}" stroke="${I}" stroke-width="1.8"/>
-      </g>
       <g>
         <path d="M48 226h64v6h-64z" fill="${WOOD}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
         ${line('M54 232v38M106 232v38', L)}
@@ -465,83 +510,101 @@ function doors() {
         <path d="M100 214h8l-1 12h-6z" fill="${P.cream}" stroke="${I}" stroke-width="1.6"/>
         <g class="steam">${line('M66 180q-5 -7 0 -14q5 -7 0 -14', 2)}${line('M74 182q-5 -7 0 -14', 2)}</g>
       </g>`,
-    note: note({ x: 104, y: 56, w: 196, en: 'name tag? optional', tr: 'yaka kartı? keyfine', arrow: 'M196 66q14 22 4 58M200 124l-8 -7M200 124l6 -8' }),
+    note: note(0, { x: 108, y: 64, w: 184, arrow: 'M198 72q12 20 2 54M200 126l-8 -7M200 126l6 -8' }),
   })
 }
 
 function crack() {
-  const seated = (x: number, inner: string) => stand(x, 262, 0.3, `${legs()}${inner}`)
+  // the two who'll join: seated on the bench, arms going up when the pitch lands
+  const listener = (x: number, inner: string, fill: string, cls: string) =>
+    stand(x, 262, 0.3, `${legs()}<g class="lhands lhands--up">${armsUp(fill, 0)}</g>${inner}<g class="lhands lhands--down">${hand(30, 204, fill, -20)}${hand(168, 204, fill, 20)}</g>`, `listener ${cls}`)
+  const leaf = (r: number) => `<path d="M0 0q-14 -20 0 -44q14 24 0 44z" transform="rotate(${r})" fill="${P.mintDeep}" stroke="${I}" stroke-width="2"/>`
   return frame('crack', 1, {
     sky: [
       [0, '#b9d6ea'],
       [1, '#eaf3f2'],
     ],
-    back: `${sun(100, 124, 15)}`,
+    back: `${sun(96, 130, 15)}`,
     set: `
-      <g class="watch" transform="translate(318 122) scale(.74)">
+      <g class="watch" transform="translate(318 136) scale(.74)">
         <rect x="-7" y="-52" width="14" height="10" rx="3" fill="#cfc8d6" stroke="${I}" stroke-width="${L}"/>
         <circle r="38" fill="${P.cream}" stroke="${I}" stroke-width="${L * 1.4}"/>
         ${Array.from({ length: 12 }, (_, i) => line(`M0 -34v${i % 3 ? 4 : 8}`, 2.4, I, `transform="rotate(${i * 30})"`)).join('')}
         <g class="watch__hand">${line('M0 0V-30', 3.6, P.tomato)}</g>
         <circle r="4.6" fill="${I}"/>
       </g>
-      <g class="bulb" transform="translate(142 94)">
+      <g class="bulb" transform="translate(150 84)">
         <circle class="bulb__glow" r="26" fill="${P.yolk}" opacity="0"/>
         <path d="M0 -18c10 0 16 8 16 16c0 7 -5 10 -7 15h-18c-2 -5 -7 -8 -7 -15c0 -8 6 -16 16 -16Z" fill="${P.cream}" stroke="${I}" stroke-width="${L}"/>
         <path class="bulb__on" d="M0 -18c10 0 16 8 16 16c0 7 -5 10 -7 15h-18c-2 -5 -7 -8 -7 -15c0 -8 6 -16 16 -16Z" fill="${P.yolk}" stroke="${I}" stroke-width="${L}" opacity="0"/>
         <path d="M-7 17h14M-5 22h10" stroke="${I}" stroke-width="${L * 0.8}" stroke-linecap="round"/>
         ${line('M-4 2l4 6l4 -6', 1.8)}
       </g>
-      <g>
-        <path d="M284 244h80v7h-80z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-        ${line('M292 251v19M356 251v19', L)}
-        ${seated(304, `${beanieEgg(-8)}${hand(30, 204, BEANIE_SHELL, -20)}${hand(168, 204, BEANIE_SHELL, 20)}`)}
-        ${seated(342, `${capEgg(-8)}${hand(30, 204, CAP_SHELL, -20)}${hand(168, 204, CAP_SHELL, 20)}`)}
+      <g transform="translate(336 248)">
+        ${leaf(-34)}${leaf(-8)}${leaf(22)}
+        <path d="M-14 0h28l-4 22h-20z" fill="${P.peachDeep}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+      </g>
+      <g class="listeners">
+        <path d="M36 244h92v7h-92z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
+        ${line('M44 251v19M120 251v19', L)}
+        ${listener(58, capEgg(10), CAP_SHELL, 'listener--b')}
+        ${listener(104, beanieEgg(10), BEANIE_SHELL, 'listener--a')}
       </g>
       <path d="M168 236h64l4 34h-72z" fill="${WOOD}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
       ${line('M170 248h62M168 260h66', 1.4, WOOD_DEEP)}`,
-    note: note({ x: 208, y: 66, w: 112, rot: 3, en: '60 sec. go!', tr: '60 sn. başla!', arrow: 'M260 76q4 38 -26 66M234 142l2 -10M234 142l9 -5' }),
+    note: note(1, { x: 206, y: 84, w: 112, rot: 3, arrow: 'M262 92q2 30 -26 52M236 144l1 -10M236 144l9 -5' }),
   })
 }
 
 function nest() {
-  const twigs = Array.from({ length: 7 }, (_, i) => {
-    const y = 238 + (i % 3) * 9
-    const x = 48 + i * 21
+  const twigs = Array.from({ length: 10 }, (_, i) => {
+    const y = 244 + (i % 3) * 8
+    const x = 44 + i * 21
     return line(`M${x - 18} ${y}q16 ${-8 + (i % 2) * 14} 36 ${-2}`, 1.8, TWIG_DEEP)
   }).join('')
-  const rim = `
-    <path d="M30 232q78 -10 156 0q-5 36 -78 38q-73 -2 -78 -38z" fill="${TWIG}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-    <path d="M36 234q72 10 144 0" fill="none" stroke="${I}" stroke-width="${L * 0.8}"/>
-    ${twigs}
-    ${line('M28 230l-8 -8M188 230l12 -10', 2.2, TWIG_DEEP)}`
   return frame('nest', 2, {
     sky: [
       [0, '#a9cde3'],
       [1, '#e6f1ef'],
     ],
     back: `
-      ${sun(176, 66, 15)}
-      ${line('M286 132q8 -8 16 0q8 -8 16 0', 2.4)}${line('M318 112q6 -6 12 0q6 -6 12 0', 2)}`,
+      ${sun(150, 60, 14)}
+      ${line('M290 140q8 -8 16 0q8 -8 16 0', 2.4)}${line('M322 120q6 -6 12 0q6 -6 12 0', 2)}`,
     set: `
-      <g class="nesters">
-        ${placed(76, 256, MATE_S, capEgg(4), 'nester nester--b')}
-        ${placed(140, 256, MATE_S, beanieEgg(4), 'nester nester--a')}
+      <g class="nest">
+        <path d="M28 238q112 -10 224 0q-6 32 -112 34q-106 -2 -112 -34z" fill="${TWIG}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+        <path d="M34 240q106 10 212 0" fill="none" stroke="${I}" stroke-width="${L * 0.8}"/>
+        ${twigs}
+        ${line('M26 236l-8 -8M254 236l12 -10', 2.2, TWIG_DEEP)}
       </g>
-      <g class="nest">${rim}</g>
+      <g class="team-flag">
+        ${line('M250 238V150', L)}
+        <g class="team-flag__cloth"><path d="M250 152l42 12l-42 14z" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
+          <path d="M262 160c2.6 0 4.6 3.6 4.6 6.4c0 2.6 -2 4.2 -4.6 4.2s-4.6 -1.6 -4.6 -4.2c0 -2.8 2 -6.4 4.6 -6.4Z" fill="${P.cream}" stroke="${I}" stroke-width="1.4"/></g>
+      </g>
       <g class="hearts">
-        <path d="M66 126c-6 -8 -18 -2 -12 8l12 12l12 -12c6 -10 -6 -16 -12 -8z" fill="${P.tomato}" stroke="${I}" stroke-width="2"/>
-        <path d="M108 108c-4 -6 -13 -1 -9 6l9 9l9 -9c4 -7 -5 -12 -9 -6z" fill="${P.pink}" stroke="${I}" stroke-width="2"/>
-      </g>
-      <g transform="translate(344 152)">
-        ${line('M0 0v118', L)}
-        <path d="M0 2l34 10l-34 12z" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}" stroke-linejoin="round"/>
+        <path d="M58 122c-6 -8 -18 -2 -12 8l12 12l12 -12c6 -10 -6 -16 -12 -8z" fill="${P.tomato}" stroke="${I}" stroke-width="2"/>
+        <path d="M100 104c-4 -6 -13 -1 -9 6l9 9l9 -9c4 -7 -5 -12 -9 -6z" fill="${P.pink}" stroke="${I}" stroke-width="2"/>
       </g>`,
-    note: note({ x: 212, y: 112, w: 136, rot: -4, en: 'co-founders now', tr: 'artık ortaklar', arrow: 'M214 120q-30 6 -54 28M160 148l3 -10M160 148l10 -2' }),
+    note: note(2, { x: 204, y: 112, w: 138, rot: -4, arrow: 'M206 118q-26 2 -48 22M158 140l4 -10M158 140l10 -2' }),
   })
 }
 
 function incubate() {
+  const stool = (x: number) => `<path d="M${x - 22} 236h44v6h-44z" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line(`M${x - 16} 242l-4 28M${x + 16} 242l4 28`, L * 0.9)}`
+  const sticky = Array.from({ length: 12 }, (_, k) => {
+    const col = k % 3
+    const row = Math.floor(k / 3)
+    const c = [P.yolk, P.pink, P.mint, P.sky, P.peach][k % 5]
+    const x = 284 + col * 15
+    const y = 70 + row * 15
+    return `<rect class="sticky" style="--k:${k}" x="${x}" y="${y}" width="12" height="12" fill="${c}" stroke="${I}" stroke-width="1.4" transform="rotate(${((k * 37) % 9) - 4} ${x + 6} ${y + 6})"/>`
+  }).join('')
+  const cups = Array.from({ length: 5 }, (_, k) => `<path class="cup" style="--k:${k}" d="M${276} ${214 - k * 10}h16l-2 10h-12z" fill="${P.cream}" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/>`).join('')
+  const proto = `
+    <g class="proto proto--1"><rect x="304" y="194" width="34" height="24" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/>${line('M310 204h12M310 210h18', 1.4, WOOD_DEEP)}</g>
+    <g class="proto proto--2"><rect x="310" y="176" width="22" height="18" fill="${CARD}" stroke="${I}" stroke-width="${L * 0.9}"/><circle cx="317" cy="185" r="2.2" fill="${I}"/><circle cx="325" cy="185" r="2.2" fill="${I}"/></g>
+    <g class="proto proto--3">${line('M321 176v-12', 2)}<circle cx="321" cy="162" r="3.6" fill="${P.tomato}" stroke="${I}" stroke-width="1.6"/></g>`
   return frame('incubate', 3, {
     sky: [
       [0, '#9cc7e2'],
@@ -549,7 +612,7 @@ function incubate() {
     ],
     back: `${sun(206, 32, 13)}`,
     set: `
-      <g class="clock" transform="translate(92 122) scale(.88)">
+      <g class="clock" transform="translate(100 72) scale(.8)">
         <circle r="25" fill="${P.cream}" stroke="${I}" stroke-width="${L}"/>
         ${Array.from({ length: 12 }, (_, i) => line(`M0 -21v${i % 3 ? 2 : 5}`, i % 3 ? 1.4 : 2.2, I, `transform="rotate(${i * 30})"`)).join('')}
         <g class="clock__h">${line('M0 2V-12', 3.2)}</g>
@@ -557,33 +620,25 @@ function incubate() {
         <circle r="3" fill="${I}"/>
       </g>
       <g class="lamp">
-        <path class="lamp__beam" d="M274 106L150 262H264Z" fill="${P.yolk}" opacity=".14"/>
-        ${line('M296 20L284 80', 2.4)}
-        <path d="M262 84l40 -8l6 18l-46 10z" fill="${P.tomato}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <circle class="lamp__bulb" cx="279" cy="103" r="6" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
+        <path class="lamp__beam" d="M242 100L146 236H262Z" fill="${P.yolk}" opacity=".14"/>
+        ${line('M250 44V82', 2.4)}
+        <path d="M232 82h36l8 14h-52z" fill="${P.tomato}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+        <circle class="lamp__bulb" cx="250" cy="99" r="5" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
       </g>
+      <g class="sticky-wall">${sticky}</g>
       <g class="mentor">
-        ${placed(322, 226, 0.3, `${eggBody({ fill: SHELL.tan })}${face({ eyes: 'dot', mouth: 'smirk', look: [-8, 0], brows: 'one' })}
+        ${placed(300, 222, 0.28, `${eggBody({ fill: SHELL.tan })}${face({ eyes: 'dot', mouth: 'smirk', look: [-8, 0], brows: 'one' })}
           <g fill="${P.sky}" fill-opacity=".38" stroke="${I}" stroke-width="${W.prop}"><rect x="62" y="119" width="34" height="28" rx="10"/><rect x="104" y="119" width="34" height="28" rx="10"/></g>
           ${line('M96 131q4 -4 8 0', W.fine)}
           <path d="M-30 150h80l-4 8h-72z" fill="#cfc8d6" stroke="${I}" stroke-width="${W.prop}"/>
           <circle cx="-8" cy="140" r="11" fill="${WOOD}" stroke="${I}" stroke-width="3.6"/><circle cx="22" cy="138" r="11" fill="#e7a45f" stroke="${I}" stroke-width="3.6"/>
           ${hand(30, 160, SHELL.tan, -20)}`)}
       </g>
-      <path d="M262 222h104v8h-104z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-      ${line('M272 230v40M356 230v40', L)}
-      <g class="lap">
-        <path d="M268 222l6 -34h44l-4 34z" fill="${SCREEN}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
-        <path class="lap__screen" d="M278 215l4 -21h30l-3 21z" fill="${P.sky}"/>
-        <path d="M290 200l-5 5 5 5M302 200l5 5 -5 5" fill="none" stroke="${P.lavDeep}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
-      <path d="M326 208h12v14h-12z" fill="${P.cream}" stroke="${I}" stroke-width="2"/>
-      <g transform="translate(352 214)">
-        <path d="M-10 6a10 10 0 0 1 20 0" fill="none" stroke="${I}" stroke-width="3"/>
-        <rect x="-14" y="2" width="7" height="8" rx="2.5" fill="${P.lavDeep}" stroke="${I}" stroke-width="1.6"/>
-        <rect x="7" y="2" width="7" height="8" rx="2.5" fill="${P.lavDeep}" stroke="${I}" stroke-width="1.6"/>
-      </g>`,
-    note: note({ x: 50, y: 74, w: 128, rot: -5, en: 'it compiles?!', tr: 'derlendi mi?!', arrow: 'M184 74q72 8 104 104M288 178l-2 -10M288 178l8 -6' }),
+      <path d="M266 218h100v8h-100z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
+      ${line('M274 226v44M358 226v44', L)}
+      ${cups}${proto}
+      ${stool(72)}${stool(136)}${stool(200)}`,
+    note: note(3, { x: 238, y: 156, w: 118, rot: -3, arrow: 'M252 164q2 16 -6 30M246 194l-6 -8M246 194l7 -6' }),
   })
 }
 
@@ -596,7 +651,7 @@ function pizza() {
       [1, '#f9dcb6'],
     ],
     back: `
-      <g class="sc-sunset">${sun(298, 172, 24)}</g>
+      <g class="sc-sunset">${sun(350, 178, 22)}</g>
       ${cloud(92, 122, 0.6)}
       <path d="M34 252q80 -12 166 -4t166 0V270H34Z" fill="${mix(P.peachDeep, '#f4b56a', 0.3)}" opacity=".6"/>`,
     set: `
@@ -628,7 +683,7 @@ function pizza() {
         </g>
         <g class="steam">${line('M266 190q-5 -7 0 -14q5 -7 0 -14', 2)}${line('M282 186q-5 -7 0 -14', 2)}</g>
       </g>`,
-    note: note({ x: 56, y: 88, w: 136, rot: -4, c: I, en: 'pineapple: no.', tr: 'ananas: hayır.', arrow: 'M154 98C214 94 250 128 262 210M262 210l-8 -7M262 210l5 -9' }),
+    note: note(4, { x: 206, y: 128, w: 138, rot: 3, c: I, arrow: 'M290 136q8 28 -2 56M288 192l-7 -7M288 192l7 -6' }),
   })
 }
 
@@ -663,7 +718,7 @@ function hatch() {
     back: `
       ${stars([
         [66, 150, 0.5],
-        [82, 104, 0.4],
+        [84, 112, 0.4],
         [352, 168, 0.45],
         [300, 140, 0.35],
       ])}
@@ -685,18 +740,18 @@ function hatch() {
       </g>
       <path d="M40 248h328v22h-328z" fill="${mix(P.lavDeep, I, 0.35)}" stroke="${I}" stroke-width="${L}"/>
       ${line('M48 256h312', 1.4, mix(P.lavDeep, '#ffffff', 0.25))}`,
-    note: note({ x: 100, y: 52, w: 196, rot: -3, c: P.cream, en: 'it works! (mostly)', tr: 'çalışıyor! (sayılır)', arrow: 'M198 62q10 14 4 30M202 92l-7 -6M202 92l5 -8' }),
+    note: note(5, { x: 106, y: 64, w: 188, rot: -3, c: P.cream, arrow: 'M198 72q10 12 4 24M202 96l-7 -5M202 96l5 -7' }),
   })
 }
 
 function afterglow() {
   const lit = Array.from({ length: 12 }, (_, i) => {
-    const x = 252 + ((i * 29) % 104)
-    const y = 198 + ((i * 11) % 22)
+    const x = 250 + ((i * 29) % 96)
+    const y = 204 + ((i * 11) % 22)
     return `<rect class="win" style="--i:${i}" x="${x}" y="${y}" width="4" height="5" fill="${P.yolk}"/>`
   }).join('')
   const kocatepe = `
-    <g transform="translate(272 236)" fill="#1a1220">
+    <g transform="translate(268 236) scale(1.25)" fill="#1a1220">
       <path d="M-26 0V-14h52V0z"/>
       <path d="M-15 -14a15 15 0 0 1 30 0z"/>
       <path d="M-24 -14a6 6 0 0 1 12 0zM12 -14a6 6 0 0 1 12 0z"/>
@@ -704,18 +759,22 @@ function afterglow() {
       <rect class="win" style="--i:2" x="-6" y="-8" width="12" height="3" fill="${P.yolk}"/>
     </g>`
   const atakule = `
-    <g transform="translate(326 236)" fill="#1a1220">
+    <g transform="translate(326 236) scale(1.2)" fill="#1a1220">
       <path d="M-3 0L-2 -72h4L3 0z"/>
       <ellipse cy="-78" rx="9" ry="6"/>
       <rect class="win" style="--i:5" x="-7" y="-80" width="14" height="2.4" fill="${P.yolk}"/>
       <path d="M-0.8 -84v-14h1.6v14z"/>
       <circle class="atakule__light" cy="-100" r="2" fill="${P.tomato}"/>
     </g>`
+  // a park bench: slatted back, a seat with depth, armrests
   const bench = `
-    <path d="M40 216h212v8h-212z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-    ${line('M52 224v20M240 224v20', L)}
-    <path d="M36 244h220v9h-220z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
-    ${line('M48 253v17M244 253v17', L)}`
+    <path d="M42 188h188v6h-188z" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.9}"/>
+    ${Array.from({ length: 9 }, (_, k) => `<rect x="${48 + k * 21}" y="194" width="9" height="34" fill="${WOOD}" stroke="${I}" stroke-width="${L * 0.7}"/>`).join('')}
+    <path d="M38 226h196l8 6h-212z" fill="${mix(WOOD, '#ffffff', 0.15)}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
+    <path d="M30 232h212v8h-212z" fill="${WOOD}" stroke="${I}" stroke-width="${L}"/>
+    ${line('M40 240v30M232 240v30', L * 1.1)}
+    <path d="M26 206h14v26M246 206h-14v26" fill="none" stroke="${I}" stroke-width="${L * 1.2}" stroke-linejoin="round"/>
+    <path d="M22 204h22v6h-22zM228 204h22v6h-22z" fill="${WOOD_DEEP}" stroke="${I}" stroke-width="${L * 0.8}"/>`
   return frame('afterglow', 6, {
     sky: [
       [0, P.night],
@@ -724,26 +783,25 @@ function afterglow() {
     ],
     back: `
       ${stars([
-        [70, 74, 0.5],
-        [124, 44, 0.35],
-        [196, 70, 0.4],
-        [240, 34, 0.55],
-        [160, 112, 0.3],
-        [356, 130, 0.4],
+        [70, 84, 0.5],
+        [130, 50, 0.35],
+        [196, 34, 0.45],
+        [244, 52, 0.4],
+        [340, 124, 0.4],
       ])}
-      <g class="moon"><circle cx="314" cy="62" r="20" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}"/><circle cx="325" cy="55" r="18" fill="${P.night}"/></g>
-      <path d="M34 232q40 -18 80 -8t70 -6t66 4t60 -12t56 8V270H34Z" fill="#2d1d33"/>
+      <g class="moon"><circle cx="290" cy="80" r="19" fill="${P.yolk}" stroke="${I}" stroke-width="${L * 0.8}"/><circle cx="300" cy="73" r="17" fill="${P.night}"/></g>
+      <path d="M34 234q40 -18 80 -8t70 -6t66 4t60 -12t56 8V270H34Z" fill="#2d1d33"/>
       ${kocatepe}${atakule}
       ${lit}`,
     set: `
-      <g transform="translate(352 196)">
-        ${line('M0 0V74', L)}
-        <circle r="13" fill="${P.tomato}" stroke="${I}" stroke-width="${L}"/>
-        <path d="M-6.5 5.5V-5.5l6.5 7l6.5 -7V5.5" fill="none" stroke="${P.cream}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>
+      <g transform="translate(356 202)">
+        ${line('M0 0V68', L)}
+        <circle r="11" fill="${P.tomato}" stroke="${I}" stroke-width="${L}"/>
+        <path d="M-5.5 4.5V-4.5l5.5 6l5.5 -6V4.5" fill="none" stroke="${P.cream}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
       </g>
       ${bench}
-      <path d="M266 258h40v12h-40z" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.9}"/>
-      ${line('M272 264h12', 2, P.tomato)}`,
+      <path d="M262 258h40v12h-40z" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.9}"/>
+      ${line('M268 264h12', 2, P.tomato)}`,
   })
 }
 
@@ -777,11 +835,19 @@ const outroSvg = () => `
     </g>
   </svg>`
 
-/** Paint every step's scene into its slot, and the edges of the strip. */
+/** Paint every step's scene into its slot (and its note as a line for phones), and the edges of the strip. */
 export function renderScenes(root: ParentNode = document) {
   root.querySelectorAll<HTMLElement>('.step__scene').forEach((slot, i) => {
     const draw = SCENES[i]
     if (draw && !slot.childElementCount) slot.innerHTML = draw()
+    const step = slot.closest('.step')
+    if (NOTES[i] && step && !step.querySelector('.step__note')) {
+      const p = document.createElement('p')
+      p.className = 'step__note'
+      p.setAttribute('aria-hidden', 'true')
+      p.textContent = noteText(i)
+      slot.before(p)
+    }
   })
   const intro = root.querySelector<HTMLElement>('.day__edge--in')
   const outro = root.querySelector<HTMLElement>('.day__edge--out .edge__note')

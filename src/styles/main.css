@@ -1832,7 +1832,15 @@ h2 {
   display: inline;
 }
 .walker[data-state='6'][data-beat='4'] .gface--calm,
-.walker[data-state='1'] .whand--r {
+.walker[data-state='1'] .whand--r,
+.walker[data-state='3'] .walker__hands {
+  display: none;
+}
+/* the wave goodbye beside the way to apply */
+.walker[data-state='6'][data-beat='5'] :is(.wprop--arms, .gface--joy) {
+  display: inline;
+}
+.walker[data-state='6'][data-beat='5'] :is(.wprop--6, .gface--calm, .gface--wink) {
   display: none;
 }
 .walker[data-state='6'][data-beat='4'] .gface--wink {
@@ -1919,6 +1927,7 @@ h2 {
   animation-delay: 0.3s;
 }
 
+.mate[data-state='1'] .mface--0,
 .mate[data-state='2'] .mface--0,
 .mate[data-state='3'] .mface--1,
 .mate[data-state='4'] .mface--2,
@@ -1927,10 +1936,11 @@ h2 {
 .day__cast[data-cheer='true'] .mhands--up,
 .mate[data-state='4'] .mprop--slice,
 .mate[data-state='6'] .mprop--phone,
-.mate--a[data-state='3'] .mprop--laptop {
+.mate[data-state='3'] .mprop--laptop {
   display: inline;
 }
-.day__cast[data-cheer='true'] .mhands--down {
+.day__cast[data-cheer='true'] .mhands--down,
+.mate[data-state='3'] .mhands--down {
   display: none;
 }
 .mate__body {
@@ -2051,9 +2061,21 @@ h2 {
   opacity: clamp(0, calc((var(--d) - 0.7) * 8), 1);
 }
 
-/* 11:30 nest: the two inside hop out to join (day.ts throws them) */
-.step:is(.is-now, .is-past) .scene .nesters {
+/* the two on Crack's bench put their hands up as the pitch lands, then
+   hop down to join (day.ts throws them); after that the bench is empty */
+.scene .lhands--up {
+  opacity: clamp(0, calc((var(--d) - 0.7) * 20), 1);
+}
+.scene .lhands--down {
+  opacity: calc(1 - clamp(0, calc((var(--d) - 0.7) * 20), 1));
+}
+.day[data-team='true'] .scene .listener {
   opacity: 0;
+}
+
+/* 11:30 nest: the three settle in and the team flag goes up */
+.scene .team-flag__cloth {
+  transform: translateY(calc((1 - clamp(0, calc(var(--d) * 1.6), 1)) * 76px));
 }
 .scene .nest {
   transform-origin: 50% 100%;
@@ -2096,7 +2118,23 @@ h2 {
   }
 }
 
-/* 12:00 incubate: the lamp warms up; the clock and the sun are day.ts's */
+/* 12:00 incubate: the lamp warms up and the build grows through the
+   afternoon (the clock and the sky are day.ts's) */
+.scene .sticky {
+  opacity: clamp(0, calc(var(--d) * 13 - var(--k)), 1);
+}
+.scene .cup {
+  opacity: clamp(0, calc(var(--d) * 6 - var(--k)), 1);
+}
+.scene .proto--1 {
+  opacity: clamp(0, calc((var(--d) - 0.2) * 8), 1);
+}
+.scene .proto--2 {
+  opacity: clamp(0, calc((var(--d) - 0.45) * 8), 1);
+}
+.scene .proto--3 {
+  opacity: clamp(0, calc((var(--d) - 0.7) * 8), 1);
+}
 .scene .lamp__beam {
   opacity: calc(0.12 + 0.3 * var(--d));
 }
@@ -2123,9 +2161,20 @@ h2 {
   transform: translateY(calc(clamp(0, (var(--d) - 0.2) * 3, 1) * -12px));
 }
 
-/* 19:00 hatch: the spot finds the egg, then confetti */
+/* 19:00 hatch: the spot finds the egg, flares on the pop, then confetti;
+   "it works!" is only written once it has */
 .scene .spot {
-  opacity: calc(0.16 + 0.42 * clamp(0, var(--d) * 2, 1));
+  opacity: calc(0.16 + 0.3 * clamp(0, calc(var(--d) * 2), 1));
+}
+.step.is-popped .scene .spot {
+  opacity: 0.62;
+}
+.scene--hatch .note {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.step:is(.is-popped, .is-past) .scene--hatch .note {
+  opacity: 1;
 }
 .step.is-now.is-popped .scene .confetti {
   animation: confetti 2.8s linear infinite;
@@ -2183,6 +2232,11 @@ h2 {
   }
 }
 
+/* the notes are drawn into the windows on wide screens; phones get them as lines */
+.step__note {
+  display: none;
+}
+
 /* below 900px, or with reduced motion, the day is a picture book */
 @media (max-width: 899px), (prefers-reduced-motion: reduce) {
   .day__pin {
@@ -2230,10 +2284,60 @@ h2 {
   .step p {
     max-width: 40ch;
   }
-  .day__edge,
+  .day__edge--in,
   .day__cast,
-  .scene .nesters {
+  .scene .note {
     display: none;
+  }
+  /* each window's aside, legible, as a scribbled line above its picture
+     (.step p would otherwise set it as body copy) */
+  .step .step__note {
+    display: block;
+    order: -2;
+    max-width: none;
+    margin: 0 0 -4px 6px;
+    font-family: var(--f-hand);
+    font-size: clamp(24px, 6.6vw, 32px);
+    line-height: 1;
+    color: var(--tomato);
+    transform: rotate(-3deg);
+    transform-origin: left bottom;
+  }
+  /* and the day ends where the strip does: see you in two Sundays */
+  .day__edge--out {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    gap: 4px;
+  }
+  .day__edge--out::after {
+    display: none;
+  }
+  .day__edge--out .edge__note {
+    position: relative;
+    inset: auto;
+    width: min(300px, 78vw);
+  }
+  .day__edge--out .edge__art {
+    position: static;
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: -16%;
+    margin-bottom: -12%;
+  }
+  .day__edge--out .note text {
+    opacity: 1;
+  }
+  .day__edge--out .note__arrow {
+    stroke-dashoffset: 0;
+  }
+  .day__apply {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    translate: none;
   }
 }
 /* tablets, and wide screens with reduced motion: scene and words side by side */
@@ -2247,6 +2351,9 @@ h2 {
   }
   .step:nth-child(odd) .step__scene {
     order: 2;
+  }
+  .step__note {
+    grid-column: 1 / -1;
   }
 }
 
