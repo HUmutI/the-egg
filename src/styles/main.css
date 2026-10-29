@@ -1871,6 +1871,39 @@ h2 {
 .day__cast.is-walking .walker[data-state] .cheese {
   display: none;
 }
+/* walking on, it puts the mic and the laptop down and wears the next
+   window's face: glad after Crack, pizza-happy after the build */
+.day__cast.is-walking .walker[data-state] :is(.wprop--1, .wprop--3, .sface--1, .sface--3, .sface--6, .sface--7) {
+  display: none;
+}
+.day__cast.is-walking .walker[data-state='1'] :is(.whand--r, .sface--2),
+.day__cast.is-walking .walker[data-state='3'] :is(.walker__hands, .sface--4),
+.day__cast.is-walking .walker[data-state='4'] .sface--4 {
+  display: inline;
+}
+/* inside a stay they react: a grin when the pitch's bulb comes on, wide
+   eyes when the build's antenna lights, and at Pizza all three look up at
+   the better idea */
+.walker[data-state='1'][data-beat='4'] .sface--1,
+.walker[data-state='3'][data-beat='4'] .sface--3,
+.walker[data-state='4']:is([data-beat='3'], [data-beat='4']) .sface--4,
+.mate[data-state='3'][data-beat='4'] .mface--1,
+.mate[data-state='4']:is([data-beat='3'], [data-beat='4']) .mface--2 {
+  display: none;
+}
+.walker[data-state='1'][data-beat='4'] .sface--2,
+.walker[data-state='3'][data-beat='4'] .sface--6,
+.walker[data-state='4']:is([data-beat='3'], [data-beat='4']) .sface--7,
+.mate[data-state='3'][data-beat='4'] .mface--3,
+.mate[data-state='4']:is([data-beat='3'], [data-beat='4']) .mface--5 {
+  display: inline;
+}
+.day__cast.is-walking .mate[data-state='4'] .mface--5 {
+  display: none;
+}
+.day__cast.is-walking .mate[data-state='4'] .mface--2 {
+  display: inline;
+}
 /* the wave goodbye beside the way to apply */
 .walker[data-state='6'][data-beat='5'] :is(.wprop--arms, .gface--joy) {
   display: inline;
@@ -2180,7 +2213,7 @@ h2 {
   opacity: clamp(0, calc((var(--d) - 0.7) * 8), 1);
 }
 .scene .lamp__beam {
-  opacity: calc(0.12 + 0.3 * var(--d));
+  opacity: calc(0.12 + 0.16 * var(--d));
 }
 .scene .mentor {
   transform-origin: 50% 100%;
@@ -2216,7 +2249,7 @@ h2 {
   opacity: 0;
   transition: opacity 0.4s;
 }
-.step:is(.is-popped, .is-past) .scene--hatch .note {
+.step:is(.is-landed, .is-past) .scene--hatch .note {
   opacity: 1;
 }
 .step.is-now.is-popped .scene .confetti {
@@ -2284,6 +2317,39 @@ h2 {
   .scene__cast,
   .scene--afterglow .metro {
     display: none;
+  }
+  /* one sun crosses the building: it's only out in the window you're in
+     (climbing through the morning, overhead at noon, setting at Pizza) */
+  .scene .sc-sun {
+    opacity: 0;
+    transition: opacity 0.6s;
+  }
+  .step.is-now .scene .sc-sun {
+    opacity: 1;
+  }
+  /* the confetti waits for the pop */
+  .step--hatch:not(.is-popped):not(.is-past) .confetti {
+    opacity: 0;
+  }
+  /* a note is for the moment it points at: it goes when the three walk on
+     (the picture book keeps them all) */
+  .scene .note {
+    transition: opacity 0.35s;
+  }
+  .day[data-walking='true'] .step.is-now .scene .note,
+  .day .step.is-past .scene .note {
+    opacity: 0;
+  }
+  /* and the mentor wanders off as the three leave the workbench */
+  .scene :is(.mentor, .mentor__say) {
+    transition: opacity 0.4s;
+  }
+  .day[data-walking='true'] .step.is-now .scene :is(.mentor, .mentor__say) {
+    opacity: 0;
+  }
+  /* at the end, the last caption moves over with the camera, so it never leaves the screen */
+  .step[data-step='6'] .step__cap {
+    translate: calc(var(--out, 0) * var(--scene-w) * 0.15) 0;
   }
 }
 

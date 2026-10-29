@@ -34,7 +34,7 @@ export const MARK = 200
  */
 export const TEAM: [number, number][] = [
   [136, 72],
-  [136, 72],
+  [122, 60],
   [272, 128],
   [258, 142],
   [320, 112],
@@ -121,13 +121,16 @@ const stars = (pts: [number, number, number][]) =>
  * poster. It fits its clear patch of sky (`w` wide) in either language, and
  * writes itself on when its step comes round.
  */
-const note = (step: number, o: { x: number; y: number; w: number; rot?: number; arrow: string; c?: string }) => {
+const note = (step: number, o: { x: number; y: number; w: number; rot?: number; arrow: string; c?: string; two?: boolean }) => {
   const text = noteText(step)
-  const size = Math.min(27, o.w / (text.length * 0.44))
+  // a two-line note breaks at its last space, and sizes to its longer line
+  const cut = text.lastIndexOf(' ')
+  const lines = o.two && cut > 0 ? [text.slice(0, cut), text.slice(cut + 1)] : [text]
+  const size = Math.min(27, o.w / (Math.max(...lines.map((l) => l.length)) * 0.44))
   const c = o.c ?? P.tomato
   return `
   <g class="note">
-    <text x="${o.x}" y="${o.y}" transform="rotate(${o.rot ?? -4} ${o.x} ${o.y})" font-family="${HAND}" font-size="${n(size)}" fill="${c}">${text}</text>
+    <text transform="rotate(${o.rot ?? -4} ${o.x} ${o.y})" font-family="${HAND}" font-size="${n(size)}" fill="${c}">${lines.map((l, i) => `<tspan x="${o.x + i * 8}" y="${n(o.y + i * size * 1.05)}">${l}</tspan>`).join('')}</text>
     <path class="note__arrow" pathLength="1" d="${o.arrow}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
   </g>`
 }
@@ -286,6 +289,9 @@ const SHELL_FACES = [
   () => face({ eyes: 'dot', mouth: 'flat', brows: 'worried', look: [0, 6] }),
   () => face({ eyes: 'happy', mouth: 'tongue', blush: true }),
   () => face({ eyes: 'wide', mouth: 'flat', brows: 'worried' }),
+  // and the moments inside a stay: the build works, the better idea arrives
+  () => face({ eyes: 'wide', mouth: 'grin', brows: 'up' }),
+  () => face({ eyes: 'dot', mouth: 'o', brows: 'up', look: [0, -9] }),
 ]
 const goldJoy = () => face({ eyes: 'happy', mouth: 'grin', blush: true, y: 120 })
 const goldCalm = () => face({ eyes: 'closed', mouth: 'smile', blush: true, y: 120 })
@@ -311,10 +317,10 @@ const bubbles = () => `
  * each with its own way out.
  */
 export const BURST = [
-  { a: -152, x: 100, y: 60, far: 520 },
-  { a: -118, x: 100, y: 60, far: 480 },
-  { a: -62, x: 100, y: 60, far: 480 },
-  { a: -28, x: 100, y: 60, far: 520 },
+  { a: -152, x: 100, y: 60, far: 270 },
+  { a: -124, x: 100, y: 60, far: 230 },
+  { a: -56, x: 100, y: 60, far: 230 },
+  { a: -28, x: 100, y: 60, far: 270 },
   { a: -40, x: 150, y: 176, far: 340 },
   { a: -12, x: 176, y: 176, far: 360 },
   { a: 22, x: 186, y: 180, far: 320 },
@@ -343,14 +349,21 @@ const burstProps = () =>
 const burstShards = () =>
   Array.from({ length: 8 }, (_, k) => `<g class="wburst" data-i="${k + 4}" opacity="0">${shard(k)}</g>`).join('')
 
-/** A ring of rays that flares behind the golden egg as it comes out. */
-const rays = () =>
-  `<g class="walker__rays" opacity="0">${Array.from({ length: 14 }, (_, i) => {
-    const a = (i / 14) * Math.PI * 2
-    const r0 = 128
-    const r1 = i % 2 ? 176 : 196
-    return line(`M${n(100 + Math.cos(a) * r0)} ${n(150 + Math.sin(a) * r0)}L${n(100 + Math.cos(a) * r1)} ${n(150 + Math.sin(a) * r1)}`, 9, i % 2 ? P.cream : P.yolk)
-  }).join('')}</g>`
+/**
+ * The light that bursts out behind the golden egg as it comes out: a ring
+ * of wedges, yolk and cream. It's its own layer, laid behind the whole cast
+ * and moved with the walker, so it shines behind the team instead of over it.
+ */
+export function raysSvg() {
+  const at = (a: number, r: number) => `${n(100 + Math.cos(a) * r)} ${n(150 + Math.sin(a) * r)}`
+  const wedges = Array.from({ length: 16 }, (_, i) => {
+    const a = (i / 16) * Math.PI * 2
+    const w = Math.PI / 26
+    const r = i % 2 ? 196 : 244
+    return `<path d="M${at(a - w * 0.35, 70)}L${at(a - w, r)}L${at(a + w, r)}L${at(a + w * 0.35, 70)}Z" fill="${i % 2 ? P.cream : P.yolk}"/>`
+  }).join('')
+  return `<svg class="walker__svg" viewBox="-70 -150 340 480" aria-hidden="true"><g class="walker__rays" opacity="0">${wedges}</g></svg>`
+}
 
 /* ── the walker: every state at once, the script picks one ───────── */
 
@@ -365,7 +378,6 @@ export function walkerSvg() {
     <svg class="walker__svg" viewBox="-70 -150 340 480" aria-hidden="true">
       <g class="walker__body"><g class="breathe">
         <ellipse class="walker__shadow" cx="104" cy="318" rx="74" ry="9" fill="${I}" opacity=".14"/>
-        ${rays()}
         <g class="walker__legs">${legs()}</g>
         <g class="wprop wprop--arms">${armsUp(P.yolk)}</g>
         <g class="walker__burst">${burstProps()}</g>
@@ -425,6 +437,7 @@ const MATE_FACES = [
   () => face({ eyes: 'happy', mouth: 'tongue', blush: true }),
   () => face({ eyes: 'happy', mouth: 'grin', blush: true }),
   () => face({ eyes: 'closed', mouth: 'smile', blush: true }),
+  () => face({ eyes: 'dot', mouth: 'o', look: [0, -9] }),
 ]
 
 /* ── stills: the cast drawn into each scene, for phones ──────────── */
@@ -603,7 +616,7 @@ function crack() {
       [0, '#b9d6ea'],
       [1, '#eaf3f2'],
     ],
-    back: `${sun(96, 130, 15)}`,
+    back: '',
     set: `
       <g class="watch" transform="translate(318 136) scale(.74)">
         <rect x="-7" y="-52" width="14" height="10" rx="3" fill="#cfc8d6" stroke="${I}" stroke-width="${L}"/>
@@ -704,6 +717,7 @@ function incubate() {
      <path d="M136 158h80l-5 9h-70z" fill="#cfc8d6" stroke="${I}" stroke-width="${W.prop}" stroke-linejoin="round"/>
      ${hand(176, 172, SHELL.tan, 16)}${hand(28, 204, SHELL.tan, -20)}`,
   )
+  const beam = nextId('lb')
   return frame('incubate', 3, {
     sky: [
       [0, '#9cc7e2'],
@@ -719,7 +733,8 @@ function incubate() {
         <circle r="3" fill="${I}"/>
       </g>
       <g class="lamp">
-        <path class="lamp__beam" d="M226 104L142 236H300Z" fill="${P.yolk}" opacity=".14"/>
+        <linearGradient id="${beam}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.cream}" stop-opacity=".9"/><stop offset="1" stop-color="${P.cream}" stop-opacity="0"/></linearGradient>
+        <path class="lamp__beam" d="M226 104L142 236H300Z" fill="url(#${beam})"/>
         ${line('M236 17V84', 2.4)}
         <path d="M218 84h36l8 14h-52z" fill="${P.tomato}" stroke="${I}" stroke-width="${L}" stroke-linejoin="round"/>
         <circle class="lamp__bulb" cx="236" cy="101" r="5" fill="${P.yolk}" stroke="${I}" stroke-width="2"/>
@@ -791,8 +806,8 @@ function hatch() {
     return `<g transform="rotate(${(i * 47) % 180} ${x} ${y})"><rect class="confetti" style="--i:${i}" x="${x}" y="${y}" width="7" height="4" rx="1" fill="${c}"/></g>`
   }).join('')
   const disco = `
-    <g transform="translate(318 88)">
-      ${line('M0 -70V-14', 1.6)}
+    <g transform="translate(318 80)">
+      ${line('M0 -26V-14', 1.6)}
       <circle r="14" fill="#cfc8d6" stroke="${I}" stroke-width="${L}"/>
       ${line('M-14 0h28M-12 -7h24M-12 7h24M0 -14v28M-7 -12v24M7 -12v24', 1, '#7d7389')}
       <path d="M-8 -8h5v5h-5z" fill="${P.cream}"/><path d="M3 2h5v5h-5z" fill="${P.sky}"/>
@@ -822,14 +837,14 @@ function hatch() {
         <ellipse cy="14" rx="15" ry="4" fill="${P.cream}" stroke="${I}" stroke-width="${L * 0.8}"/>
       </g>
       ${disco}
-      <g transform="translate(316 162)">
+      <g transform="translate(316 188)">
         <rect x="-30" y="-24" width="60" height="40" rx="4" fill="${P.cream}" stroke="${I}" stroke-width="${L}"/>
         <path d="M-13 -2l9 9l18 -20" fill="none" stroke="${P.mintDeep}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
         ${line('M0 16v24M-12 40h24', L)}
       </g>
       <path d="M136 248h230v22h-230z" fill="${mix(P.lavDeep, I, 0.35)}" stroke="${I}" stroke-width="${L}"/>
       ${line('M144 256h214', 1.4, mix(P.lavDeep, '#ffffff', 0.25))}`,
-    note: note(5, { x: 106, y: 64, w: 188, rot: -3, c: P.cream, arrow: 'M198 72q10 12 4 24M202 96l-7 -5M202 96l5 -7' }),
+    note: note(5, { x: 274, y: 128, w: 80, rot: -4, c: P.cream, two: true, arrow: 'M276 158q-6 12 -18 16M258 174l9 1M258 174l4 -8' }),
   })
 }
 

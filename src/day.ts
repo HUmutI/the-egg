@@ -17,6 +17,7 @@ import {
   TURN,
   frontOverlays,
   mateSvg,
+  raysSvg,
   renderScenes,
   walkerSvg,
 } from './dayscenes'
@@ -42,7 +43,7 @@ const DWELL = 0.58
 /** The arrival, the hatch (the poster moment) and the walk home (the ending) stay longer. */
 const STAY = [1.5, 1, 1, 1, 1, 1.7, 1.6]
 /** When the two on Crack's bench get up and join (through Crack's stay). */
-const JOIN = 0.82
+const JOIN = 0.9
 /** The nest: they hop in over its rim, and out again. */
 const NEST = 2
 /** Through the Doors stay: the door opens, it steps out of the doorway, it takes a coffee. */
@@ -64,6 +65,7 @@ export function renderDay() {
     const el = document.getElementById(id)
     if (el && !el.childElementCount) el.innerHTML = html()
   }
+  fill('walkerRays', raysSvg)
   fill('walker', walkerSvg)
   fill('mateA', () => mateSvg('beanie'))
   fill('mateB', () => mateSvg('cap'))
@@ -90,6 +92,7 @@ export function initDay() {
   const track = $('#dayTrack')
   const cast = $('#dayCast')
   const walker = $('#walker')
+  const glow = $('#walkerRays')
   const mates = [$('#mateA'), $('#mateB')]
   const steps = $$<HTMLLIElement>('.step', track)
   const outro = $('.day__edge--out', track)
@@ -117,7 +120,7 @@ export function initDay() {
       whole: q<SVGGElement>(walker, '.walker__whole'),
       top: q<SVGGElement>(walker, '.walker__top'),
       golden: q<SVGGElement>(walker, '.walker__golden'),
-      rays: q<SVGGElement>(walker, '.walker__rays'),
+      rays: q<SVGGElement>(glow, '.walker__rays'),
       burst: Array.from(walker.querySelectorAll<SVGGElement>('.wburst')),
     }
     const team = mates.map((m) => ({
@@ -136,8 +139,8 @@ export function initDay() {
 
     // GSAP owns the cast's centring, so its own x/y tweens never fight a CSS translate;
     // they scale and turn round on their feet (y 316 of the -150…330 view box)
-    gsap.set([walker, ...mates], { xPercent: -50, yPercent: 2.92 })
-    gsap.set([walker, ...team.map((m) => m.svg)], { transformOrigin: '50% 97.08%' })
+    gsap.set([walker, glow, ...mates], { xPercent: -50, yPercent: 2.92 })
+    gsap.set([walker, glow, ...team.map((m) => m.svg)], { transformOrigin: '50% 97.08%' })
 
     // geometry, read fresh on every frame so a resize never goes stale
     const unit = () => (track.querySelector('.step__scene svg')?.getBoundingClientRect().width ?? 400) / 400
@@ -221,6 +224,8 @@ export function initDay() {
       const popped = d >= POP
       walker.dataset.hatch = popped ? 'popped' : 'whole'
       steps[5].classList.toggle('is-popped', popped)
+      // "it works!" is written once the hat has come down, not under the flying shell
+      steps[5].classList.toggle('is-landed', d >= 0.74)
       cast.dataset.cheer = String(popped)
       // squash and stretch as it comes out: 0.9 → 1.12 → 1
       const s1 = band(d, POP, 0.48)
@@ -229,7 +234,7 @@ export function initDay() {
       hero.golden.setAttribute('transform', `translate(100 262) scale(${(2 - sy).toFixed(3)} ${sy.toFixed(3)}) translate(-100 -262)`)
       const flare = band(d, POP, 0.7)
       hero.rays.setAttribute('opacity', (flare > 0 && flare < 1 ? 1 - flare : 0).toFixed(2))
-      hero.rays.setAttribute('transform', `translate(100 150) scale(${(0.6 + 0.8 * easeOut(flare)).toFixed(3)}) translate(-100 -150)`)
+      hero.rays.setAttribute('transform', `translate(100 150) scale(${(0.5 + 0.6 * easeOut(flare)).toFixed(3)}) translate(-100 -150)`)
       // the cap: kicked off on the pop, up and spinning, then down onto the head
       const u = band(d, POP, 0.8)
       const k1 = easeOut(Math.min(u / 0.4, 1))
@@ -248,7 +253,9 @@ export function initDay() {
         const ang = (o.a * Math.PI) / 180
         const dist = o.far * easeOut(b)
         const bx = o.x + Math.cos(ang) * dist
-        const by = o.y + Math.sin(ang) * dist + 90 * b * b
+        // what falls lands on the stage (just above its feet) and stops there
+        const fall = o.y + Math.sin(ang) * dist + 90 * b * b
+        const by = Math.min(fall, 306)
         const spin = (i % 2 ? 1 : -1) * 260 * b
         g.setAttribute('transform', `translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${spin.toFixed(1)}) scale(${(0.7 + 0.3 * Math.min(1, b * 3)).toFixed(2)})`)
         g.setAttribute('opacity', (b < 0.6 ? 1 : 1 - (b - 0.6) / 0.4).toFixed(2))
@@ -269,7 +276,8 @@ export function initDay() {
         const fr = from.getBoundingClientRect()
         gsap.set(m.el, { x: 0, y: 0 })
         const mr = m.el.getBoundingClientRect()
-        const dx = fr.left + fr.width / 2 - (mr.left + mr.width / 2)
+        // (less the step it's already shifted by in its Crack spot)
+        const dx = fr.left + fr.width / 2 - (mr.left + mr.width / 2) - (TEAM[1][k] - SLOTS[k]) * unit()
         const dy = fr.bottom - mr.bottom
         gsap.killTweensOf(m.el)
         gsap
@@ -297,7 +305,7 @@ export function initDay() {
       team.forEach((m) => (m.el.dataset.state = String(i)))
       if (i < 5) {
         walker.dataset.hatch = 'whole'
-        steps[5].classList.remove('is-popped')
+        steps[5].classList.remove('is-popped', 'is-landed')
         hero.top.removeAttribute('transform')
       }
       if (i !== 5) {
@@ -367,8 +375,10 @@ export function initDay() {
         cast.dataset.cheer = String(d > 0.94)
       }
       cast.classList.toggle('is-walking', a > 0.05)
+      // on the way out of a window, its note and its extras step aside
+      section.dataset.walking = String(t > 0)
       const sit = state === last && t === 0 ? fold : 1
-      gsap.set(walker, { x: ax * u, y: -(lerp(0, liftAt(LIFT, state, t), sit) + ay) * u, scale: sc })
+      gsap.set([walker, glow], { x: ax * u, y: -(lerp(0, liftAt(LIFT, state, t), sit) + ay) * u, scale: sc })
       pose(hero.legs, hero.body, walked / 32, a, fold, dangle)
       // the team walks in its own formation, falling back or passing behind the hero to reach its next spots
       team.forEach((m, k) => {
@@ -398,6 +408,7 @@ export function initDay() {
                         : 5
               : Math.min(4, Math.floor(d * 5)),
       )
+      team.forEach((m) => (m.el.dataset.beat = walker.dataset.beat))
       if (state === 5) hatchAt(t > 0 ? 1 : d)
       // the cheering stops when they walk off stage
       if (state === 5 && t > 0) cast.dataset.cheer = 'false'
@@ -445,11 +456,12 @@ export function initDay() {
       clockState.dayMinutes = null
       current = -1
       joined = false
-      gsap.set([track, walker, cast, ...team.map((m) => m.svg), ...fronts.map((f) => f.el)], { clearProps: 'transform,opacity' })
+      gsap.set([track, walker, glow, cast, ...team.map((m) => m.svg), ...fronts.map((f) => f.el)], { clearProps: 'transform,opacity' })
       team.forEach((m) => (gsap.killTweensOf(m.el), gsap.set(m.el, { clearProps: 'all' })))
       ;[...hero.legs, hero.body, hero.whole, hero.top, hero.golden, ...team.flatMap((m) => [...m.legs, m.body])].forEach((g) => g.removeAttribute('transform'))
       section.style.removeProperty('--out')
       delete section.dataset.end
+      delete section.dataset.walking
       delete section.dataset.team
       settled()
     }
