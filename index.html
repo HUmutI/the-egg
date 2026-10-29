@@ -14,13 +14,23 @@
     <!-- Critical path: fonts origin, the hero art (LCP), then CSS. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Mirrors the hero <picture>'s AVIF <source> (srcset + sizes): change both together. -->
+    <!-- Mirror the hero <picture>'s AVIF <source>s (media + srcset + sizes): change them together. -->
     <link
       rel="preload"
       as="image"
       type="image/avif"
+      media="(min-width: 601px)"
       imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w"
       imagesizes="(max-width: 860px) 100vw, 1400px"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="(max-width: 600px)"
+      imagesrcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-1200.avif 1200w"
+      imagesizes="100vw"
       fetchpriority="high"
     />
     <link
@@ -228,6 +238,9 @@
         <figure class="hero__art">
           <div class="hero__frame">
           <picture>
+            <!-- phones held upright: the same poster recomposed, the art larger over the wordmark -->
+            <source media="(max-width: 600px)" type="image/avif" srcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1000" />
+            <source media="(max-width: 600px)" type="image/webp" srcset="/hero/the-egg-club-phone-600.webp 600w, /hero/the-egg-club-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1000" />
             <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
             <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
             <img
@@ -243,7 +256,7 @@
               data-i18n-tr-attr-alt="Büyük serif harflerle “the egg club” yazısı. Ortada altın rengi bir yumurta çatlamış; içinden laptoplar, kitaplar, pizza, kahve, bir fotoğraf makinesi, kulaklıklar ve bir disko topuyla insanlar dökülüyor."
             />
           </picture>
-            <svg class="doodles" id="doodles" viewBox="0 0 1660 948" aria-hidden="true">
+            <svg class="doodles doodles--wide" id="doodles" viewBox="0 0 1660 948" aria-hidden="true">
               <!-- good ideas hatch here → the crack -->
               <g class="dd dd--a" data-redraw style="--d: 0.15s">
                 <text x="104" y="136" transform="rotate(-5 104 136)" class="ink-red" data-i18n-tr="fikirler burada doğar">good ideas hatch here</text>
@@ -302,6 +315,29 @@
                 <path class="spark ink-red" d="M742 52 q 2 12 12 14 q -10 2 -12 14 q -2 -12 -12 -14 q 10 -2 12 -14 Z" />
                 <path class="spark ink" d="M1604 140 q 2 9 9 11 q -7 2 -9 11 q -2 -9 -9 -11 q 7 -2 9 -11 Z" />
                 <path class="spark ink-orange" d="M78 470 q 2 10 10 12 q -8 2 -10 12 q -2 -10 -10 -12 q 8 -2 10 -12 Z" />
+              </g>
+            </svg>
+            <!-- the same notes, written on the phone poster (its own layout, so its own sheet) -->
+            <svg class="doodles doodles--tall" viewBox="0 0 1200 1000" aria-hidden="true">
+              <g class="dd dd--ta" data-redraw style="--d: 0.15s">
+                <text x="440" y="57" text-anchor="end" transform="rotate(-5 440 57)" class="ink-red" data-i18n-tr="fikir yuvası">ideas hatch here</text>
+                <path class="draw ink-red" pathLength="1" d="M452 46 C 488 52 496 96 462 124" />
+                <path class="draw ink-red" pathLength="1" d="M462 124 L 482 122 M462 124 L 467 105" />
+              </g>
+              <g class="dd dd--tb" data-redraw style="--d: 0.7s">
+                <path class="draw ink-red" pathLength="1" d="M1115 297 C 1077 265 1008 283 1004 341 C 1000 400 1066 418 1107 390 C 1143 365 1133 305 1093 293 C 1075 287 1057 291 1042 301" />
+              </g>
+              <g class="dd dd--td" style="--d: 1.2s">
+                <path class="draw ink-red" pathLength="1" d="M760 910 C 860 900 1000 906 1152 898" />
+                <path class="draw ink-red" pathLength="1" d="M784 930 C 890 920 1010 926 1130 920" />
+              </g>
+              <g class="dd dd--te" data-redraw style="--d: 1.4s">
+                <text x="40" y="966" transform="rotate(-2 40 966)" class="ink" data-i18n-tr="kabuğunu kır.">crack something.</text>
+              </g>
+              <g class="dd dd--s" style="--d: 1.8s">
+                <path class="spark ink-red" d="M560 18 q 2 12 12 14 q -10 2 -12 14 q -2 -12 -12 -14 q 10 -2 12 -14 Z" />
+                <path class="spark ink" d="M1150 118 q 2 9 9 11 q -7 2 -9 11 q -2 -9 -9 -11 q 7 -2 9 -11 Z" />
+                <path class="spark ink-orange" d="M66 214 q 2 10 10 12 q -8 2 -10 12 q -2 -10 -10 -12 q 8 -2 10 -12 Z" />
               </g>
             </svg>
           </div>

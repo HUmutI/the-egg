@@ -857,6 +857,23 @@ body.is-night .nav::before {
     animation: none;
   }
 }
+/* the phone poster's notes: drawn for its own layout, about a finger's
+   width of handwriting on the screen */
+.doodles--tall {
+  display: none;
+}
+.doodles--tall path {
+  stroke-width: 5.5;
+}
+.doodles--tall text {
+  font-size: 68px;
+}
+.doodles--tall .dd--te text {
+  font-size: 60px;
+}
+.doodles--tall .dd--td path {
+  stroke-width: 6;
+}
 
 html:not(.js) .hero__art img {
   opacity: 1;
@@ -1033,6 +1050,23 @@ html:not(.js) .hero__art img {
   }
   .built__logo--tk img {
     height: 15px;
+  }
+}
+/* phones held upright get the poster recomposed for a tall screen (see the
+   <picture>): the art larger, the wordmark on a line of its own. A short
+   screen shrinks it so the button and the facts still make the first view. */
+@media (max-width: 600px) {
+  .hero__art img {
+    aspect-ratio: 1200 / 1000;
+  }
+  .hero__frame {
+    width: min(100%, calc((100svh - var(--nav-top) - 236px) * 1.2));
+  }
+  .doodles--wide {
+    display: none;
+  }
+  .doodles--tall {
+    display: block;
   }
 }
 /* landscape phones: the poster has to fit under the bar, not the width;

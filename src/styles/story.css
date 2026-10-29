@@ -70,6 +70,17 @@
   box-shadow: 0 0 0 1.5px var(--ink);
 }
 
+/* phones: the four facts set as a small two-by-two table (free · when,
+   time · where) instead of a ragged wrap */
+@media (max-width: 600px) {
+  .hero__facts {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    gap: 9px 26px;
+  }
+}
+
 @media (min-width: 861px) {
   .hero__info {
     justify-items: start;

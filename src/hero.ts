@@ -2,22 +2,24 @@ import { $, $$, reducedMotion } from './util'
 
 /**
  * The hero is a single finished illustration. It arrives gently once it has
- * decoded; then someone scribbles on it — the notes in #doodles draw on in
- * sequence, and redraw themselves when you hover them.
+ * decoded; then someone scribbles on it — the notes draw on in sequence, and
+ * redraw themselves when you hover them. There are two sheets of notes, one
+ * for the wide poster and one for the phone's recomposed one; CSS shows the
+ * sheet that matches the picture on screen.
  */
 export function initHero() {
   const img = $<HTMLImageElement>('#heroArt')
-  const doodles = $<SVGSVGElement>('#doodles')
+  const sheets = $$<SVGSVGElement>('.doodles')
   if (!img) return
 
   const show = () => {
     img.classList.add('is-in')
-    if (!doodles) return
+    if (!sheets.length) return
     // The notes are handwriting: wait for that font so they don't redraw
     // in a fallback face, but never hold them back for long.
     const fonts = Promise.race([document.fonts.load('40px "Reenie Beanie"'), new Promise((r) => setTimeout(r, 1200))])
     const delay = new Promise((r) => setTimeout(r, reducedMotion() ? 0 : 350))
-    Promise.all([fonts, delay]).then(() => doodles.classList.add('is-drawn'))
+    Promise.all([fonts, delay]).then(() => sheets.forEach((s) => s.classList.add('is-drawn')))
   }
   if (img.complete && img.naturalWidth) show()
   else {
@@ -27,19 +29,21 @@ export function initHero() {
 
   fillStrip()
 
-  if (!doodles || reducedMotion()) return
-  $$<SVGGElement>('[data-redraw]', doodles).forEach((g) => {
-    let busy = false
-    g.addEventListener('pointerenter', () => {
-      if (busy || !doodles.classList.contains('is-drawn')) return
-      busy = true
-      g.style.setProperty('--d', '0s')
-      g.classList.add('is-redrawing')
-      void g.getBoundingClientRect()
-      requestAnimationFrame(() => g.classList.remove('is-redrawing'))
-      setTimeout(() => (busy = false), 900)
+  if (reducedMotion()) return
+  for (const sheet of sheets) {
+    $$<SVGGElement>('[data-redraw]', sheet).forEach((g) => {
+      let busy = false
+      g.addEventListener('pointerenter', () => {
+        if (busy || !sheet.classList.contains('is-drawn')) return
+        busy = true
+        g.style.setProperty('--d', '0s')
+        g.classList.add('is-redrawing')
+        void g.getBoundingClientRect()
+        requestAnimationFrame(() => g.classList.remove('is-redrawing'))
+        setTimeout(() => (busy = false), 900)
+      })
     })
-  })
+  }
 }
 
 /**
