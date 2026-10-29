@@ -857,6 +857,23 @@ body.is-night .nav::before {
     animation: none;
   }
 }
+/* the phone poster's notes: drawn for its own layout, about a finger's
+   width of handwriting on the screen */
+.doodles--tall {
+  display: none;
+}
+.doodles--tall path {
+  stroke-width: 5.5;
+}
+.doodles--tall text {
+  font-size: 68px;
+}
+.doodles--tall .dd--te text {
+  font-size: 60px;
+}
+.doodles--tall .dd--td path {
+  stroke-width: 6;
+}
 
 html:not(.js) .hero__art img {
   opacity: 1;
@@ -1033,6 +1050,23 @@ html:not(.js) .hero__art img {
   }
   .built__logo--tk img {
     height: 15px;
+  }
+}
+/* phones held upright get the poster recomposed for a tall screen (see the
+   <picture>): the art larger, the wordmark on a line of its own. A short
+   screen shrinks it so the button and the facts still make the first view. */
+@media (max-width: 600px) {
+  .hero__art img {
+    aspect-ratio: 1200 / 1000;
+  }
+  .hero__frame {
+    width: min(100%, calc((100svh - var(--nav-top) - 236px) * 1.2));
+  }
+  .doodles--wide {
+    display: none;
+  }
+  .doodles--tall {
+    display: block;
   }
 }
 /* landscape phones: the poster has to fit under the bar, not the width;
@@ -2148,16 +2182,24 @@ h2 {
     display: none;
   }
 }
+.flock__nav {
+  display: none;
+}
 @media (max-width: 760px) {
   .flock__head {
     grid-template-columns: 1fr;
   }
-  /* one swipeable row instead of a five-row grid: the half-visible
-     third card says "there's more" */
+  /* one row you swipe through instead of a five-row grid: a figure at a
+     time, big, with the next one showing at the edge, run edge to edge */
   .flock__field {
     display: flex;
+    margin-left: calc(var(--gut) * -1);
+    margin-right: calc(var(--gut) * -1);
+    padding: 0 var(--gut);
+    border-left: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gut);
     overscroll-behavior-x: contain;
     scrollbar-width: none;
   }
@@ -2165,16 +2207,70 @@ h2 {
     display: none;
   }
   .bird {
-    flex: 0 0 56%;
+    flex: 0 0 min(76%, 340px);
+    grid-template-rows: auto auto 1fr auto;
     scroll-snap-align: start;
-    min-height: 280px;
-    padding: 12px;
+    min-height: 0;
+    padding: 12px 14px 14px;
     cursor: pointer;
   }
+  .bird:first-child {
+    border-left: 1px solid var(--ink-3);
+  }
+  /* the quote prints into its own line above the figure, so whoever is in
+     front can say it without covering their face */
   .bird__say {
-    left: 8px;
-    right: 8px;
-    font-size: 14px;
+    position: static;
+    min-height: calc(2.5em + 21px);
+    margin-top: 10px;
+    font-size: 15px;
+  }
+  .bird__body {
+    padding: 14px 4px 10px;
+  }
+  .bird__body svg {
+    width: min(72%, 200px);
+  }
+  .bird__name {
+    font-size: 16px;
+  }
+  .flock__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .flock__count {
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .flock__count b {
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .flock__arrows {
+    display: flex;
+    gap: 8px;
+  }
+  .flock__arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+  .flock__arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
   }
 }
 
@@ -2579,13 +2675,38 @@ html:not(.js) .rule__fix,
   .foot__sign {
     font-size: clamp(34px, 10vw, 44px);
   }
+  /* the phone picture has no empty sky on top, so it can stand taller:
+     the castle, Anıtkabir and Atakule across the frame, the party under them */
   .foot__img {
-    height: clamp(280px, 82vw, 360px);
+    height: clamp(290px, 85vw, 400px);
     aspect-ratio: auto;
     object-fit: cover;
-    object-position: 47% 50%;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 92%, transparent 100%);
-    mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 92%, transparent 100%);
+    object-position: 48.5% 50%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  }
+}
+/* and as it scrolls by, the view drifts across the roof: in from the
+   friends on the cushions, settled on the skyline while it's all on
+   screen, out past Atakule to the cat on the wall */
+@supports (animation-timeline: view()) {
+  @media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+    .foot__img {
+      animation: footPan linear both;
+      animation-timeline: view();
+    }
+  }
+}
+@keyframes footPan {
+  entry 0% {
+    object-position: 24% 50%;
+  }
+  entry 100%,
+  exit 0% {
+    object-position: 48.5% 50%;
+  }
+  exit 100% {
+    object-position: 76% 50%;
   }
 }
 
@@ -3082,19 +3203,41 @@ body.is-arcade .nav > * {
   outline-offset: 3px;
 }
 
+.cabinet__help--touch {
+  display: none;
+}
 @media (max-width: 700px) {
   .cabinet {
     border-radius: 20px;
-    width: min(100%, calc((100svh - 150px) * 176 / 192 + 2 * var(--p)));
+    /* the deck under the screen carries one more line here: how to play by touch */
+    width: min(100%, calc((100svh - 172px) * 176 / 192 + 2 * var(--p)));
   }
   .cabinet__help {
     display: none;
+  }
+  .cabinet__deck {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .cabinet__help.cabinet__help--touch {
+    display: block;
+    order: 3;
+    flex-basis: 100%;
+    font-size: 10px;
+    line-height: 1.5;
+    text-wrap: balance;
+    opacity: 0.7;
   }
   .cabinet__name {
     font-size: 11px;
   }
   .screen {
     border-radius: 8px;
+  }
+  /* the opening note has to be read on a small screen */
+  .screen.is-narrow .screen__hint {
+    font-size: clamp(10px, 3.4cqw, 13px);
+    line-height: 1.5;
   }
 }
 /* landscape phones: there's no height for a deck under the screen, so
@@ -3290,5 +3433,93 @@ body.is-arcade .nav > * {
   .live-badge__egg .mark__eyes,
   .live-badge__dot {
     animation: none;
+  }
+}
+
+/* ── PHONES: the dock and the badge's place in the footer ────────
+   On a phone the floating badge would sit on whatever you're reading,
+   so it settles into the footer's last line instead, and the bottom of
+   the screen goes to the thing a phone visitor came to do: Apply, with
+   send-to-a-friend beside it. The dock looks like the nav's pills.  */
+.dock,
+.foot__live {
+  display: none;
+}
+/* phones either way up (a phone on its side is short, not narrow) */
+@media (max-width: 700px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  .live-badge {
+    display: none;
+  }
+  .foot__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .foot__live .live-badge__dot {
+    background: var(--mint);
+  }
+}
+@media (max-width: 700px) {
+  .dock {
+    position: fixed;
+    left: var(--gut);
+    right: var(--gut);
+    bottom: calc(10px + var(--safe-b));
+    z-index: 55;
+    display: flex;
+    gap: 8px;
+    transition:
+      transform 0.45s var(--ease-out),
+      opacity 0.3s var(--ease-out),
+      visibility 0s;
+  }
+  .dock.is-away {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(calc(100% + 16px));
+    transition:
+      transform 0.35s var(--ease-out),
+      opacity 0.25s var(--ease-out),
+      visibility 0s 0.35s;
+  }
+  .dock__share,
+  .dock__apply {
+    height: 52px;
+    box-shadow: 0 10px 24px -14px rgba(31, 23, 34, 0.55);
+  }
+  .dock__share {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    padding: 0;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .dock__share svg {
+    width: 22px;
+    height: 22px;
+    margin: 1px 2px 0 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .dock__share:active {
+    transform: scale(0.96);
+  }
+  .dock__apply {
+    flex: 1;
+    min-width: 0;
+    padding: 0 20px;
+    border: 1px solid var(--ink);
+    font-size: 16px;
   }
 }

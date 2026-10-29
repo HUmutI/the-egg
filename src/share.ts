@@ -1,4 +1,4 @@
-import { $ } from './util'
+import { $, reducedMotion } from './util'
 
 const SITE = 'https://the-egg.club/'
 const TITLE = 'The Egg Club'
@@ -35,6 +35,24 @@ export function initShare() {
 
   const canShare =
     typeof navigator.share === 'function' && (typeof navigator.canShare !== 'function' || navigator.canShare(data))
+
+  // Share buttons elsewhere (the phone dock) open the same sheet; without
+  // one, they bring you down to this section's WhatsApp and copy buttons.
+  document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      if (canShare) {
+        try {
+          await navigator.share(data)
+        } catch {
+          /* closed, or refused: nothing to undo */
+        }
+        return
+      }
+      $('#share')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' })
+      ;[wa, copy].find((b) => b && !b.hidden)?.focus({ preventScroll: true })
+    }),
+  )
+
   if (native && canShare) {
     native.hidden = false
     if (wa) wa.hidden = true

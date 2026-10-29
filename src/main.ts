@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { applyI18n, initLangToggle } from './i18n'
 import { initHero } from './hero'
 import { initLiveBadge } from './badge'
+import { initDock } from './dock'
 import { initSky } from './sky'
 import { initReveals, initRules, initStatement } from './story'
 import { initDay, renderDay } from './day'
@@ -30,6 +31,7 @@ initShare()
 // instead of waiting on the fonts below.
 initHero()
 initLiveBadge()
+initDock()
 
 const start = () => {
   initReveals()
