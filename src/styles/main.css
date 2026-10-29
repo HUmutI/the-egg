@@ -2182,16 +2182,24 @@ h2 {
     display: none;
   }
 }
+.flock__nav {
+  display: none;
+}
 @media (max-width: 760px) {
   .flock__head {
     grid-template-columns: 1fr;
   }
-  /* one swipeable row instead of a five-row grid: the half-visible
-     third card says "there's more" */
+  /* one row you swipe through instead of a five-row grid: a figure at a
+     time, big, with the next one showing at the edge, run edge to edge */
   .flock__field {
     display: flex;
+    margin-left: calc(var(--gut) * -1);
+    margin-right: calc(var(--gut) * -1);
+    padding: 0 var(--gut);
+    border-left: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gut);
     overscroll-behavior-x: contain;
     scrollbar-width: none;
   }
@@ -2199,16 +2207,70 @@ h2 {
     display: none;
   }
   .bird {
-    flex: 0 0 56%;
+    flex: 0 0 min(76%, 340px);
+    grid-template-rows: auto auto 1fr auto;
     scroll-snap-align: start;
-    min-height: 280px;
-    padding: 12px;
+    min-height: 0;
+    padding: 12px 14px 14px;
     cursor: pointer;
   }
+  .bird:first-child {
+    border-left: 1px solid var(--ink-3);
+  }
+  /* the quote prints into its own line above the figure, so whoever is in
+     front can say it without covering their face */
   .bird__say {
-    left: 8px;
-    right: 8px;
-    font-size: 14px;
+    position: static;
+    min-height: calc(2.5em + 21px);
+    margin-top: 10px;
+    font-size: 15px;
+  }
+  .bird__body {
+    padding: 14px 4px 10px;
+  }
+  .bird__body svg {
+    width: min(72%, 200px);
+  }
+  .bird__name {
+    font-size: 16px;
+  }
+  .flock__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .flock__count {
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .flock__count b {
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .flock__arrows {
+    display: flex;
+    gap: 8px;
+  }
+  .flock__arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+  .flock__arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
   }
 }
 

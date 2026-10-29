@@ -99,6 +99,8 @@ export function initFlock() {
     })
   })
 
+  initPlateRow(field, cells)
+
   // ── pull and let go: the figure springs back into its cell ──
   if (reducedMotion()) return
   cells.forEach((el) => {
@@ -147,4 +149,73 @@ export function initFlock() {
     el.addEventListener('pointerup', end)
     el.addEventListener('pointercancel', end)
   })
+}
+
+/**
+ * Phones read the plate as one row you swipe through. Under it, a counter
+ * and two arrows say there's more (and work for anyone who doesn't swipe),
+ * and whoever is in front says their line without being tapped.
+ */
+function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
+  const phone = matchMedia('(max-width: 760px)')
+  const total = String(cells.length).padStart(2, '0')
+  const nav = document.createElement('div')
+  nav.className = 'flock__nav'
+  nav.innerHTML = `
+    <p class="flock__count mono" aria-hidden="true"><b>${FIG} 01</b> / ${total}</p>
+    <div class="flock__arrows">
+      <button type="button" class="flock__arrow" data-dir="-1" aria-controls="flockField" aria-label="${lang === 'tr' ? 'Önceki' : 'Previous'}">←</button>
+      <button type="button" class="flock__arrow" data-dir="1" aria-controls="flockField" aria-label="${lang === 'tr' ? 'Sonraki' : 'Next'}">→</button>
+    </div>`
+  field.after(nav)
+  const count = nav.querySelector('b')!
+  const [prev, next] = Array.from(nav.querySelectorAll<HTMLButtonElement>('.flock__arrow'))
+
+  const step = () => Math.max(1, (cells[1]?.offsetLeft ?? 1) - (cells[0]?.offsetLeft ?? 0))
+  const at = () => clamp(Math.round(field.scrollLeft / step()), 0, cells.length - 1)
+  let seen = false
+  const talk = () => {
+    if (!phone.matches || !seen) return
+    const i = at()
+    cells.forEach((c, k) => c.classList.toggle('is-talking', k === i))
+  }
+  // back on a wide screen, quotes are for hovering again
+  phone.addEventListener('change', () => {
+    if (phone.matches) talk()
+    else cells.forEach((c) => c.classList.remove('is-talking'))
+  })
+  const update = () => {
+    const i = at()
+    count.textContent = `${FIG} ${String(i + 1).padStart(2, '0')}`
+    prev.disabled = field.scrollLeft < 4
+    next.disabled = field.scrollLeft > field.scrollWidth - field.clientWidth - 4
+  }
+
+  nav.addEventListener('click', (e) => {
+    const dir = Number((e.target as HTMLElement).closest<HTMLElement>('[data-dir]')?.dataset.dir)
+    if (dir) field.scrollBy({ left: dir * step(), behavior: reducedMotion() ? 'auto' : 'smooth' })
+  })
+  let frame = 0
+  let settle = 0
+  field.addEventListener(
+    'scroll',
+    () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(update)
+      clearTimeout(settle)
+      settle = window.setTimeout(talk, 160)
+    },
+    { passive: true },
+  )
+  // the first figure speaks up once the row is properly on screen
+  new IntersectionObserver(
+    (entries, io) => {
+      if (!entries.some((e) => e.isIntersecting)) return
+      seen = true
+      talk()
+      io.disconnect()
+    },
+    { threshold: 0.6 },
+  ).observe(field)
+  update()
 }
