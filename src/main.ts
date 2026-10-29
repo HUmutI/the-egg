@@ -10,11 +10,14 @@ import { initFlock } from './flock'
 import { initPortal } from './portal'
 import { initNextSunday } from './next'
 import { initShare } from './share'
+import { installInkDefs } from './riso'
 // hero facts, FAQ, join ticket and share: new UI, kept out of main.css
 import './styles/story.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// The house ink (wobble, halftone, the shading mask) before anything draws with it.
+installInkDefs()
 // Translate the DOM before anything measures or animates it.
 applyI18n()
 initLangToggle()
