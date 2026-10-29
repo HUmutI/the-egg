@@ -1,175 +1,147 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { $, $$, PALETTE, clamp, clockState, lerp } from './util'
-import { mix } from './ink'
+import { lang } from './i18n'
 import {
-  BURST,
-  DOOR,
-  HAT,
-  HATCH_S,
-  LIFT,
+  AUDIENCE,
+  FOLLOW,
+  GROUND,
+  K,
+  LANDED,
   MARK,
-  MATE_LIFT,
-  SEATED,
-  SEAT_LEGS,
-  SLOTS,
-  TEAM,
-  TURN,
-  frontOverlays,
-  mateSvg,
-  raysSvg,
-  renderScenes,
-  walkerSvg,
-} from './dayscenes'
+  PIECE,
+  PLATE,
+  STAGE,
+  STAIRS,
+  WATCH,
+  castSvg,
+  installDayDefs,
+  plateSvg,
+} from './dayplates'
 
 const toMin = (s: string) => {
   const [h, m] = s.split(':').map(Number)
   return h * 60 + m
 }
 
-/** The page's own sky at each step, from the palette: morning butter to a dimmed lavender at lights out. */
-const SKY = ['#fdf1d3', '#f3f1df', '#e3efe5', '#dde9f1', '#f6dcc6', '#e5d6ee', '#cdc1e3']
-const skyAt = (pos: number) => {
-  const i = clamp(Math.floor(pos), 0, SKY.length - 1)
-  return mix(SKY[i], SKY[Math.min(i + 1, SKY.length - 1)], clamp(pos - i, 0, 1))
+const mix = (a: string, b: string, t: number) => {
+  const p = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
+  const [x, y] = [p(a), p(b)]
+  return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('')
 }
-/** The Incubate window's afternoon: blue, through pale gold, to apricot. */
-const AFTERNOON = ['#9cc7e2', '#f3e2a6', '#f2b98a']
-const afternoonAt = (u: number) => (u < 0.5 ? mix(AFTERNOON[0], AFTERNOON[1], u * 2) : mix(AFTERNOON[1], AFTERNOON[2], (u - 0.5) * 2))
 
-/** Each step: a short walk to the next window, then a longer stay while its moment plays. */
-const WALK = 0.42
-const DWELL = 0.58
-/** The arrival, the hatch (the poster moment) and the walk home (the ending) stay longer. */
-const STAY = [1.5, 1, 1, 1, 1, 1.7, 1.6]
-/** When the two on Crack's bench get up and join (through Crack's stay). */
-const JOIN = 0.9
-/** The nest: they hop in over its rim, and out again. */
-const NEST = 2
-/** Through the Doors stay: the door opens, it steps out of the doorway, it takes a coffee. */
-const OPEN = 0.3
-const IN = 0.62
-const COFFEE = 0.72
-/** The hatch's pop, through its stay. */
+/** The page through the day, from the site's own pastels: butter morning, lavender noon, mint afternoon, peach supper, pink at lights out. */
+const SKY = [PALETTE.butter, mix(PALETTE.butter, PALETTE.lav, 0.45), PALETTE.lav, PALETTE.mint, PALETTE.peach, PALETTE.lav, PALETTE.pink]
+
+/** Each step: a short walk to the next plate, then a stay while its moment plays. */
+const WALK = 0.45
+const DWELL = 0.6
+/** The hatch and the way home stay longest. */
+const STAY = [0.9, 1.1, 0.8, 1.2, 0.9, 1.7, 1.6]
+/** The pop, through the Hatch stay. */
 const POP = 0.42
+/** When each stay's second note shows: the first crack, the pop. */
+const LATE = [2, 0.45, 2, 2, 2, POP, 2]
+/** How cracked the shell is through each stay: [from d, before, after]. 4 is hatched. */
+const CRACKS: [number, number, number][] = [
+  [0, 0, 0],
+  [0.45, 0, 1],
+  [0, 1, 1],
+  [0.35, 1, 2],
+  [0.45, 2, 3],
+  [POP, 3, 4],
+  [0, 4, 4],
+]
+/** On the way home, when each of the three sets off for the stairs: ours, then the two. */
+const LEAVE = [0.3, 0.4, 0.5]
 
 const easeOut = (t: number) => 1 - (1 - t) * (1 - t)
 const easeIn = (t: number) => t * t
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t))
 const band = (d: number, a: number, b: number) => clamp((d - a) / (b - a), 0, 1)
+/** Legs on for a walk from 0 to 1, easing in and out at its ends. */
+const stride = (w: number) => (w <= 0 || w >= 1 ? 0 : Math.min(1, w * 6, (1 - w) * 6))
 
-/** Draw the scenes and the cast. Runs before anything measures the page. */
+/** Build it, break it, build it again: [version, progress], -1 when it breaks. */
+const build = (d: number): [number, number] => {
+  if (d < 0.1) return [1, 0]
+  if (d < 0.42) return [1, band(d, 0.1, 0.42) * 0.8]
+  if (d < 0.48) return [1, -1]
+  if (d < 0.7) return [2, band(d, 0.48, 0.7) * 0.55]
+  if (d < 0.75) return [2, -1]
+  return [3, band(d, 0.75, 0.95)]
+}
+
+/** Draw the plates and the cast. Runs before anything measures the page. */
 export function renderDay() {
-  renderScenes()
-  const fill = (id: string, html: () => string) => {
-    const el = document.getElementById(id)
-    if (el && !el.childElementCount) el.innerHTML = html()
-  }
-  fill('walkerRays', raysSvg)
-  fill('walker', walkerSvg)
-  fill('mateA', () => mateSvg('beanie'))
-  fill('mateB', () => mateSvg('cap'))
-  fill('dayFronts', frontOverlays)
+  installDayDefs()
+  $$<HTMLElement>('#day .step').forEach((s, i) => {
+    const fig = s.querySelector('.step__fig')
+    if (fig && !fig.childElementCount) fig.innerHTML = plateSvg(i)
+  })
+  const cast = document.getElementById('dayCast')
+  if (cast && !cast.childElementCount) cast.innerHTML = castSvg()
 }
 
 /**
- * "A day at the club": seven windows from 10:30 to 20:00. On wide screens the
- * section pins and the scroll plays the day as a story: our egg walks to the
- * middle of each window and stays while that hour happens — the door opens
- * on it standing in the doorway, it steps in and takes a coffee; it pitches
- * from a crate against a stopwatch until the two on the bench hop down and
- * fall in behind it; the three sit down in a nest as their flag goes up;
- * they huddle round one laptop while the afternoon spins by and a mentor
- * leans in; they pull a pizza apart as a better idea arrives; on stage it
- * wobbles, pops and bursts out everything it carried that day while the
- * other two cheer below; then the three sit down to the group chat, get up
- * and walk off to the metro as the club's windows go dark and the city's
- * come on. On phones (and with reduced motion) it's a picture book read top
- * to bottom, the cast drawn into every scene.
+ * "A day at the club": a programme from 10:30 to 20:00, set on a hairline,
+ * with one riso plate per step on a shared ruler. On wide screens the section
+ * pins and the scroll walks one egg through the day: the door opens on it, it
+ * pitches against the stopwatch and gets its first crack, the two who
+ * listened fall in behind it, they build, they eat, and on stage it hatches
+ * into the club's golden egg; then the three take the metro home and the
+ * programme hands over to Apply. On phones (and with reduced motion) it reads
+ * top to bottom, each plate drawn with the cast as it is at that hour.
  */
 export function initDay() {
   const section = $('#day')
   const track = $('#dayTrack')
-  const cast = $('#dayCast')
-  const walker = $('#walker')
-  const glow = $('#walkerRays')
-  const mates = [$('#mateA'), $('#mateB')]
   const steps = $$<HTMLLIElement>('.step', track)
-  const outro = $('.day__edge--out', track)
+  const cast = $<SVGSVGElement>('#dayCast')
+  const progress = $('.day__progress', track)
   const times = steps.map((s) => toMin($('.step__time', s).textContent ?? '10:30'))
-  // lights out is lights out: the last window holds at its own hour
+  // lights out is lights out: the last step holds at its own hour
   times.push(times[times.length - 1])
   const root = document.documentElement
+  const last = steps.length - 1
 
   let current = -1
-  const markStep = (i: number, d: number) => {
+  const markStep = (i: number, here: boolean, late: boolean) => {
     steps.forEach((s, k) => {
       s.classList.toggle('is-now', k === i)
       s.classList.toggle('is-past', k < i)
-      s.style.setProperty('--d', String(k < i ? 1 : k === i ? d : 0))
+      s.classList.toggle('is-here', k === i && here)
+      s.classList.toggle('is-late', k === i && here && late)
     })
   }
 
   const mm = gsap.matchMedia()
 
   mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-    const q = <T extends Element>(el: Element, sel: string) => el.querySelector<T>(sel)!
-    // each leg swings at the hip; its shin folds and its shoe comes up with it
-    const legsOf = (el: Element) =>
-      ['.leg--l', '.leg--r'].map((sel) => {
-        const leg = q<SVGGElement>(el, sel)
-        return { leg, shin: q<SVGGElement>(leg, '.shin'), shoe: q<SVGGElement>(leg, '.shoe') }
-      })
-    const hero = {
-      body: q<SVGGElement>(walker, '.walker__body'),
-      legs: legsOf(walker),
-      whole: q<SVGGElement>(walker, '.walker__whole'),
-      top: q<SVGGElement>(walker, '.walker__top'),
-      golden: q<SVGGElement>(walker, '.walker__golden'),
-      rays: q<SVGGElement>(glow, '.walker__rays'),
-      burst: Array.from(walker.querySelectorAll<SVGGElement>('.wburst')),
+    const q = <T extends Element>(sel: string, el: ParentNode = cast) => el.querySelector<T>(sel)!
+    const member = (id: string) => {
+      const el = q<SVGGElement>('#' + id)
+      return { el, l: q<SVGPathElement>('.leg--l', el), r: q<SVGPathElement>('.leg--r', el) }
     }
-    const team = mates.map((m) => ({
-      el: m,
-      svg: q<SVGSVGElement>(m, 'svg'),
-      body: q<SVGGElement>(m, '.mate__body'),
-      legs: legsOf(m),
-    }))
-    const incubate = steps[3]
-    const clockH = q<SVGGElement>(incubate, '.clock__h')
-    const clockM = q<SVGGElement>(incubate, '.clock__m')
-    const noonSky = q<SVGStopElement>(incubate, '.sky-stop--0')
-    // the door frame and the nest's front wall, laid over the cast
-    const fronts = $$<SVGSVGElement>('.day__front', cast).map((el) => ({ el, i: Number(el.dataset.step) }))
-    const door = fronts.find((f) => f.i === 0)?.el
-    const rim = fronts.find((f) => f.i === NEST)?.el
-
-    // GSAP owns the cast's centring, so its own x/y tweens never fight a CSS translate;
-    // they scale and turn round on their feet (y 316 of the -150…330 view box)
-    gsap.set([walker, glow, ...mates], { xPercent: -50, yPercent: 2.92 })
-    gsap.set([walker, glow, ...team.map((m) => m.svg)], { transformOrigin: '50% 97.08%' })
-
-    // geometry, read fresh on every frame so a resize never goes stale
-    const unit = () => (track.querySelector('.step__scene svg')?.getBoundingClientRect().width ?? 400) / 400
-    const markX = (i: number) => steps[i].offsetLeft + steps[i].offsetWidth * (MARK / 400)
-    const markAt = (pos: number) => {
-      const i = Math.floor(pos)
-      return lerp(markX(i), markX(Math.min(i + 1, steps.length - 1)), pos - i)
-    }
-    const eggX = () => walker.offsetLeft
-    // at the end the camera follows the three out of the last window to the metro sign, x 144 of the way home
-    const homeward = () => outro.offsetLeft + 0.36 * steps[0].offsetWidth - markX(steps.length - 1)
-
-    // the cast stands on the scenes' floor: y 270 of each 300-tall scene
-    const place = () => {
-      const scene = track.querySelector('.step__scene svg')
-      if (!scene) return
-      const r = scene.getBoundingClientRect()
-      const p = section.querySelector('.day__pin')!.getBoundingClientRect()
-      cast.style.top = `${r.top - p.top + r.height * 0.9}px`
+    const hero = member('walker')
+    const mates = [member('mateA'), member('mateB')]
+    const golden = q<SVGGElement>('.cm__golden')
+    const rays = q<SVGGElement>('.cm__rays')
+    const pieces = { top: q<SVGGElement>('#shellTop'), bot: q<SVGGElement>('#shellBot') }
+    const door = q<SVGGElement>('#dayDoor')
+    const hand = q<SVGGElement>('.watch__hand', steps[1])
+    const bar = q<SVGRectElement>('.bar__fill', steps[3])
+    const barLabel = q<SVGTextElement>('.bar__label', steps[3])
+    const chatLead = q<SVGPathElement>('.chat__lead', steps[6])
+    const chatN = q<SVGTextElement>('.chat__n', steps[6])
+    const rest = {
+      hand: hand.getAttribute('transform') ?? '',
+      bar: bar.getAttribute('width') ?? '',
+      label: barLabel.textContent ?? '',
+      chat: chatN.textContent ?? '',
     }
 
-    /** The scroll's story, as numbers the frame reads: where the egg is, and how far into each step's moment. */
+    /** The scroll's story, as numbers the frame reads: where the egg is, and how far into each stay. */
     const story = { pos: 0, d: [0, 0, 0, 0, 0, 0, 0] }
     const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: () => frame() })
     tl.to(story.d, { 0: 1, duration: DWELL * STAY[0] })
@@ -178,288 +150,143 @@ export function initDay() {
       tl.to(story.d, { [i]: 1, duration: DWELL * STAY[i] })
     }
     tl.to({}, { duration: 0.3 }) // a breath before the section lets go
+    section.dataset.tl = tl.duration().toFixed(2)
 
-    /** Hop between what they stand or sit on, and over the nest's rim: down at the start of a walk, up at the end, in a small arc. */
-    const liftAt = (lifts: number[], state: number, t: number) => {
-      if (t <= 0) return lifts[state]
-      const from = lifts[state]
-      const to = lifts[state + 1] ?? 0
-      // the nest's rim is high: a long hop in, from just outside it, and out again
-      const off = from > 4 ? 10 : state === NEST ? 60 : 0
-      const on = to > 4 ? 14 : state + 1 === NEST ? 60 : 0
-      const offEnd = state === NEST ? 0.35 : 0.2
-      const onStart = state + 1 === NEST ? 0.55 : 0.8
-      if (t < offEnd) return lerp(from, 0, easeOut(t / offEnd)) + Math.sin((Math.PI * t) / offEnd) * off
-      if (t > onStart) return lerp(0, to, easeIn((t - onStart) / (1 - onStart))) + Math.sin((Math.PI * (t - onStart)) / (1 - onStart)) * on
-      return 0
-    }
-    /** Where a teammate stands in its window, moving into the next window's spot over the walk. */
-    const teamAt = (state: number, t: number, k: number) =>
-      t > 0 ? lerp(TEAM[state][k], TEAM[state + 1][k], easeInOut(t)) : TEAM[state][k]
-    /** How far round it has turned to face the hero: 1 facing it (mirrored), through edge-on, to 0 for the walk. */
-    const turnAt = (state: number, t: number, k: number) => {
-      const now = TURN[state][k] ? 1 : 0
-      if (t <= 0) return now
-      const next = TURN[state + 1][k] ? 1 : 0
-      return Math.max(now * (1 - band(t, 0, 0.08)), next * band(t, 0.92, 1))
-    }
-    /** How folded the legs are: sitting at a seated step, standing up to walk, sitting down on arrival. */
-    const foldAt = (state: number, t: number, d: number) => {
-      if (t > 0) return Math.max(SEATED[state] ? 1 - band(t, 0, 0.15) : 0, SEATED[state + 1] ? band(t, 0.85, 1) : 0)
-      if (state === steps.length - 1) return 1 - band(d, 0.5, 0.56)
-      return SEATED[state] ? 1 : 0
+    /** Up onto the stage at Hatch and off again, with a small hop at each edge. */
+    const groundAt = (x: number) => {
+      const lx = x - PLATE * 5
+      const e = 44
+      const up = clamp((lx - (STAGE.l - e / 2)) / e, 0, 1)
+      const down = clamp((STAGE.r + e / 2 - lx) / e, 0, 1)
+      return STAGE.h * easeInOut(Math.min(up, down)) + 26 * (Math.sin(Math.PI * up) + Math.sin(Math.PI * down))
     }
 
-    /** Legs and a waddle. `fold` shortens the shins for sitting (0 standing, 1 seated); `lean` tips the body on its feet, `rise` lifts it. */
-    const pose = (legs: ReturnType<typeof legsOf>, body: SVGGElement, ph: number, a: number, fold = 0, dangle = 0, lean = 0, rise = 0) => {
-      const sw = Math.sin(2 * ph) * 24 * a + dangle
-      const sy = lerp(1, SEAT_LEGS, fold)
-      const swing = [sw, -sw * (dangle ? 0.8 : 1)]
-      legs.forEach((l, i) => {
-        l.leg.setAttribute('transform', `rotate(${swing[i].toFixed(2)} ${i ? 120 : 80} 248)`)
-        l.shin.setAttribute('transform', `translate(0 248) scale(1 ${sy.toFixed(3)}) translate(0 -248)`)
-        l.shoe.setAttribute('transform', `translate(0 ${(-(1 - sy) * 54).toFixed(2)})`)
-      })
-      body.setAttribute('transform', `translate(0 ${(-Math.abs(Math.cos(2 * ph)) * 6 * a - rise).toFixed(2)}) rotate(${(Math.sin(2 * ph) * 3 * a + lean).toFixed(2)} 100 316)`)
+    /** One egg on its legs: a waddle and a stride while it moves (a, 0 to 1), standing on the floor at x. */
+    const pose = (m: ReturnType<typeof member>, x: number, sink: number, a: number, tilt: number, k: number) => {
+      const ph = x / 90
+      const bob = -Math.abs(Math.sin(ph)) * 8 * a
+      const rot = Math.sin(ph) * 4 * a + tilt
+      const tf = `translate(${x.toFixed(1)} ${(GROUND - groundAt(x) + sink + bob).toFixed(1)}) rotate(${rot.toFixed(2)}) scale(${k}) translate(-100 -330)`
+      m.el.setAttribute('transform', tf)
+      const sw = Math.sin(ph * 2) * 18 * a
+      m.l.setAttribute('transform', `rotate(${sw.toFixed(2)} 82 246)`)
+      m.r.setAttribute('transform', `rotate(${(-sw).toFixed(2)} 118 246)`)
+      return tf
     }
 
-    /**
-     * The hatch, scrubbed: a held wobble, the crack runs round, and on the pop
-     * the cap kicks off (so the face is there at once), the golden egg squashes
-     * and stretches in a flare of rays, everything it carried today bursts out,
-     * and the cap comes down as a hat.
-     */
-    const hatchAt = (d: number) => {
-      const wob = band(d, 0.05, 0.32)
-      const rot = wob > 0 && wob < 1 ? Math.sin(wob * Math.PI * 6) * 6 * (0.6 + 0.4 * wob) : 0
-      const c = band(d, 0.32, POP)
-      hero.whole.setAttribute('transform', `rotate(${rot.toFixed(2)} 100 262) translate(100 262) scale(1 ${(1 - 0.07 * c).toFixed(3)}) translate(-100 -262)`)
-      const popped = d >= POP
-      walker.dataset.hatch = popped ? 'popped' : 'whole'
-      steps[5].classList.toggle('is-popped', popped)
-      // "it works!" is written once the hat has come down, not under the flying shell
-      steps[5].classList.toggle('is-landed', d >= 0.6)
-      cast.dataset.cheer = String(popped)
-      // squash and stretch as it comes out: 0.9 → 1.12 → 1
-      const s1 = band(d, POP, 0.48)
-      const s2 = band(d, 0.48, 0.58)
-      const sy = !popped ? 1 : s2 > 0 ? lerp(1.12, 1, easeOut(s2)) : lerp(0.9, 1.12, easeOut(s1))
-      hero.golden.setAttribute('transform', `translate(100 262) scale(${(2 - sy).toFixed(3)} ${sy.toFixed(3)}) translate(-100 -262)`)
-      const flare = band(d, POP, 0.7)
-      hero.rays.setAttribute('opacity', (flare > 0 && flare < 1 ? 1 - flare : 0).toFixed(2))
-      hero.rays.setAttribute('transform', `translate(100 150) scale(${(0.5 + 0.6 * easeOut(flare)).toFixed(3)}) translate(-100 -150)`)
-      // the cap: kicked off on the pop, up and spinning, then down onto the head
-      const u = band(d, POP, 0.8)
-      const k1 = easeOut(Math.min(u / 0.4, 1))
-      const k2 = easeIn(Math.max((u - 0.4) / 0.6, 0))
-      const kick = popped ? 60 : 0
-      const x = u < 0.4 ? lerp(0, 70, k1) : lerp(70, HAT.x, k2)
-      const y = u < 0.4 ? lerp(-kick, -240, k1) : lerp(-240, HAT.y, k2) - (u > 0.92 ? Math.sin(((u - 0.92) / 0.08) * Math.PI) * 6 : 0)
-      const r = lerp(popped ? 24 : 0, 360 + HAT.r, u)
-      const s = u < 0.4 ? lerp(1, 0.8, k1) : lerp(0.8, HAT.s, k2)
-      hero.top.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) translate(100 178) rotate(${r.toFixed(1)}) scale(${s.toFixed(3)}) translate(-100 -178)`)
-      // everything it carried today bursts out with the shell, past the arch like the poster
-      hero.burst.forEach((g, i) => {
-        const b = band(d, POP + i * 0.012, 0.6)
-        if (b <= 0.02 || b >= 1) return g.setAttribute('opacity', '0')
-        const o = BURST[i]
-        const ang = (o.a * Math.PI) / 180
-        const dist = o.far * easeOut(b)
-        const bx = o.x + Math.cos(ang) * dist
-        // what falls lands on the stage (just above its feet) and stops there
-        const fall = o.y + Math.sin(ang) * dist + 90 * b * b
-        const by = Math.min(fall, 306)
-        const spin = (i % 2 ? 1 : -1) * 260 * b
-        g.setAttribute('transform', `translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${spin.toFixed(1)}) scale(${(0.7 + 0.3 * Math.min(1, b * 3)).toFixed(2)})`)
-        g.setAttribute('opacity', (b < 0.5 ? 1 : 1 - (b - 0.5) / 0.5).toFixed(2))
-      })
-    }
-    const settled = () => {
-      hero.whole.removeAttribute('transform')
-      hero.golden.removeAttribute('transform')
-      hero.rays.setAttribute('opacity', '0')
-      hero.burst.forEach((g) => g.setAttribute('opacity', '0'))
-    }
-
-    // the two on Crack's bench hop down and fall in behind, from where they sat
-    const hop = () => {
-      team.forEach((m, k) => {
-        const from = steps[1].querySelector(k === 0 ? '.listener--a' : '.listener--b')
-        if (!from) return
-        const fr = from.getBoundingClientRect()
-        gsap.set(m.el, { x: 0, y: 0 })
-        const mr = m.el.getBoundingClientRect()
-        // (less the step it's already shifted by in its Crack spot)
-        const dx = fr.left + fr.width / 2 - (mr.left + mr.width / 2) - (TEAM[1][k] - SLOTS[k]) * unit()
-        const dy = fr.bottom - mr.bottom
-        gsap.killTweensOf(m.el)
-        gsap
-          .timeline({ delay: k * 0.16 })
-          .set(m.el, { x: dx, y: dy, opacity: 1, scale: 0.75, transformOrigin: '50% 100%' })
-          .to(m.el, { x: dx * 0.5, y: Math.min(dy, 0) - 70 * unit(), scale: 0.9, duration: 0.3, ease: 'power2.out' })
-          .to(m.el, { x: 0, y: 0, scale: 1, duration: 0.45, ease: 'bounce.out' })
-      })
-    }
-
-    let joined = false
-    const setJoined = (j: boolean, forward: boolean) => {
-      if (j === joined) return
-      joined = j
-      section.dataset.team = String(j)
-      if (j && forward) hop()
-      else if (j) team.forEach((m) => (gsap.killTweensOf(m.el), gsap.set(m.el, { x: 0, y: 0, scale: 1, opacity: 1 })))
-      else team.forEach((m) => (gsap.killTweensOf(m.el), gsap.set(m.el, { opacity: 0 })))
-    }
-
-    const setStep = (i: number) => {
-      if (i === current) return
-      current = i
-      walker.dataset.state = String(i)
-      team.forEach((m) => (m.el.dataset.state = String(i)))
-      if (i < 5) {
-        walker.dataset.hatch = 'whole'
-        steps[5].classList.remove('is-popped', 'is-landed')
-        hero.top.removeAttribute('transform')
-      }
-      if (i !== 5) {
-        settled()
-        cast.dataset.cheer = 'false'
-      }
-      if (i === 6) {
-        walker.dataset.hatch = 'popped'
-        hero.top.setAttribute('transform', `translate(${HAT.x} ${HAT.y}) translate(100 178) rotate(${HAT.r}) scale(${HAT.s}) translate(-100 -178)`)
-      } else {
-        section.style.setProperty('--out', '0')
-        section.dataset.end = 'false'
+    /** The way home: walk to the stairs, then down them, out of sight below the floor. */
+    const homeward = (d: number, from: number, start: number) => {
+      const w = band(d, start, start + 0.2)
+      const down = band(d, start + 0.2, start + 0.32)
+      return {
+        x: lerp(from, PLATE * last + STAIRS, easeInOut(w)) + down * 40,
+        sink: easeIn(down) * 340,
+        a: Math.max(stride(w), down > 0 && down < 1 ? 1 : 0),
       }
     }
 
-    let lastPos = 0
+    let lastStage = ''
+    let lastLabel = ''
+    let lastChat = ''
     const frame = () => {
-      const u = unit()
-      const last = steps.length - 1
-      const state = Math.min(Math.floor(story.pos + 1e-4), last)
-      const t = story.pos - state // 0 while it stays, 0..1 on the way to the next window
+      const colW = steps[0].offsetWidth
+      const pos = story.pos
+      const state = Math.min(Math.floor(pos + 1e-4), last)
+      const t = Math.max(0, pos - state)
+      const here = t < 1e-4
       const d = story.d[state]
-      const forward = story.pos + d >= lastPos
-      lastPos = story.pos + d
-      setStep(state)
-      markStep(state, t > 0 ? 1 : d)
-      setJoined(state > 1 || (state === 1 && (t > 0 || d >= JOIN)), forward)
+      if (state !== current) {
+        current = state
+        hero.el.dataset.state = String(state)
+      }
+      markStep(state, here, d >= LATE[state])
 
-      // the camera keeps the egg's window in the middle, and at the end follows the three home
-      const home = state === last && t === 0 ? easeInOut(band(d, 0.56, 0.95)) : 0
-      const trackX = eggX() - markAt(story.pos) - home * homeward()
-      gsap.set(track, { x: trackX })
-      // what stands in front of the cast rides along with its window, and swings with it
-      fronts.forEach((f) => {
-        gsap.set(f.el, { x: trackX + steps[f.i].offsetLeft })
-        f.el.style.setProperty('--d', steps[f.i].style.getPropertyValue('--d'))
+      // the camera keeps the egg's plate in the first column; the programme line inks up to it
+      gsap.set(track, { x: -pos * colW })
+      const along = MARK + PLATE * pos
+      progress.style.transform = `scaleX(${(along / (PLATE * steps.length)).toFixed(4)})`
+
+      // our egg, and the two who stand listening at Crack until it walks past, then fall in behind it
+      const walking = here ? 0 : Math.sin(Math.PI * t)
+      const home = state === last && here
+      const ours = home ? homeward(d, along, LEAVE[0]) : { x: along, sink: 0, a: walking }
+      mates.forEach((m, k) => {
+        const stand = PLATE + AUDIENCE[k]
+        const behind = along - FOLLOW[k]
+        let x = Math.max(stand, behind)
+        let sink = 0
+        let a = walking * clamp((behind - stand) / 40, 0, 1)
+        if (home) ({ x, sink, a } = homeward(d, behind, LEAVE[k + 1]))
+        pose(m, x, sink, a, 0, K.mate)
+        // until Crack, they're part of the programme still to come
+        m.el.style.opacity = pos < 0.5 ? '0.42' : ''
       })
 
-      // the arrival: the door opens on it standing in the doorway (framed, a step back);
-      // it steps out in front of the door and walks to its mark
-      let ax = 0
-      let ay = 0
-      let sc = 1
-      let a = Math.sin(Math.PI * t)
-      const inDoor = state === 0 && t === 0
-      if (inDoor) {
-        const p = band(d, OPEN, IN)
-        const out = easeOut(Math.min(p / 0.3, 1))
-        ax = lerp(DOOR.x - MARK, 0, easeInOut(p))
-        ay = lerp(270 - DOOR.feet, 0, out)
-        sc = lerp(DOOR.s, 1, out)
-        a = p > 0 && p < 1 ? 1 : 0
+      // the hatch: a held wobble, the pop, and the shell's two halves land on the stage
+      const hatching = state === 5 && here
+      const popped = state > 5 || (state === 5 && (!here || d >= POP))
+      let tilt = 0
+      if (hatching) {
+        const w = band(d, 0.1, 0.38)
+        if (w > 0 && w < 1) tilt = Math.sin(w * Math.PI * 7) * 6 * (0.4 + 0.6 * w)
       }
-      if (door) door.style.opacity = inDoor && band(d, OPEN, IN) < 0.06 ? '1' : '0'
-      // the nest's wall is in front of them from the top of the hop in to the top of the hop out
-      if (rim) rim.style.opacity = (state === NEST && t < 0.175) || (state === NEST - 1 && t > 0.775) ? '1' : '0'
-      // hatched, it stands taller: up on the pop, back to size on the way off stage
-      if (state === 5) sc = t > 0 ? lerp(HATCH_S, 1, easeInOut(band(t, 0, 0.5))) : lerp(1, HATCH_S, easeOut(band(d, POP, POP + 0.14)))
-
-      // the walk: legs and a waddle only while moving, a small hop onto crates, stools, the stage and benches, and into the nest
-      const walked = markAt(story.pos) - markX(0) + home * homeward() + ax * u
-      const fold = foldAt(state, t, d)
-      let dangle = fold > 0.6 && t === 0 ? Math.sin(d * Math.PI * 7) * 9 : 0
-      if (state === last && t === 0) {
-        a = home > 0 && home < 1 ? 1 : 0
-        if (a) dangle = 0
-        section.style.setProperty('--out', band(d, 0.58, 0.98).toFixed(3))
-        section.dataset.end = String(d > 0.9)
-        cast.dataset.cheer = String(d > 0.94)
-      }
-      cast.classList.toggle('is-walking', a > 0.05)
-      // on the way out of a window, its note and its extras step aside
-      section.dataset.walking = String(t > 0)
-      const sit = state === last && t === 0 ? fold : 1
-      gsap.set([walker, glow], { x: ax * u, y: -(lerp(0, liftAt(LIFT, state, t), sit) + ay) * u, scale: sc })
-      // one thing each middle stay does with its body (degrees, the team's leaning towards the hero):
-      // the three bump in the nest, the two lean in to the laptop when it works, the hero and the
-      // beanie pull the pizza apart and stand up straight for the better idea
-      const lean = [0, 0, 0]
-      let rise = 0
-      if (t === 0 && state === NEST) {
-        const bump = Math.sin(Math.PI * band(d, 0.3, 0.6))
-        lean[1] = lean[2] = 5 * bump
-        rise = 6 * bump
-      }
-      if (t === 0 && state === 3) lean[1] = lean[2] = 6 * easeOut(band(d, 0.68, 0.78))
-      if (t === 0 && state === 4) {
-        const pull = easeOut(band(d, 0.35, 0.6)) * (1 - easeOut(band(d, 0.62, 0.67)))
-        lean[0] = lean[1] = -5 * pull
-      }
-      pose(hero.legs, hero.body, walked / 32, a, fold, dangle, lean[0], rise)
-      // the team walks in its own formation, falling back or passing behind the hero to reach its next spots;
-      // turning round is a quick flip, never edge-on
-      team.forEach((m, k) => {
-        const turn = turnAt(state, t, k)
-        const sx = (turn > 0.5 ? -1 : 1) * Math.max(0.55, Math.abs(1 - 2 * turn))
-        gsap.set(m.svg, { x: (teamAt(state, t, k) - SLOTS[k]) * u, y: -lerp(0, liftAt(MATE_LIFT, state, t), sit) * u, scaleX: sx })
-        pose(m.legs, m.body, walked / 32 - (k + 1) * 0.9, a, fold, dangle ? Math.sin(d * Math.PI * 7 + k + 1) * 9 : 0, lean[k + 1])
+      const heroTf = pose(hero, ours.x, ours.sink, ours.a, tilt, K.hero)
+      ;(['top', 'bot'] as const).forEach((p) => {
+        const el = pieces[p]
+        if (!popped) return el.setAttribute('transform', heroTf)
+        const f = hatching ? band(d, POP, POP + (p === 'top' ? 0.22 : 0.12)) : 1
+        const [cx, cy] = PIECE[p]
+        const [lx, ly, lr] = LANDED[p]
+        const x0 = PLATE * 5 + MARK + (cx - 100) * K.hero
+        const y0 = GROUND - STAGE.h - (330 - cy) * K.hero
+        const x = lerp(x0, PLATE * 5 + lx, f)
+        const y = lerp(y0, ly, f) - (p === 'top' ? 250 : 70) * Math.sin(Math.PI * f)
+        const r = lerp(0, lr + (p === 'top' ? 360 : 0), easeOut(f))
+        el.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${r.toFixed(1)}) scale(${K.hero}) translate(${-cx} ${-cy})`)
       })
+      golden.setAttribute('opacity', popped ? '1' : '0')
+      if (hatching && popped) {
+        const s1 = band(d, POP, POP + 0.05)
+        const s2 = band(d, POP + 0.05, POP + 0.16)
+        const sy = s2 > 0 ? lerp(1.1, 1, easeOut(s2)) : lerp(0.86, 1.1, easeOut(s1))
+        golden.setAttribute('transform', `translate(100 266) scale(${(2 - sy).toFixed(3)} ${sy.toFixed(3)}) translate(-100 -266)`)
+        const r = band(d, POP, POP + 0.2)
+        rays.setAttribute('opacity', (r > 0 && r < 1 ? 1 - r : 0).toFixed(2))
+        rays.setAttribute('transform', `translate(100 146) scale(${(0.85 + 0.45 * r).toFixed(3)}) translate(-100 -146)`)
+      } else {
+        golden.removeAttribute('transform')
+        rays.setAttribute('opacity', '0')
+      }
+      const [th, before, after] = CRACKS[state]
+      const stage = String(!here || d >= th ? after : before)
+      if (stage !== lastStage) cast.dataset.stage = lastStage = stage
 
-      // what it's doing: a coffee once it's in; on the bench three bubbles, a wink, then a wave goodbye
-      walker.dataset.beat = String(
-        t > 0
-          ? 4
-          : state === 0
-            ? d < COFFEE
-              ? 0
-              : 3
-            : state === last
-              ? d < 0.1
-                ? 0
-                : d < 0.2
-                  ? 1
-                  : d < 0.3
-                    ? 2
-                    : d < 0.4
-                      ? 3
-                      : d < 0.94
-                        ? 4
-                        : 5
-              : Math.min(4, Math.floor(d * 5)),
-      )
-      team.forEach((m) => (m.el.dataset.beat = walker.dataset.beat))
-      if (state === 5) hatchAt(t > 0 ? 1 : d)
-      // the cheering stops when they walk off stage
-      if (state === 5 && t > 0) cast.dataset.cheer = 'false'
+      // the door opens on it, standing in the doorway
+      const open = state === 0 && here ? easeInOut(band(d, 0.12, 0.55)) : 1
+      door.setAttribute('transform', `translate(230 250) scale(${lerp(1, -0.34, open).toFixed(3)} 1)`)
+      // sixty seconds on the stopwatch
+      const sweep = state === 1 ? (here ? 360 * d : 360) : pos > 1 ? 360 : 0
+      hand.setAttribute('transform', `rotate(${sweep.toFixed(1)} ${WATCH[0]} ${WATCH[1]})`)
+      // the build, the break, the build again
+      const [v, p] = state === 3 && here ? build(d) : pos > 3 ? [3, 1] : [1, 0]
+      bar.setAttribute('width', (194 * Math.max(p, 0)).toFixed(1))
+      const label = `v0.${v} · ${p < 0 ? 'ERR' : Math.round(p * 100) + '%'}`
+      if (label !== lastLabel) barLabel.textContent = lastLabel = label
+      // and the group chat, which carries on once they've gone
+      const n = state === last ? Math.round(lerp(3, 214, easeIn(band(d, 0.04, 0.92)))) : 3
+      const unread = lang === 'tr' ? `${n} okunmamış` : `${n} unread`
+      if (unread !== lastChat) chatN.textContent = lastChat = unread
+      chatLead.style.opacity = home ? (1 - band(d, LEAVE[0] + 0.02, LEAVE[0] + 0.1)).toFixed(2) : ''
+      section.dataset.end = String(home && d > 0.9)
 
-      // the clock: each stay runs most of its hour, the walk finishes it; it stops at lights out
+      // the club clock: each stay runs most of its hour, the walk finishes it; it stops at lights out
       const span = times[state + 1] - times[state]
-      const minutes = t > 0 ? lerp(times[state] + span * 0.85, times[state + 1], t) : times[state] + span * 0.85 * d
-      clockState.dayMinutes = minutes
+      clockState.dayMinutes = here ? times[state] + span * 0.85 * d : lerp(times[state] + span * 0.85, times[state + 1], t)
       clockState.onChange()
-      clockH.setAttribute('transform', `rotate(${(((minutes / 60) % 12) * 30).toFixed(1)})`)
-      clockM.setAttribute('transform', `rotate(${((minutes % 60) * 6).toFixed(1)})`)
-      // the afternoon in the Incubate window: while the clock spins, the sky warms
-      const noon = state > 3 ? 1 : state === 3 ? (t > 0 ? 1 : d) : 0
-      noonSky.setAttribute('stop-color', afternoonAt(noon))
 
       // the page drifts through the day with it, and flashes cream on the pop
-      let sky = skyAt(state + t)
-      if (state === 5 && t === 0 && d >= POP) sky = mix(sky, PALETTE.cream, 0.9 * (1 - easeOut(band(d, POP, POP + 0.18))))
+      let sky = here ? SKY[state] : mix(SKY[state], SKY[state + 1], t)
+      if (hatching && popped) sky = mix(sky, PALETTE.cream, 0.8 * (1 - easeOut(band(d, POP, POP + 0.16))))
       section.dataset.sky = sky
       if (root.dataset.sky === 'day') gsap.set(root, { '--page': sky })
     }
@@ -468,19 +295,17 @@ export function initDay() {
       trigger: section,
       pin: true,
       start: 'top top',
-      end: () => '+=' + innerHeight * 0.8 * tl.duration(),
+      end: () => '+=' + innerHeight * 0.55 * tl.duration(),
       scrub: 0.5,
       invalidateOnRefresh: true,
       animation: tl,
       onRefresh: (self) => {
-        place()
         clockState.dayStart = self.start
         clockState.dayEnd = self.end
         frame()
       },
     })
 
-    place()
     clockState.dayStart = st.start
     clockState.dayEnd = st.end
     frame()
@@ -488,16 +313,15 @@ export function initDay() {
     return () => {
       clockState.dayMinutes = null
       current = -1
-      joined = false
-      gsap.set([track, walker, glow, cast, ...team.map((m) => m.svg), ...fronts.map((f) => f.el)], { clearProps: 'transform,opacity' })
-      team.forEach((m) => (gsap.killTweensOf(m.el), gsap.set(m.el, { clearProps: 'all' })))
-      const parts = [hero, ...team].flatMap((c) => c.legs.flatMap((l) => [l.leg, l.shin, l.shoe]))
-      ;[...parts, hero.body, hero.whole, hero.top, hero.golden, ...team.map((m) => m.body)].forEach((g) => g.removeAttribute('transform'))
-      section.style.removeProperty('--out')
+      gsap.set(track, { clearProps: 'transform' })
+      progress.style.removeProperty('transform')
+      hand.setAttribute('transform', rest.hand)
+      bar.setAttribute('width', rest.bar)
+      barLabel.textContent = rest.label
+      chatN.textContent = rest.chat
+      chatLead.style.removeProperty('opacity')
       delete section.dataset.end
-      delete section.dataset.walking
-      delete section.dataset.team
-      settled()
+      delete section.dataset.tl
     }
   })
 
@@ -505,15 +329,15 @@ export function initDay() {
     const setBook = (i: number) => {
       if (i === current) return
       current = i
-      markStep(i, 1)
+      markStep(i, true, true)
       section.dataset.sky = SKY[i]
       if (root.dataset.sky === 'day') gsap.to(root, { '--page': SKY[i], duration: 0.9, ease: 'power2.out', overwrite: true })
     }
-    // the clock reads the scene you're in: its time, ticking towards the next
+    // the clock reads the step you're on: its time, ticking towards the next
     const triggers = steps.map((s, i) =>
       ScrollTrigger.create({
         trigger: s,
-        start: i === steps.length - 1 ? 'top 80%' : 'top 62%',
+        start: i === last ? 'top 80%' : 'top 62%',
         end: 'bottom 62%',
         onToggle: (self) => self.isActive && setBook(i),
         onUpdate: (self) => {
