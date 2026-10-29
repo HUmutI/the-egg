@@ -926,9 +926,22 @@ html:not(.js) .hero__art img {
     transform: translateX(-50%);
   }
 }
+/* no marquee: the real logos sit still and centred, without the
+   repeats and the edge fade that only make sense while moving */
 @media (prefers-reduced-motion: reduce) {
   .built__track {
     animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 0;
+  }
+  .built__logo[data-clone] {
+    display: none;
+  }
+  .built__window {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 
