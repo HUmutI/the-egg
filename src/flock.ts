@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { $, clamp, reducedMotion } from './util'
-import { FIG_VIEWBOX, emptyEgg, ensureRisoDefs, figure, type Kind } from './figures'
+import { FIG_VIEWBOX, emptyEgg, figure, type Kind } from './figures'
 import { lang } from './i18n'
 
 interface Bird {
@@ -41,7 +41,6 @@ const svg = (inner: string) => `<svg viewBox="${FIG_VIEWBOX}" aria-hidden="true"
 export function initFlock() {
   const field = $('#flockField')
   if (!field) return
-  ensureRisoDefs()
 
   const cells: HTMLElement[] = []
   FLOCK.forEach((b, i) => {

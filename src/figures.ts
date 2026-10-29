@@ -211,24 +211,3 @@ export const emptyEgg = (lang: Lang) => `
   <path class="egg__dash" d="${handEgg(99, { w: 0.95, lean: -5 })}" fill="${P.cream}" fill-opacity="0" stroke="${I}" stroke-width="2.6" stroke-dasharray="2 8" stroke-linecap="round"/>
   <text x="100" y="160" text-anchor="middle" ${SERIF} font-style="italic" font-size="52" fill="${I}">${lang === 'tr' ? 'sen?' : 'you?'}</text>`
 
-/**
- * riso.ts's installInkDefs() skips everything once #wobble exists, and the
- * page ships #wobble in its markup, so the halftone can go missing. Add
- * whichever of the shading defs aren't there, by id.
- */
-export function ensureRisoDefs() {
-  const defs = document.querySelector('.defs defs')
-  if (!defs) return
-  const want: [string, string][] = [
-    [
-      'halftone',
-      `<pattern id="halftone" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><circle cx="3" cy="3" r="1.15" fill="${I}"/></pattern>`,
-    ],
-    [
-      'shadeGrad',
-      `<linearGradient id="shadeGrad" x1="0.15" y1="0.1" x2="0.95" y2="0.95"><stop offset="0.45" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient>`,
-    ],
-    ['shadeMask', `<mask id="shadeMask" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#shadeGrad)"/></mask>`],
-  ]
-  for (const [id, markup] of want) if (!document.getElementById(id)) defs.insertAdjacentHTML('beforeend', markup)
-}
