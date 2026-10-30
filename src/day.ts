@@ -92,8 +92,8 @@ export function renderDay() {
  * listened fall in behind it, they build, they eat, and on stage it hatches
  * into the club's golden egg; then the three take the metro home and the
  * programme hands over to Apply. Phones held upright get the same walk, one
- * plate to a screen: the stage under the nav pins, the plates slide past as
- * the egg walks, a row of seven eggs keeps the programme, and the copy
+ * plate to a screen: the stage under the nav pins (with the heading, on a
+ * screen tall enough to hold both), the plates slide past as the egg walks, a row of seven eggs keeps the programme, and the copy
  * changes with each step. Phones on their side, and reduced motion, read it
  * top to bottom, each plate drawn with the cast as it is at that hour.
  */
@@ -122,14 +122,21 @@ export function initDay() {
 
   const mm = gsap.matchMedia()
 
-  /** The walk itself: wide screens pin the whole section; phones (`phone`) pin the stage under the nav. */
-  const walk = (phone: boolean) => () => {
+  /**
+   * The walk itself: wide screens pin the whole section; phones (`phone`) pin it under the nav,
+   * the heading and the stage together where the screen is tall enough (`tall`), else the stage alone.
+   */
+  const walk = (phone: boolean, tall = false) => () => {
     let ink: HTMLElement | null = null
     /** The phone story's row of seven eggs. */
     let nodes: HTMLElement[] = []
+    /** Phones: what pins, and (when the screen is short for the plate) how wide the plate can be. */
+    const box = tall ? $('.day__pin', section) : viewport
+    let fitCol = () => {}
     if (phone) {
       // the stage takes its phone shape before anything measures it
       section.classList.add('day--story')
+      section.classList.toggle('day--tall', tall)
       const ticker = document.createElement('div')
       ticker.className = 'day__ticker'
       ticker.setAttribute('aria-hidden', 'true')
@@ -140,6 +147,20 @@ export function initDay() {
       ink = $<HTMLElement>('.ticker__ink', ticker)
       nodes = $$<HTMLElement>('.ticker__node', ticker)
       nodes[5]?.classList.add('is-hatch')
+      // The plate is as wide as the page unless the pinned box is too short for it under the
+      // heading, the programme and the tallest copy: then it narrows until they all fit, with a
+      // little air. The copy reads across the page whatever the plate's width, so one pass does.
+      const head = $('.day__head', section)
+      const px = (el: Element, prop: 'paddingTop' | 'paddingBottom') => parseFloat(getComputedStyle(el)[prop]) || 0
+      fitCol = () => {
+        section.style.removeProperty('--col')
+        const stage = track.getBoundingClientRect().bottom - ticker.getBoundingClientRect().top
+        const need = (tall ? head.offsetHeight : 0) + px(viewport, 'paddingTop') + stage + px(viewport, 'paddingBottom') + px(box, 'paddingTop') + px(box, 'paddingBottom') + 16
+        const over = need - box.clientHeight
+        if (over > 0) section.style.setProperty('--col', `${Math.max(200, steps[0].offsetWidth - over * (4 / 3)).toFixed(1)}px`)
+      }
+      fitCol()
+      ScrollTrigger.addEventListener('refreshInit', fitCol)
     }
     const q = <T extends Element>(sel: string, el: ParentNode = cast) => el.querySelector<T>(sel)!
     const member = (id: string) => {
@@ -342,9 +363,9 @@ export function initDay() {
 
     const nav = $('#nav')
     const st = ScrollTrigger.create({
-      trigger: phone ? viewport : section,
-      pin: phone ? viewport : true,
-      // a phone pins the stage just under the nav, once the heading has gone by
+      trigger: phone ? box : section,
+      pin: phone ? box : true,
+      // a phone pins just under the nav: the heading and the stage, or the stage once the heading has gone by
       start: phone ? () => `top ${nav.offsetHeight}px` : 'top top',
       end: () => '+=' + innerHeight * 0.55 * tl.duration(),
       scrub: 0.5,
@@ -384,7 +405,9 @@ export function initDay() {
       delete section.dataset.end
       delete section.dataset.tl
       if (phone) {
-        section.classList.remove('day--story')
+        ScrollTrigger.removeEventListener('refreshInit', fitCol)
+        section.classList.remove('day--story', 'day--tall')
+        section.style.removeProperty('--col')
         ink?.parentElement?.remove()
         nodes = []
         steps.forEach((s) => s.classList.remove('is-told'))
@@ -395,7 +418,9 @@ export function initDay() {
   }
 
   mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', walk(false))
-  mm.add('(max-width: 899px) and (orientation: portrait) and (prefers-reduced-motion: no-preference)', walk(true))
+  // a phone at least 720px tall keeps the heading on the stage (.day--tall); a shorter one gives the plate the room
+  mm.add('(max-width: 899px) and (orientation: portrait) and (min-height: 720px) and (prefers-reduced-motion: no-preference)', walk(true, true))
+  mm.add('(max-width: 899px) and (orientation: portrait) and (max-height: 719.98px) and (prefers-reduced-motion: no-preference)', walk(true))
 
   mm.add('(max-width: 899px) and (orientation: landscape), (prefers-reduced-motion: reduce)', () => {
     const setBook = (i: number) => {

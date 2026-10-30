@@ -2075,20 +2075,49 @@ h2 {
 }
 
 /* phones held upright: the day plays as a story here too (src/day.ts adds
-   .day--story). The heading scrolls by, then the stage under the nav pins:
-   the programme as a row of seven eggs, the step's copy, and its plate on
-   the ruler, one plate to a screen. As you scroll,
-   the egg walks into the next plate and the copy changes with it; at the end
-   the copy gives way to Apply. Everything not set here is the wide story's. */
+   .day--story). The stage under the nav pins: the programme as a row of
+   seven eggs, the step's copy, and its plate on the ruler, one plate to a
+   screen. A screen tall enough for it (.day--tall) keeps the heading on the
+   stage too, as the wide layout does; a shorter one lets the heading scroll
+   by first. As you scroll, the egg walks into the next plate and the copy
+   changes with it; at the end the copy gives way to Apply. Everything not
+   set here is the wide story's. */
 .day__ticker {
   display: none;
 }
 @media (max-width: 899px) {
   .day.day--story {
     /* a plate as wide as the page inside the gutters, unless the screen is
-       too short for one under the copy; then it narrows and centres */
-    --col: min(calc(100vw - 2 * var(--gut)), calc((100svh - var(--nav-top) - 300px) * 4 / 3));
+       too short for one under the copy; then day.ts narrows it (and it centres) */
+    --col: calc(100vw - 2 * var(--gut));
     --lead: calc((100vw - var(--col)) / 2);
+  }
+  /* the stage ends the section: the rules follow one breath on */
+  .day--story .day__pin {
+    padding-bottom: 0;
+  }
+  /* tall screens: the heading and the stage pin together, the heading
+     under the nav and the stage in the height that's left */
+  .day.day--tall {
+    padding-top: calc(var(--sec-y) - 18px);
+  }
+  .day--tall .day__pin {
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - var(--nav-top));
+    padding: 18px 0 0;
+  }
+  .day--tall .day__head .label {
+    margin-bottom: 14px;
+  }
+  /* two lines, whatever the width: "Morning to evening," is about 9em */
+  .day--tall .day__head h2 {
+    font-size: clamp(30px, 9.4vw, 64px);
+  }
+  .day--story.day--tall .day__viewport {
+    flex: 1;
+    height: auto;
+    min-height: 0;
   }
   /* the programme, the copy and the plate stay together as one block, in
      the middle of whatever height the screen has */
@@ -2282,6 +2311,18 @@ h2 {
   }
   .day--story .step__fig {
     padding-top: 34px;
+  }
+}
+/* and taller still (the bigger phones in a full-screen browser) */
+@media (max-width: 899px) and (min-height: 880px) {
+  .day--story .step h3 {
+    font-size: 44px;
+  }
+  .day--story .step p {
+    font-size: 17px;
+  }
+  .day--story .ticker__node {
+    font-size: 12px;
   }
 }
 /* tablets held upright: a bigger plate, so bigger copy and programme */
