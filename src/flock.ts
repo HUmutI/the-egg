@@ -154,7 +154,8 @@ export function initFlock() {
 /**
  * Phones read the plate as one row you swipe through. Under it, a counter
  * and two arrows say there's more (and work for anyone who doesn't swipe),
- * and whoever is in front says their line without being tapped.
+ * and whoever is in front says their line without being tapped. The row
+ * walks in from the right as it arrives, which also says it moves.
  */
 function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
   const phone = matchMedia('(max-width: 760px)')
@@ -169,6 +170,7 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
     </div>`
   field.after(nav)
   const count = nav.querySelector('b')!
+  cells.forEach((c, k) => c.style.setProperty('--n', String(k)))
   const [prev, next] = Array.from(nav.querySelectorAll<HTMLButtonElement>('.flock__arrow'))
 
   const step = () => Math.max(1, (cells[1]?.offsetLeft ?? 1) - (cells[0]?.offsetLeft ?? 0))
@@ -207,6 +209,14 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
     },
     { passive: true },
   )
+  new IntersectionObserver(
+    (entries, io) => {
+      if (!entries.some((e) => e.isIntersecting)) return
+      field.classList.add('is-in')
+      io.disconnect()
+    },
+    { threshold: 0.2 },
+  ).observe(field)
   // the first figure speaks up once the row is properly on screen
   new IntersectionObserver(
     (entries, io) => {

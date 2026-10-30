@@ -60,7 +60,9 @@ function tokenize(root: HTMLElement): HTMLElement[] {
 /**
  * Scene one: the statement sits faint on its own screen and darkens word by
  * word as you scroll; the highlighter strokes draw in as their words arrive.
- * On wide screens the scene holds still (pinned) while it reads itself.
+ * The scene holds still (pinned) while it reads itself: on wide screens from
+ * the top, on phones held upright in the middle of the screen. A phone on
+ * its side is too short to hold it, so there it reads as it scrolls by.
  */
 export function initStatement() {
   const stage = $('#whatStage')
@@ -83,7 +85,11 @@ export function initStatement() {
     .add('(min-width: 861px)', () => {
       ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=70%', scrub: 0.2, animation: tl })
     })
-    .add('(max-width: 860px)', () => {
+    .add('(max-width: 860px) and (orientation: portrait)', () => {
+      // (refreshPriority: see the day's pin in day.ts)
+      ScrollTrigger.create({ trigger: stage, pin: true, start: 'center center', end: '+=60%', scrub: 0.2, anticipatePin: 1, refreshPriority: 1, animation: tl })
+    })
+    .add('(max-width: 860px) and (orientation: landscape)', () => {
       ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })
     })
 }
@@ -91,7 +97,8 @@ export function initStatement() {
 /**
  * The house rules: when the list comes into view the four rules fade in one
  * after another, then "do not" gets struck out and the hand-written DO
- * appears above it. Played once, not scrubbed to the scroll.
+ * appears above it. Played once, not scrubbed to the scroll. On phones the
+ * four rules are taller than the screen, so each one plays as it arrives.
  */
 export function initRules() {
   const section = $('#rules')
@@ -112,5 +119,19 @@ export function initRules() {
     tl.to(fix, { '--d': 1, duration: 0.5, ease: 'back.out(2.4)' }, 0.8)
   }
 
-  ScrollTrigger.create({ trigger: section, start: 'top 65%', once: true, onEnter: () => tl.play() })
+  gsap.matchMedia()
+    .add('(min-width: 861px)', () => {
+      ScrollTrigger.create({ trigger: section, start: 'top 65%', once: true, onEnter: () => tl.play() })
+    })
+    .add('(max-width: 860px)', () => {
+      rules.forEach((rule, i) => {
+        const one = gsap.timeline({ paused: true })
+        one.to(lines[i], { opacity: 1, duration: 0.5, ease: 'power2.out' })
+        if (fix && rule.contains(fix)) {
+          one.to(fix, { '--s': 1, duration: 0.6, ease: 'power2.out' }, 0.35)
+          one.to(fix, { '--d': 1, duration: 0.5, ease: 'back.out(2.4)' }, 0.8)
+        }
+        ScrollTrigger.create({ trigger: rule, start: 'top 82%', once: true, onEnter: () => one.play() })
+      })
+    })
 }
