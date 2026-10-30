@@ -61,7 +61,8 @@ function tokenize(root: HTMLElement): HTMLElement[] {
  * Scene one: the statement sits faint on its own screen and darkens word by
  * word as you scroll; the highlighter strokes draw in as their words arrive.
  * The scene holds still (pinned) while it reads itself: on wide screens from
- * the top, on phones held upright in the middle of the screen. A phone on
+ * the top, on phones held upright just under the nav, the sentence set as
+ * large as the screen holds so it fills the scene to its foot. A phone on
  * its side is too short to hold it, so there it reads as it scrolls by.
  */
 export function initStatement() {
@@ -89,6 +90,28 @@ export function initStatement() {
       // the stage is a screen tall under the nav (main.css), so it holds there.
       // (refreshPriority: see the day's pin in day.ts)
       const nav = $('#nav')
+      // The sentence takes the stage's height under its running head, at the largest size that
+      // fits it without breaking a word, so the scene has no empty foot to leave behind when it
+      // lets go. Measured again on every refresh (a turned phone, the other language).
+      const words = tokens.filter((t) => !t.matches(UNITS))
+      const fit = () => {
+        // (the stage grows with the sentence, and holds its size while pinned: the room is a
+        // screen under the nav, its min-height, less the running head's row)
+        const cs = getComputedStyle(stage)
+        const pad = parseFloat(getComputedStyle(st).paddingTop) || 0
+        const head = parseFloat(cs.gridTemplateRows) || 0
+        const room = parseFloat(cs.minHeight) - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - head - pad
+        let [lo, hi] = [30, Math.min(96, stage.clientWidth * 0.19)]
+        for (let i = 0; i < 9; i++) {
+          const f = (lo + hi) / 2
+          st.style.fontSize = `${f}px`
+          if (st.offsetHeight - pad <= room && words.every((w) => w.getClientRects().length < 2)) lo = f
+          else hi = f
+        }
+        st.style.fontSize = `${lo.toFixed(1)}px`
+      }
+      fit()
+      ScrollTrigger.addEventListener('refreshInit', fit)
       ScrollTrigger.create({
         trigger: stage,
         pin: true,
@@ -100,6 +123,10 @@ export function initStatement() {
         invalidateOnRefresh: true,
         animation: tl,
       })
+      return () => {
+        ScrollTrigger.removeEventListener('refreshInit', fit)
+        st.style.removeProperty('font-size')
+      }
     })
     .add('(max-width: 860px) and (orientation: landscape)', () => {
       ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })

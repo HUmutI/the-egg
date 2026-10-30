@@ -1234,21 +1234,23 @@ h2 {
     align-items: baseline;
     column-gap: 16px;
     min-height: calc(100svh - var(--nav-top));
-    padding: 28px 0 calc(72px + var(--safe-b));
+    padding: 28px 0 calc(88px + var(--safe-b));
   }
   .js .what__cue {
     grid-area: 1 / 2;
     margin-top: 0;
   }
+  /* story.ts sets the size that fills the stage; the sentence stands on
+     the stage's foot, so it leaves no empty band behind it */
   .js .what__stage .statement {
     grid-area: 2 / 1 / 3 / 3;
-    align-self: center;
-    padding: 16px 0;
+    align-self: end;
+    padding: 16px 0 0;
     font-size: clamp(34px, min(13.4vw, 6.8svh), 64px);
   }
   /* the stage's foot already clears the dock: who comes follows one breath on */
   .js .what + .flock {
-    padding-top: calc(var(--sec-y) - 24px);
+    padding-top: max(0px, calc(var(--sec-y) - 40px));
   }
 }
 /* tablets: no dock to clear, and a taller screen for a larger sentence */
