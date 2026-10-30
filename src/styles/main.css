@@ -2076,21 +2076,24 @@ h2 {
 
 /* phones held upright: the day plays as a story here too (src/day.ts adds
    .day--story). The stage under the nav pins: the programme as a row of
-   seven eggs, the step's copy, and its plate on the ruler, one plate to a
-   screen. A screen tall enough for it (.day--tall) keeps the heading on the
-   stage too, as the wide layout does; a shorter one lets the heading scroll
-   by first. As you scroll, the egg walks into the next plate and the copy
-   changes with it; at the end the copy gives way to Apply. Everything not
-   set here is the wide story's. */
+   seven eggs, then the step: its copy standing just over its plate, and the
+   plate on the ruler, one to a screen, framed close and edge to edge so the
+   cast is drawn as large as the screen allows. A screen tall enough for it
+   (.day--tall) keeps the heading on the stage too, as the wide layout does;
+   a shorter one lets the heading scroll by first. As you scroll, the egg
+   walks into the next plate and the copy changes with it; at the end Apply
+   is written on the floor the three have left. Everything not set here is
+   the wide story's. */
 .day__ticker {
   display: none;
 }
 @media (max-width: 899px) {
   .day.day--story {
-    /* a plate as wide as the page inside the gutters, unless the screen is
-       too short for one under the copy; then day.ts narrows it (and it centres) */
-    --col: calc(100vw - 2 * var(--gut));
-    --lead: calc((100vw - var(--col)) / 2);
+    /* day.ts sets the plate's scale (--s, px to a plate unit) and so its
+       width (--col), and moves a camera over it: no margin frames it */
+    --s: 0.45;
+    --col: calc(800px * var(--s));
+    --lead: 0px;
   }
   /* the stage ends the section: the rules follow one breath on */
   .day--story .day__pin {
@@ -2119,21 +2122,20 @@ h2 {
     height: auto;
     min-height: 0;
   }
-  /* the programme, the copy and the plate stay together as one block, in
-     the middle of whatever height the screen has */
+  /* the programme, then the step in the height that's left */
   .day--story .day__viewport {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     height: calc(100svh - var(--nav-top));
     padding: 14px 0 calc(10px + var(--safe-b));
     overflow: hidden;
   }
   .day--story .day__track {
-    flex: none;
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     width: max-content;
-    padding: 0 var(--lead) 12px;
+    padding: 0 0 12px;
     will-change: transform;
   }
   .day--story .day__track::before {
@@ -2159,12 +2161,13 @@ h2 {
   .day--story .step__node {
     display: none;
   }
-  /* the copy reads across the page even when the plate is narrower, and
-     holds still while the plates slide (day.ts moves it against the camera) */
+  /* the copy reads across the page whatever the plate's scale, holds still
+     while the plates slide (day.ts moves it against the camera), and stands
+     in the middle of the air over its plate's highest ink */
   .day--story .step__text {
     width: calc(100vw - 2 * var(--gut));
-    margin-left: calc(var(--gut) - var(--lead));
-    padding: 22px 0 0;
+    margin: auto 0 auto calc(var(--gut) - var(--lead));
+    padding: 0;
     opacity: 0;
     transition: opacity 0.35s var(--ease-out);
     will-change: transform;
@@ -2172,23 +2175,32 @@ h2 {
   .day--story .step.is-told .step__text {
     opacity: 1;
   }
+  /* the step is the screen's headline while it plays */
   .day--story .step__time {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
   .day--story .step h3 {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 44px;
   }
   .day--story .step p {
     max-width: 34em;
-    font-size: 15px;
+    font-size: 16px;
   }
-  /* the plates are their own layers, so fading one in doesn't redraw its ink */
+  /* the plates are their own layers, so fading one in doesn't redraw its ink.
+     Each one's box starts at its highest ink (--top, in plate units, from
+     day.ts): the empty sky above that is the copy's */
   .day--story .step__fig {
+    flex: none;
+    height: calc((600 - var(--top, 0)) * var(--s) * 1px);
     max-width: none;
-    margin: auto 0 0;
-    padding: 26px 0 0;
+    margin: 0;
+    padding: 0;
     opacity: 0.42;
     will-change: opacity;
+  }
+  .day--story .step__fig svg {
+    margin-top: calc(var(--top, 0) * var(--s) * -1px);
   }
   .day--story .step.is-now .step__fig {
     opacity: 1;
@@ -2196,10 +2208,13 @@ h2 {
   .day--story .step__fig::after {
     display: none;
   }
+  /* a step's notes come with its copy and stay until the egg has left its
+     plate, so a screen is whole while the plates slide; the late ones still
+     wait for their moment */
   .day--story .step .here {
     opacity: 0;
   }
-  .day--story .step.is-here .here:not(.here--late),
+  .day--story .step:is(.is-told, .is-now) .here:not(.here--late),
   .day--story .step.is-late .here--late {
     opacity: 1;
   }
@@ -2268,14 +2283,15 @@ h2 {
     background: var(--tomato);
   }
 
-  /* the way out, written where the last step's copy was once the three
-     have gone down to the metro */
+  /* the way out, written on the floor the three have left for the metro
+     (day.ts holds it still against the camera, as it does the copy) */
   .day--story .day__end {
     position: absolute;
-    top: 0;
+    top: auto;
+    bottom: calc(12px + 22px);
     left: calc(var(--col) * 6 + var(--gut));
-    width: calc(100vw - 2 * var(--gut));
-    padding: 26px 0 0;
+    width: auto;
+    padding: 0;
     border-top: 0;
   }
   .day.day--story :is(.day__bye, .day__arrow) {
@@ -2294,32 +2310,23 @@ h2 {
     visibility: visible;
     translate: 0 0;
   }
-  .day.day--story[data-end='true'] .step:last-child .step__text {
-    opacity: 0;
-  }
 }
 /* taller screens (in-app browsers, bigger phones): the copy gets the room */
 @media (max-width: 899px) and (min-height: 740px) {
-  .day--story .step__text {
-    padding-top: 30px;
-  }
   .day--story .step h3 {
-    font-size: 40px;
+    font-size: 56px;
   }
   .day--story .step p {
-    font-size: 16px;
-  }
-  .day--story .step__fig {
-    padding-top: 34px;
+    font-size: 17px;
   }
 }
 /* and taller still (the bigger phones in a full-screen browser) */
 @media (max-width: 899px) and (min-height: 880px) {
   .day--story .step h3 {
-    font-size: 44px;
+    font-size: 60px;
   }
   .day--story .step p {
-    font-size: 17px;
+    font-size: 18px;
   }
   .day--story .ticker__node {
     font-size: 12px;
@@ -2328,11 +2335,11 @@ h2 {
 /* tablets held upright: a bigger plate, so bigger copy and programme */
 @media (min-width: 700px) and (max-width: 899px) {
   .day--story .step h3 {
-    font-size: 52px;
+    font-size: 68px;
   }
   .day--story .step p {
     max-width: 30em;
-    font-size: 18px;
+    font-size: 19px;
   }
   .day--story .ticker__node {
     font-size: 12px;
