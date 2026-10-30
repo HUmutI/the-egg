@@ -1219,6 +1219,47 @@ h2 {
     overflow-wrap: break-word;
   }
 }
+/* phones and tablets held upright: the scene holds under the nav while it
+   reads itself in (src/story.ts), so it fills the screen with the sentence,
+   set as large as the height allows. The label and the cue share a running
+   head under the nav; the statement fills the rest, clear of the dock. */
+@media (max-width: 860px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
+  .js .what {
+    padding-top: var(--sec-y);
+  }
+  .js .what__stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 16px;
+    min-height: calc(100svh - var(--nav-top));
+    padding: 28px 0 calc(72px + var(--safe-b));
+  }
+  .js .what__cue {
+    grid-area: 1 / 2;
+    margin-top: 0;
+  }
+  .js .what__stage .statement {
+    grid-area: 2 / 1 / 3 / 3;
+    align-self: center;
+    padding: 16px 0;
+    font-size: clamp(34px, min(13.4vw, 6.8svh), 64px);
+  }
+  /* the stage's foot already clears the dock: who comes follows one breath on */
+  .js .what + .flock {
+    padding-top: calc(var(--sec-y) - 24px);
+  }
+}
+/* tablets: no dock to clear, and a taller screen for a larger sentence */
+@media (min-width: 701px) and (max-width: 860px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
+  .js .what__stage {
+    padding-bottom: calc(40px + var(--safe-b));
+  }
+  .js .what__stage .statement {
+    font-size: clamp(34px, min(13.4vw, 8.4svh), 96px);
+  }
+}
 
 .chip {
   display: inline-flex;
@@ -1626,6 +1667,12 @@ h2 {
   letter-spacing: -0.025em;
 }
 
+/* phones: the pull quote is set a size up, so it holds its band on its own */
+@media (max-width: 600px) {
+  .why__mini {
+    font-size: clamp(28px, 8.4vw, 40px);
+  }
+}
 @media (max-width: 860px) {
   .why__grid {
     grid-template-columns: 1fr;
@@ -2028,20 +2075,49 @@ h2 {
 }
 
 /* phones held upright: the day plays as a story here too (src/day.ts adds
-   .day--story). The heading scrolls by, then the stage under the nav pins:
-   the programme as a row of seven eggs, the step's copy, and its plate on
-   the ruler, one plate to a screen. As you scroll,
-   the egg walks into the next plate and the copy changes with it; at the end
-   the copy gives way to Apply. Everything not set here is the wide story's. */
+   .day--story). The stage under the nav pins: the programme as a row of
+   seven eggs, the step's copy, and its plate on the ruler, one plate to a
+   screen. A screen tall enough for it (.day--tall) keeps the heading on the
+   stage too, as the wide layout does; a shorter one lets the heading scroll
+   by first. As you scroll, the egg walks into the next plate and the copy
+   changes with it; at the end the copy gives way to Apply. Everything not
+   set here is the wide story's. */
 .day__ticker {
   display: none;
 }
 @media (max-width: 899px) {
   .day.day--story {
     /* a plate as wide as the page inside the gutters, unless the screen is
-       too short for one under the copy; then it narrows and centres */
-    --col: min(calc(100vw - 2 * var(--gut)), calc((100svh - var(--nav-top) - 300px) * 4 / 3));
+       too short for one under the copy; then day.ts narrows it (and it centres) */
+    --col: calc(100vw - 2 * var(--gut));
     --lead: calc((100vw - var(--col)) / 2);
+  }
+  /* the stage ends the section: the rules follow one breath on */
+  .day--story .day__pin {
+    padding-bottom: 0;
+  }
+  /* tall screens: the heading and the stage pin together, the heading
+     under the nav and the stage in the height that's left */
+  .day.day--tall {
+    padding-top: calc(var(--sec-y) - 18px);
+  }
+  .day--tall .day__pin {
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - var(--nav-top));
+    padding: 18px 0 0;
+  }
+  .day--tall .day__head .label {
+    margin-bottom: 14px;
+  }
+  /* two lines, whatever the width: "Morning to evening," is about 9em */
+  .day--tall .day__head h2 {
+    font-size: clamp(30px, 9.4vw, 64px);
+  }
+  .day--story.day--tall .day__viewport {
+    flex: 1;
+    height: auto;
+    min-height: 0;
   }
   /* the programme, the copy and the plate stay together as one block, in
      the middle of whatever height the screen has */
@@ -2235,6 +2311,18 @@ h2 {
   }
   .day--story .step__fig {
     padding-top: 34px;
+  }
+}
+/* and taller still (the bigger phones in a full-screen browser) */
+@media (max-width: 899px) and (min-height: 880px) {
+  .day--story .step h3 {
+    font-size: 44px;
+  }
+  .day--story .step p {
+    font-size: 17px;
+  }
+  .day--story .ticker__node {
+    font-size: 12px;
   }
 }
 /* tablets held upright: a bigger plate, so bigger copy and programme */
@@ -2949,38 +3037,37 @@ html:not(.js) .rule__fix,
   }
 }
 
-/* phones: the words come first, then the rooftop, centred on the party */
+/* phones: the rooftop painted for an upright screen (see the <picture>), the
+   full width of the phone: the moon and the stars on top, the castle,
+   Anıtkabir and Atakule in the middle, the party at the bottom. The sign is
+   written in its sky, as it is on a wide screen; the links and the way to
+   the game follow under the picture. As it scrolls by, the picture drifts a
+   little behind the page (src/phone.ts). */
 @media (max-width: 700px) {
   .foot__scene {
-    display: flex;
-    flex-direction: column-reverse;
     padding-top: 0;
   }
-  .foot__top {
-    position: static;
-    grid-template-columns: 1fr;
-    gap: 32px;
-    padding: 64px var(--gut) 8px;
-  }
-  .foot__sign {
-    font-size: clamp(34px, 10vw, 44px);
-  }
-  /* the phone picture has no empty sky on top, so it can stand taller:
-     the castle, Anıtkabir and Atakule across the frame, the party under
-     them. It keeps its own width, wider than the screen, and --pan says how
-     far across it the frame sits; as it scrolls by, src/phone.ts drifts the
-     view across the roof (a transform, so it stays smooth) */
   .foot__scene picture {
     overflow: hidden;
   }
   .foot__img {
-    width: auto;
-    max-width: none;
-    height: clamp(290px, 85vw, 400px);
-    aspect-ratio: 2007 / 683;
-    transform: translateX(calc((100vw - 100%) * var(--pan, 0.485)));
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
-    mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    aspect-ratio: 1200 / 1500;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 4%, #000 95%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 4%, #000 95%, transparent 100%);
+  }
+  .foot__sign {
+    position: absolute;
+    z-index: 2;
+    top: clamp(24px, 7.6vw, 48px);
+    left: var(--gut);
+    right: var(--gut);
+    font-size: clamp(34px, 10vw, 44px);
+  }
+  .foot__top {
+    position: static;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 4px var(--gut) 8px;
   }
 }
 @media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
@@ -3830,5 +3917,27 @@ body.is-arcade .nav > * {
     padding: 0 20px;
     border: 1px solid var(--ink);
     font-size: 16px;
+  }
+}
+
+/* ── PHONES: one vertical rhythm ──────────────────────────────────
+   --sec-y is sized for a wide screen, and on a phone it left bands of
+   empty paper between the sections. Phones (upright, or on their side)
+   take a smaller step, so every section break is the same breath: two
+   --sec-y, about 94px on a 390px phone, from the last line of one
+   section to the label of the next. Tablets and wider (a short desktop
+   window included) keep theirs. */
+@media (max-width: 600px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  :root {
+    --sec-y: clamp(44px, 12vw, 56px);
+    --sec-y-tight: clamp(32px, 9vw, 44px);
+  }
+  .flock {
+    padding-bottom: var(--sec-y);
+  }
+  .rules,
+  .join {
+    padding-top: var(--sec-y);
+    padding-bottom: var(--sec-y);
   }
 }
