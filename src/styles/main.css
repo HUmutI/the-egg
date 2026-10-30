@@ -2592,11 +2592,12 @@ h2 {
     margin-top: 10px;
     font-size: 15px;
   }
+  /* the figure takes its cell: one at a time, as large as the card */
   .bird__body {
-    padding: 14px 4px 10px;
+    padding: 10px 0 6px;
   }
   .bird__body svg {
-    width: min(72%, 200px);
+    width: min(86%, 236px);
   }
   .bird__name {
     font-size: 16px;
