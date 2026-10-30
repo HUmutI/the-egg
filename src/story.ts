@@ -86,8 +86,20 @@ export function initStatement() {
       ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=70%', scrub: 0.2, animation: tl })
     })
     .add('(max-width: 860px) and (orientation: portrait)', () => {
+      // the stage is a screen tall under the nav (main.css), so it holds there.
       // (refreshPriority: see the day's pin in day.ts)
-      ScrollTrigger.create({ trigger: stage, pin: true, start: 'center center', end: '+=60%', scrub: 0.2, anticipatePin: 1, refreshPriority: 1, animation: tl })
+      const nav = $('#nav')
+      ScrollTrigger.create({
+        trigger: stage,
+        pin: true,
+        start: () => `top ${nav.offsetHeight}px`,
+        end: '+=75%',
+        scrub: 0.2,
+        anticipatePin: 1,
+        refreshPriority: 1,
+        invalidateOnRefresh: true,
+        animation: tl,
+      })
     })
     .add('(max-width: 860px) and (orientation: landscape)', () => {
       ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })

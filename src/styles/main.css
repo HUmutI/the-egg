@@ -1219,6 +1219,47 @@ h2 {
     overflow-wrap: break-word;
   }
 }
+/* phones and tablets held upright: the scene holds under the nav while it
+   reads itself in (src/story.ts), so it fills the screen with the sentence,
+   set as large as the height allows. The label and the cue share a running
+   head under the nav; the statement fills the rest, clear of the dock. */
+@media (max-width: 860px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
+  .js .what {
+    padding-top: var(--sec-y);
+  }
+  .js .what__stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 16px;
+    min-height: calc(100svh - var(--nav-top));
+    padding: 28px 0 calc(72px + var(--safe-b));
+  }
+  .js .what__cue {
+    grid-area: 1 / 2;
+    margin-top: 0;
+  }
+  .js .what__stage .statement {
+    grid-area: 2 / 1 / 3 / 3;
+    align-self: center;
+    padding: 16px 0;
+    font-size: clamp(34px, min(13.4vw, 6.8svh), 64px);
+  }
+  /* the stage's foot already clears the dock: who comes follows one breath on */
+  .js .what + .flock {
+    padding-top: calc(var(--sec-y) - 24px);
+  }
+}
+/* tablets: no dock to clear, and a taller screen for a larger sentence */
+@media (min-width: 701px) and (max-width: 860px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
+  .js .what__stage {
+    padding-bottom: calc(40px + var(--safe-b));
+  }
+  .js .what__stage .statement {
+    font-size: clamp(34px, min(13.4vw, 8.4svh), 96px);
+  }
+}
 
 .chip {
   display: inline-flex;
