@@ -399,8 +399,12 @@ const PLATES: ((ph: boolean) => string)[] = [doors, crack, nest, incubate, pizza
 
 /**
  * One step's plate: its props and notes, and (for the vertical programme) the
- * cast as it is then. `ph`: drawn for the phone story's tighter frame (PH).
+ * cast as it is then. `ph`: drawn for the phone story's tighter frame (PH);
+ * `crop`: and cut to that frame, from just over its highest ink to the floor.
  */
-export function plateSvg(step: number, ph = false) {
-  return `<svg viewBox="0 0 ${PLATE} 600" aria-hidden="true" focusable="false">${PLATES[step](ph)}${castAt(step, ph)}</svg>`
+export function plateSvg(step: number, ph = false, crop = false) {
+  const [l, r] = PH.frame
+  const top = PH.top[step] - 12
+  const box = crop ? `${l} ${top} ${r - l} ${GROUND - top}` : `0 0 ${PLATE} 600`
+  return `<svg viewBox="${box}" aria-hidden="true" focusable="false">${PLATES[step](ph)}${castAt(step, ph)}</svg>`
 }

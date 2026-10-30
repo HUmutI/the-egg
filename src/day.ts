@@ -75,16 +75,16 @@ const build = (d: number): [number, number] => {
 }
 
 /**
- * The plates as the wide layouts draw them, or framed for the phone story.
- * Drawn again only when the layout needs the other kind (renderDay draws the
- * wide ones).
+ * The plates as the wide layouts draw them, framed for the phone story, or
+ * framed so and cut to their ink for a narrow vertical programme. Drawn again
+ * only when the layout needs another kind (renderDay draws the wide ones).
  */
-type Plates = 'wide' | 'phone'
+type Plates = 'wide' | 'phone' | 'crop'
 let drawn: Plates = 'wide'
 const drawPlates = (kind: Plates) => {
   if (kind === drawn) return
   drawn = kind
-  $$<HTMLElement>('#day .step__fig').forEach((fig, i) => (fig.innerHTML = plateSvg(i, kind === 'phone')))
+  $$<HTMLElement>('#day .step__fig').forEach((fig, i) => (fig.innerHTML = plateSvg(i, kind !== 'wide', kind === 'crop')))
 }
 
 /** Air the phone story keeps at least above and below the step's copy. */
@@ -466,8 +466,14 @@ export function initDay() {
   mm.add('(max-width: 899px) and (orientation: portrait) and (min-height: 720px) and (prefers-reduced-motion: no-preference)', walk(true, true))
   mm.add('(max-width: 899px) and (orientation: portrait) and (max-height: 719.98px) and (prefers-reduced-motion: no-preference)', walk(true))
 
-  mm.add('(max-width: 899px) and (orientation: landscape), (prefers-reduced-motion: reduce)', () => {
-    drawPlates('wide')
+  /**
+   * The vertical programme: phones on their side, and reduced motion. Narrower than the wide
+   * layout (`narrow`), each plate is the phone story's, framed close and cut to its own ink, so the
+   * copy and its picture read together with no empty sky between them.
+   */
+  const book = (narrow: boolean) => () => {
+    drawPlates(narrow ? 'crop' : 'wide')
+    section.classList.toggle('day--crop', narrow)
     const setBook = (i: number) => {
       if (i === current) return
       current = i
@@ -506,6 +512,9 @@ export function initDay() {
       current = -1
       triggers.forEach((t) => t.kill())
       range.kill()
+      section.classList.remove('day--crop')
     }
-  })
+  }
+  mm.add('(max-width: 899px) and (orientation: landscape), (max-width: 899px) and (prefers-reduced-motion: reduce)', book(true))
+  mm.add('(min-width: 900px) and (prefers-reduced-motion: reduce)', book(false))
 }

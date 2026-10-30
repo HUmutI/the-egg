@@ -2058,6 +2058,11 @@ h2 {
     translate: none;
   }
 }
+/* narrower than the wide layout, the plates are framed close and cut to
+   their own ink (src/day.ts): their shape comes from that frame, not 4:3 */
+.day--crop .step__fig svg {
+  aspect-ratio: auto;
+}
 /* wider than a phone: the copy beside its plate, one step per row */
 @media (min-width: 700px) and (max-width: 899px), (min-width: 700px) and (prefers-reduced-motion: reduce) {
   .step {
