@@ -1626,6 +1626,12 @@ h2 {
   letter-spacing: -0.025em;
 }
 
+/* phones: the pull quote is set a size up, so it holds its band on its own */
+@media (max-width: 600px) {
+  .why__mini {
+    font-size: clamp(28px, 8.4vw, 40px);
+  }
+}
 @media (max-width: 860px) {
   .why__grid {
     grid-template-columns: 1fr;
@@ -3830,5 +3836,27 @@ body.is-arcade .nav > * {
     padding: 0 20px;
     border: 1px solid var(--ink);
     font-size: 16px;
+  }
+}
+
+/* ── PHONES: one vertical rhythm ──────────────────────────────────
+   --sec-y is sized for a wide screen, and on a phone it left bands of
+   empty paper between the sections. Phones (upright, or on their side)
+   take a smaller step, so every section break is the same breath: two
+   --sec-y, about 94px on a 390px phone, from the last line of one
+   section to the label of the next. Tablets and wider (a short desktop
+   window included) keep theirs. */
+@media (max-width: 600px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  :root {
+    --sec-y: clamp(44px, 12vw, 56px);
+    --sec-y-tight: clamp(32px, 9vw, 44px);
+  }
+  .flock {
+    padding-bottom: var(--sec-y);
+  }
+  .rules,
+  .join {
+    padding-top: var(--sec-y);
+    padding-bottom: var(--sec-y);
   }
 }
