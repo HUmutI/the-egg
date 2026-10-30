@@ -65,3 +65,6 @@ const remeasure = () => {
 }
 document.addEventListener('toggle', remeasure, true)
 document.addEventListener('egg:relayout', remeasure)
+
+// iOS only shows :active (the press on buttons) once something listens for touches.
+document.addEventListener('touchstart', () => {}, { passive: true })

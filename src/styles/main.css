@@ -324,6 +324,42 @@ body::after {
   box-shadow: none;
 }
 
+/* touch screens: a tap leaves :hover stuck on whatever it touched, so the
+   hover looks are put back to rest there and the press answers instead,
+   with the same yolk fill a mouse gets on hover */
+@media (hover: none) {
+  .btn {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover {
+    transform: none;
+  }
+  .btn:hover::before {
+    transform: translateY(102%);
+  }
+  .btn:hover span {
+    color: var(--b-fg);
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn:active::before {
+    transform: translateY(0);
+    transition-duration: 0.18s;
+  }
+  .btn:active span {
+    color: var(--ink);
+  }
+  .foot .foot__cols a:hover {
+    background-size: 0 1.5px;
+    color: inherit;
+  }
+  .foot .foot__cols a:active {
+    background-size: 100% 1.5px;
+    color: var(--yolk);
+  }
+}
+
 /* ── NAV ─────────────────────────────────────────────────────── */
 
 .nav {
@@ -2437,6 +2473,8 @@ h2 {
     flex: 0 0 min(76%, 340px);
     grid-template-rows: auto auto 1fr auto;
     scroll-snap-align: start;
+    /* one figure per swipe, like turning a page */
+    scroll-snap-stop: always;
     min-height: 0;
     padding: 12px 14px 14px;
     cursor: pointer;
@@ -2493,11 +2531,18 @@ h2 {
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
-    transition: opacity 0.25s;
+    transition:
+      opacity 0.25s,
+      transform 0.2s var(--ease-out),
+      background 0.2s;
   }
   .flock__arrow:disabled {
     opacity: 0.35;
     cursor: default;
+  }
+  .flock__arrow:active:not(:disabled) {
+    transform: scale(0.92);
+    background: var(--yolk);
   }
 }
 @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
@@ -3706,9 +3751,22 @@ body.is-arcade .nav > * {
     display: flex;
     gap: 8px;
     transition:
-      transform 0.45s var(--ease-out),
       opacity 0.3s var(--ease-out),
       visibility 0s;
+  }
+  /* the two buttons come up from under the thumb with a little spring,
+     Apply a beat after its neighbour */
+  .dock > * {
+    transition:
+      transform 0.6s var(--ease-spring),
+      box-shadow 0.35s var(--ease-out);
+  }
+  .dock > .dock__apply {
+    transition-delay: 0.05s;
+  }
+  .dock > :active {
+    transition-duration: 0.15s;
+    transition-delay: 0s;
   }
   /* the page fades out under it, so text never runs into the buttons */
   .dock::before {
@@ -3725,11 +3783,14 @@ body.is-arcade .nav > * {
   .dock.is-away {
     opacity: 0;
     visibility: hidden;
-    transform: translateY(calc(100% + 16px));
     transition:
-      transform 0.35s var(--ease-out),
-      opacity 0.25s var(--ease-out),
+      opacity 0.25s var(--ease-out) 0.05s,
       visibility 0s 0.35s;
+  }
+  .dock.is-away > * {
+    transform: translateY(calc(100% + 16px + var(--safe-b)));
+    transition: transform 0.3s var(--ease-out);
+    transition-delay: 0s;
   }
   .dock__share,
   .dock__apply {
@@ -3759,7 +3820,9 @@ body.is-arcade .nav > * {
     stroke-linejoin: round;
   }
   .dock__share:active {
-    transform: scale(0.96);
+    transform: scale(0.92);
+    background: var(--yolk);
+    transition-duration: 0.15s;
   }
   .dock__apply {
     flex: 1;
