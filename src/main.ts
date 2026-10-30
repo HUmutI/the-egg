@@ -12,6 +12,7 @@ import { initPortal } from './portal'
 import { initNextSunday } from './next'
 import { initShare } from './share'
 import { installInkDefs } from './riso'
+import { initPhone } from './phone'
 // hero facts, FAQ, join ticket and share: new UI, kept out of main.css
 import './styles/story.css'
 
@@ -40,6 +41,7 @@ const start = () => {
   initFlock()
   initRules()
   initPortal()
+  initPhone()
   // The sky (background colour + club clock) reads positions set up by the
   // sections above, so it goes last.
   initSky()
@@ -63,3 +65,6 @@ const remeasure = () => {
 }
 document.addEventListener('toggle', remeasure, true)
 document.addEventListener('egg:relayout', remeasure)
+
+// iOS only shows :active (the press on buttons) once something listens for touches.
+document.addEventListener('touchstart', () => {}, { passive: true })

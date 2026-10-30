@@ -29,7 +29,7 @@
       as="image"
       type="image/avif"
       media="(max-width: 600px)"
-      imagesrcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-1200.avif 1200w"
+      imagesrcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w"
       imagesizes="100vw"
       fetchpriority="high"
     />
@@ -238,9 +238,10 @@
         <figure class="hero__art">
           <div class="hero__frame">
           <picture>
-            <!-- phones held upright: the same poster recomposed, the art larger over the wordmark -->
-            <source media="(max-width: 600px)" type="image/avif" srcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1000" />
-            <source media="(max-width: 600px)" type="image/webp" srcset="/hero/the-egg-club-phone-600.webp 600w, /hero/the-egg-club-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1000" />
+            <!-- phones held upright: the same poster recomposed, the art larger over the wordmark.
+                 1200w is the master's own resolution (a 390px phone at 3x needs 1170); 900w serves 2x phones -->
+            <source media="(max-width: 600px)" type="image/avif" srcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1000" />
+            <source media="(max-width: 600px)" type="image/webp" srcset="/hero/the-egg-club-phone-600.webp 600w, /hero/the-egg-club-phone-900.webp 900w, /hero/the-egg-club-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1000" />
             <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
             <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
             <img

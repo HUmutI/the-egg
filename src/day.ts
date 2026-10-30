@@ -2,6 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { $, $$, PALETTE, clamp, clockState, lerp } from './util'
 import { lang } from './i18n'
+import { holdDock } from './dock'
 import {
   AUDIENCE,
   FOLLOW,
@@ -90,11 +91,15 @@ export function renderDay() {
  * pitches against the stopwatch and gets its first crack, the two who
  * listened fall in behind it, they build, they eat, and on stage it hatches
  * into the club's golden egg; then the three take the metro home and the
- * programme hands over to Apply. On phones (and with reduced motion) it reads
+ * programme hands over to Apply. Phones held upright get the same walk, one
+ * plate to a screen: the stage under the nav pins, the plates slide past as
+ * the egg walks, a row of seven eggs keeps the programme, and the copy
+ * changes with each step. Phones on their side, and reduced motion, read it
  * top to bottom, each plate drawn with the cast as it is at that hour.
  */
 export function initDay() {
   const section = $('#day')
+  const viewport = $('.day__viewport', section)
   const track = $('#dayTrack')
   const steps = $$<HTMLLIElement>('.step', track)
   const cast = $<SVGSVGElement>('#dayCast')
@@ -117,7 +122,25 @@ export function initDay() {
 
   const mm = gsap.matchMedia()
 
-  mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+  /** The walk itself: wide screens pin the whole section; phones (`phone`) pin the stage under the nav. */
+  const walk = (phone: boolean) => () => {
+    let ink: HTMLElement | null = null
+    /** The phone story's row of seven eggs. */
+    let nodes: HTMLElement[] = []
+    if (phone) {
+      // the stage takes its phone shape before anything measures it
+      section.classList.add('day--story')
+      const ticker = document.createElement('div')
+      ticker.className = 'day__ticker'
+      ticker.setAttribute('aria-hidden', 'true')
+      ticker.innerHTML =
+        '<span class="ticker__ink"></span>' +
+        steps.map((s) => `<span class="ticker__node">${$('.step__time', s).textContent ?? ''}</span>`).join('')
+      viewport.prepend(ticker)
+      ink = $<HTMLElement>('.ticker__ink', ticker)
+      nodes = $$<HTMLElement>('.ticker__node', ticker)
+      nodes[5]?.classList.add('is-hatch')
+    }
     const q = <T extends Element>(sel: string, el: ParentNode = cast) => el.querySelector<T>(sel)!
     const member = (id: string) => {
       const el = q<SVGGElement>('#' + id)
@@ -149,7 +172,8 @@ export function initDay() {
       tl.to(story, { pos: i, duration: WALK, ease: 'power1.inOut' })
       tl.to(story.d, { [i]: 1, duration: DWELL * STAY[i] })
     }
-    tl.to({}, { duration: 0.3 }) // a breath before the section lets go
+    // a breath before the section lets go; on a phone, long enough to see Apply arrive
+    tl.to({}, { duration: phone ? 0.6 : 0.3 })
     section.dataset.tl = tl.duration().toFixed(2)
 
     /** Up onto the stage at Hatch and off again, with a small hop at each edge. */
@@ -188,8 +212,12 @@ export function initDay() {
     let lastStage = ''
     let lastLabel = ''
     let lastChat = ''
+    /** Phones: the column's width, measured on refresh rather than on every frame. */
+    let col = phone ? steps[0].offsetWidth : 0
+    let told = -1
+    const texts = phone ? steps.map((s) => $('.step__text', s)) : []
     const frame = () => {
-      const colW = steps[0].offsetWidth
+      const colW = phone ? col : steps[0].offsetWidth
       const pos = story.pos
       const state = Math.min(Math.floor(pos + 1e-4), last)
       const t = Math.max(0, pos - state)
@@ -202,10 +230,25 @@ export function initDay() {
       markStep(state, here, d >= LATE[state])
 
       // the camera keeps the egg's plate in the first column, until the last walk: then it holds,
-      // so the day ends on Hatch, Afterglow and the way to Apply; the programme line inks up to the egg
-      gsap.set(track, { x: -Math.min(pos, last - 1) * colW })
+      // so the day ends on Hatch, Afterglow and the way to Apply; the programme line inks up to the egg.
+      // A phone shows one plate, so its camera stays with the egg all the way, and the row of eggs
+      // above the stage inks up instead; the copy holds its place while the plates slide under it,
+      // and changes halfway through each walk.
+      gsap.set(track, { x: -(phone ? pos : Math.min(pos, last - 1)) * colW })
       const along = MARK + PLATE * pos
-      progress.style.transform = `scaleX(${(along / (PLATE * steps.length)).toFixed(4)})`
+      if (ink) {
+        ink.style.transform = `scaleX(${(pos / last).toFixed(4)})`
+        texts.forEach((el, k) => (el.style.transform = `translate3d(${((pos - k) * colW).toFixed(1)}px, 0, 0)`))
+        const near = Math.round(pos)
+        if (near !== told) {
+          told = near
+          steps.forEach((s, k) => s.classList.toggle('is-told', k === near))
+          nodes.forEach((n, k) => {
+            n.classList.toggle('is-now', k === near)
+            n.classList.toggle('is-past', k < near)
+          })
+        }
+      } else progress.style.transform = `scaleX(${(along / (PLATE * steps.length)).toFixed(4)})`
 
       // our egg, and the two who stand listening at Crack until it walks past, then fall in behind it
       const walking = here ? 0 : Math.sin(Math.PI * t)
@@ -278,7 +321,8 @@ export function initDay() {
       const unread = lang === 'tr' ? `${n} okunmamış` : `${n} unread`
       if (unread !== lastChat) chatN.textContent = lastChat = unread
       chatLead.style.opacity = home ? (1 - band(d, LEAVE[0] + 0.02, LEAVE[0] + 0.1)).toFixed(2) : ''
-      section.dataset.end = String(home && d > 0.9)
+      const end = String(home && d > (phone ? 0.86 : 0.9))
+      if (section.dataset.end !== end) section.dataset.end = end
 
       // the club clock: each stay runs most of its hour, the walk finishes it; it stops at lights out
       const span = times[state + 1] - times[state]
@@ -286,29 +330,45 @@ export function initDay() {
       clockState.onChange()
 
       // the page drifts through the day with it, and flashes cream on the pop
-      let sky = here ? SKY[state] : mix(SKY[state], SKY[state + 1], t)
-      if (hatching && popped) sky = mix(sky, PALETTE.cream, 0.8 * (1 - easeOut(band(d, POP, POP + 0.16))))
-      section.dataset.sky = sky
-      if (root.dataset.sky === 'day') gsap.set(root, { '--page': sky })
+      // (a phone takes the drift in sixteen steps a walk, each too small to see, so the whole
+      // page isn't restyled on every frame)
+      const fine = (v: number) => (phone ? Math.round(v * 16) / 16 : v)
+      let sky = here ? SKY[state] : mix(SKY[state], SKY[state + 1], fine(t))
+      if (hatching && popped) sky = mix(sky, PALETTE.cream, fine(0.8 * (1 - easeOut(band(d, POP, POP + 0.16)))))
+      if (section.dataset.sky !== sky) section.dataset.sky = sky
+      // (every new --page restyles the whole page, so a phone only sends real changes)
+      if (root.dataset.sky === 'day' && (!phone || root.style.getPropertyValue('--page') !== sky)) gsap.set(root, { '--page': sky })
     }
 
+    const nav = $('#nav')
     const st = ScrollTrigger.create({
-      trigger: section,
-      pin: true,
-      start: 'top top',
+      trigger: phone ? viewport : section,
+      pin: phone ? viewport : true,
+      // a phone pins the stage just under the nav, once the heading has gone by
+      start: phone ? () => `top ${nav.offsetHeight}px` : 'top top',
       end: () => '+=' + innerHeight * 0.55 * tl.duration(),
       scrub: 0.5,
       invalidateOnRefresh: true,
       animation: tl,
       onRefresh: (self) => {
+        if (phone) col = steps[0].offsetWidth
         clockState.dayStart = self.start
         clockState.dayEnd = self.end
         frame()
       },
+      // the story ends on its own Apply, so the phone dock waits it out. A phone turned on its side
+      // and back makes this pin anew, after the triggers below it: refreshPriority has the pins
+      // measured first again, so everything under them counts their scroll
+      ...(phone
+        ? { anticipatePin: 1, refreshPriority: 1, onToggle: (self: ScrollTrigger) => holdDock('day', self.isActive) }
+        : {}),
     })
 
-    clockState.dayStart = st.start
-    clockState.dayEnd = st.end
+    // (made mid-resize, a trigger has no end until the refresh that follows; onRefresh fills it in)
+    if (Number.isFinite(st.end)) {
+      clockState.dayStart = st.start
+      clockState.dayEnd = st.end
+    }
     frame()
 
     return () => {
@@ -323,10 +383,21 @@ export function initDay() {
       chatLead.style.removeProperty('opacity')
       delete section.dataset.end
       delete section.dataset.tl
+      if (phone) {
+        section.classList.remove('day--story')
+        ink?.parentElement?.remove()
+        nodes = []
+        steps.forEach((s) => s.classList.remove('is-told'))
+        texts.forEach((el) => el.style.removeProperty('transform'))
+        holdDock('day', false)
+      }
     }
-  })
+  }
 
-  mm.add('(max-width: 899px), (prefers-reduced-motion: reduce)', () => {
+  mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', walk(false))
+  mm.add('(max-width: 899px) and (orientation: portrait) and (prefers-reduced-motion: no-preference)', walk(true))
+
+  mm.add('(max-width: 899px) and (orientation: landscape), (prefers-reduced-motion: reduce)', () => {
     const setBook = (i: number) => {
       if (i === current) return
       current = i

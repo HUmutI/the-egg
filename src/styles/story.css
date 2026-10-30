@@ -202,6 +202,15 @@
 .faq__item summary:hover .faq__mark {
   transform: rotate(-10deg);
 }
+/* touch: a tap would leave the egg tilted, so it tilts while pressed instead */
+@media (hover: none) {
+  .faq__item summary:hover .faq__mark {
+    transform: none;
+  }
+  .faq__item summary:active .faq__mark {
+    transform: rotate(-10deg) scale(0.92);
+  }
+}
 
 .faq__a {
   max-width: 62ch;
