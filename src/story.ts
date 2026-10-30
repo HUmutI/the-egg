@@ -137,7 +137,10 @@ export function initStatement() {
  * The house rules: when the list comes into view the four rules fade in one
  * after another, then "do not" gets struck out and the hand-written DO
  * appears above it. Played once, not scrubbed to the scroll. On phones the
- * four rules are taller than the screen, so each one plays as it arrives.
+ * four rules are taller than the screen, so each one plays as it arrives:
+ * it inks in as it comes up from under the dock (never a faint rule waiting
+ * at the foot of the screen), and the correction waits until the first rule
+ * is well in view.
  */
 export function initRules() {
   const section = $('#rules')
@@ -164,13 +167,14 @@ export function initRules() {
     })
     .add('(max-width: 860px)', () => {
       rules.forEach((rule, i) => {
-        const one = gsap.timeline({ paused: true })
-        one.to(lines[i], { opacity: 1, duration: 0.5, ease: 'power2.out' })
+        const ink = gsap.to(lines[i], { opacity: 1, duration: 0.5, ease: 'power2.out', paused: true })
+        ScrollTrigger.create({ trigger: rule, start: 'top bottom-=24px', once: true, onEnter: () => ink.play() })
         if (fix && rule.contains(fix)) {
-          one.to(fix, { '--s': 1, duration: 0.6, ease: 'power2.out' }, 0.35)
-          one.to(fix, { '--d': 1, duration: 0.5, ease: 'back.out(2.4)' }, 0.8)
+          const correct = gsap.timeline({ paused: true })
+          correct.to(fix, { '--s': 1, duration: 0.6, ease: 'power2.out' })
+          correct.to(fix, { '--d': 1, duration: 0.5, ease: 'back.out(2.4)' }, 0.45)
+          ScrollTrigger.create({ trigger: rule, start: 'top 72%', once: true, onEnter: () => correct.play() })
         }
-        ScrollTrigger.create({ trigger: rule, start: 'top 82%', once: true, onEnter: () => one.play() })
       })
     })
 }
