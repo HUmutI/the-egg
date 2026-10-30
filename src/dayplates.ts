@@ -35,6 +35,20 @@ export const STAIRS = 672
 export const K = { hero: 0.9, mate: 0.74 }
 /** Where the shell lands on the stage at the pop: [x, y of the piece's middle, turn]. */
 export const LANDED = { top: [650, 519, 172], bot: [490, 507, -8] } as const
+/**
+ * Phones frame each plate tighter (day.ts), so the cast can be drawn larger:
+ * whatever matters at a step stands between `frame`'s two x, a few props and
+ * notes standing a little further in than they do on a wide screen.
+ */
+export const PH = {
+  frame: [-8, 692] as const,
+  audience: [520, 615],
+  landed: { top: [590, 519, 172], bot: [490, 507, -8] } as const,
+  /** The metro, a step in, so its sign is whole when the camera follows the three there. */
+  stairs: STAIRS - 12,
+  /** Each plate's highest ink at rest: the step's copy stands just above it. */
+  top: [158, 148, 191, 205, 181, 44, 167],
+}
 /** The middle of each half of the shell, in the egg box. */
 export const PIECE = { top: [100, 78], bot: [100, 200] } as const
 
@@ -190,13 +204,15 @@ function heroAt(step: number) {
 }
 /** How cracked our egg's shell is by each step (4 is hatched). */
 const STAGE_OF = [0, 1, 1, 2, 3, 4, 4]
-function castAt(step: number) {
+function castAt(step: number, ph: boolean) {
+  const audience = ph ? PH.audience : AUDIENCE
+  const landed = ph ? PH.landed : LANDED
   const mates =
     step === 0
       ? ''
       : [1, 0]
           .map((k) => {
-            const x = step === 1 ? AUDIENCE[k] : MARK - FOLLOW[k]
+            const x = step === 1 ? audience[k] : MARK - FOLLOW[k]
             return `<g transform="${at(x, K.mate)}">${mateInner(k)}</g>`
           })
           .join('')
@@ -204,7 +220,7 @@ function castAt(step: number) {
     step === 5
       ? (['bot', 'top'] as const)
           .map((p) => {
-            const [x, y, r] = LANDED[p]
+            const [x, y, r] = landed[p]
             const [cx, cy] = PIECE[p]
             return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${K.hero}) translate(${-cx} ${-cy})">${shellPiece(p)}</g>`
           })
@@ -221,18 +237,19 @@ const doorLeaf = () => `
   ${line('M26 26 H194 V160 H26 Z M26 196 H194 V324 H26 Z', 2.2, 'opacity=".5"')}
   <circle cx="190" cy="186" r="7" fill="${I}"/>`
 
-/** 10:30 Doors: the door it arrives through, measured. */
-function doors() {
+/** 10:30 Doors: the door it arrives through, measured (on a phone, both ways: not to scale). */
+function doors(ph: boolean) {
   return `
     ${print('M232 600 V252 H448 V600 Z', PALETTE.sky, [232, 252, 216, 348], { outline: false, shade: 0.22 })}
     ${line('M230 600 V250 H450 V600', 4.4)}
     ${line('M212 600 V232 H468 V600', 2.4)}
     ${red('M494 250 V600 M484 250 h20 M484 600 h20')}
-    ${mono(522, 425, '2.10 m', T, 'text-anchor="middle" transform="rotate(-90 522 425)"')}`
+    ${mono(522, 425, '2.10 m', T, 'text-anchor="middle" transform="rotate(-90 522 425)"')}
+    ${ph ? `${red('M212 200 H468 M212 190 v20 M468 190 v20')}${mono(340, 180, '0.90 m', T, 'text-anchor="middle"')}` : ''}`
 }
 
 /** 11:00 Crack: a sixty-second pitch against the stopwatch, and the first hairline. */
-function crack() {
+function crack(ph: boolean) {
   const [cx, cy, r] = [...WATCH, 58]
   const ticks = Array.from({ length: 12 }, (_, i) => {
     const a = (i / 12) * Math.PI * 2
@@ -248,44 +265,52 @@ function crack() {
     ${mono(cx, cy + r + 38, '60 s', T, 'text-anchor="middle"')}
     <g class="here here--late">
       ${serif(394, 356, '¹', 40)}
-      ${serif(0, 74, tr ? '¹ kılcal çatlak. arkası gelecek.' : '¹ hairline crack. more to follow.', 27, `fill-opacity=".8"`)}
+      ${serif(ph ? 14 : 0, ph ? 168 : 74, tr ? '¹ kılcal çatlak. arkası gelecek.' : '¹ hairline crack. more to follow.', 27, `fill-opacity=".8"`)}
     </g>`
 }
 
 /** 11:30 Nest: the idea on the wall, and the team it gathered, circled. */
-function nest() {
+function nest(ph: boolean) {
   return `
-    <g transform="rotate(6 612 330)">
+    <g transform="${ph ? 'translate(0 -86) ' : ''}rotate(6 612 330)">
       ${print('M562 282 H662 V380 H562 Z', PALETTE.butter, [562, 282, 100, 98], { sw: 3.4 })}
       ${line('M578 310 H646 M578 330 H640 M578 350 H624', 2.2, 'opacity=".55"')}
     </g>
-    <g class="here">
+    <g class="here"${ph ? ' transform="translate(14 0)"' : ''}>
       ${red('M-30 452 C -30 332 90 282 220 284 C 360 286 456 350 452 456 C 448 560 340 612 206 610 C 70 608 -30 560 -30 452 Z', 2.2, 'stroke-dasharray="11 9"')}
       ${mono(14, 262, tr ? 'yuva (aşağı yukarı) · n = 3' : 'nest (approx.) · n = 3')}
     </g>`
 }
 
 /** 12:00 Incubate: one laptop, a progress bar that keeps resetting, and six hours, abridged. */
-function incubate() {
+function incubate(ph: boolean) {
   return `
+    ${ph ? '<g transform="translate(-26 0)">' : ''}
     ${rule(452, 468, 716, 468, 4.4)}
     ${line('M474 468 V600 M694 468 V600', 3.6)}
     ${print('M510 462 L524 352 L674 352 L664 462 Z', PALETTE.lav, [510, 352, 164, 110], { sw: 4 })}
     ${line('M488 462 H686 L692 470 H482 Z', 3)}
     <ellipse cx="594" cy="404" rx="11" ry="14" fill="${PALETTE.yolk}" stroke="${I}" stroke-width="2"/>
     <g class="here">
+      ${ph ? '<g transform="translate(0 -50)">' : ''}
       <rect x="484" y="290" width="200" height="16" fill="none" stroke="${T}" stroke-width="2.2"/>
       <rect class="bar__fill" x="487" y="293" width="194" height="10" fill="${T}"/>
       ${mono(484, 274, 'v0.3 · 100%', T, 'class="bar__label"')}
+      ${ph ? '</g>' : ''}
     </g>
+    ${ph ? '</g>' : ''}
     <rect x="772" y="586" width="16" height="32" style="fill: var(--page)"/>
     ${line('M764 620 L778 582 M782 620 L796 582', 2.6)}
     ${mono(714, 566, tr ? '≈ 6 sa' : '≈ 6 h', I, 'fill-opacity=".72"')}`
 }
 
-/** 18:00 Pizza: box one of twelve, and the pineapple question, still open. */
-function pizza() {
-  const [cx, cy, rx, ry] = [618, 543, 116, 46]
+/**
+ * 18:00 Pizza: box one of twelve, and the pineapple question, still open.
+ * (A phone has the box a step closer, and the question up in the air.)
+ */
+function pizza(ph: boolean) {
+  const dx = ph ? -76 : 0
+  const [cx, cy, rx, ry] = [618 + dx, 543, 116, 46]
   const slices = [0, 1, 2, 3, 4, 5, 6, 7]
     .map((i) => {
       const a = (i / 8) * Math.PI * 2 + 0.3
@@ -300,56 +325,61 @@ function pizza() {
     [624, 518],
     [548, 556],
   ]
-    .map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="10" ry="6" fill="${T}"/>`)
+    .map(([x, y]) => `<ellipse cx="${x + dx}" cy="${y}" rx="10" ry="6" fill="${T}"/>`)
     .join('')
+  const [lead, end, y] = ph ? ['M578 538 L614 242 H664', 664, 200] : ['M654 540 L680 470 H796', 796, 428]
   return `
-    ${print('M470 600 L766 600 L734 486 L502 486 Z', PALETTE.cream, [470, 486, 296, 114], { sw: 4 })}
+    ${print(`M${470 + dx} 600 L${766 + dx} 600 L${734 + dx} 486 L${502 + dx} 486 Z`, PALETTE.cream, [470 + dx, 486, 296, 114], { sw: 4 })}
     ${print(`M${cx - rx} ${cy} a${rx} ${ry} 0 1 0 ${2 * rx} 0 a${rx} ${ry} 0 1 0 ${-2 * rx} 0 Z`, '#f6cf7a', [cx - rx, cy - ry, 2 * rx, 2 * ry], { sw: 3.4, off: [5, 4] })}
     <path d="${slices}" stroke="${I}" stroke-width="2" opacity=".5"/>
     ${tops}
-    <path d="M640 552 l14 -17 l10 19 Z" fill="${PALETTE.yolk}" stroke="${I}" stroke-width="2.2"/>
-    ${red('M654 540 L680 470 H796')}
-    ${mono(796, 428, tr ? 'ananas' : 'pineapple', T, 'text-anchor="end"')}
-    ${mono(796, 456, tr ? '(tartışmalı)' : '(disputed)', T, 'text-anchor="end"')}`
+    <path d="M${640 + dx} 552 l14 -17 l10 19 Z" fill="${PALETTE.yolk}" stroke="${I}" stroke-width="2.2"/>
+    ${red(lead)}
+    ${mono(end, y, tr ? 'ananas' : 'pineapple', T, 'text-anchor="end"')}
+    ${mono(end, y + 28, tr ? '(tartışmalı)' : '(disputed)', T, 'text-anchor="end"')}`
 }
 
-/** 19:00 Hatch: a stage, a lamp, and a status report. */
-function hatch() {
+/** 19:00 Hatch: a stage, a lamp, and a status report (on a phone, up beside the lamp). */
+function hatch(ph: boolean) {
   return `
-    ${rule(340, 8, 340, 96, 2.6)}
+    ${rule(340, ph ? 44 : 8, 340, 96, 2.6)}
     ${print('M318 96 H362 L378 124 H302 Z', PALETTE.cream, [302, 96, 76, 28], { shade: 0, sw: 3.4 })}
     <polygon class="here" points="308,128 372,128 478,566 202,566" fill="${PALETTE.butter}" opacity=".8"/>
     ${print(`M${STAGE.l} 600 V${600 - STAGE.h} H${STAGE.r} V600 Z`, '#cbc0ea', [STAGE.l, 600 - STAGE.h, STAGE.r - STAGE.l, STAGE.h], { sw: 4 })}
     <g class="here here--late">
       ${red('M340 270 V528 M198 398 H482')}
       <circle cx="340" cy="398" r="118" fill="none" stroke="${T}" stroke-width="2.2"/>
+      ${ph ? '<g transform="translate(-110 -80)">' : ''}
       ${mono(494, 296, tr ? 'durum: çalışıyor*' : 'status: working*')}
       ${serif(494, 332, tr ? '* iddialı ama bozuk' : '* ambitious and broken', 25, `fill-opacity=".8"`)}
       ${serif(494, 362, tr ? 'olması da sayılır.' : 'also counts.', 25, `fill-opacity=".8"`)}
+      ${ph ? '</g>' : ''}
       ${red('M176 352 l-12 -14 M195 344 v-18 M214 352 l12 -14 M46 372 l-12 -14 M65 364 v-18 M84 372 l12 -14', 2.6)}
     </g>`
 }
 
 /** 20:00 Afterglow: the metro home, and a group chat that carries on without them. */
-function afterglow() {
+function afterglow(ph: boolean) {
+  const at = ph ? PH.stairs : STAIRS
+  const m = at + 90
   return `
-    ${metroEntrance()}
-    ${rule(762, 600, 762, 340, 4.4)}
-    ${print(circle(762, 300, 40), PALETTE.cream, [722, 260, 80, 80])}
-    <text x="762" y="317" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="46" fill="${I}">M</text>
-    ${print('M718 352 H806 V384 H718 Z', PALETTE.cream, [718, 352, 88, 32], { shade: 0, sw: 3 })}
-    <text x="762" y="376" text-anchor="middle" ${MONO} font-size="19" fill="${I}">ODTÜ</text>
+    ${metroEntrance(at)}
+    ${rule(m, 600, m, 340, 4.4)}
+    ${print(circle(m, 300, 40), PALETTE.cream, [m - 40, 260, 80, 80])}
+    <text x="${m}" y="317" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="46" fill="${I}">M</text>
+    ${print(`M${m - 44} 352 H${m + 44} V384 H${m - 44} Z`, PALETTE.cream, [m - 44, 352, 88, 32], { shade: 0, sw: 3 })}
+    <text x="${m}" y="376" text-anchor="middle" ${MONO} font-size="19" fill="${I}">ODTÜ</text>
     <g class="here chat">
-      ${red('M386 330 L412 262', 2.2, 'class="chat__lead"')}
-      ${mono(420, 240, tr ? 'grup sohbeti' : 'group chat', T)}
-      ${mono(420, 270, tr ? '214 okunmamış' : '214 unread', T, 'class="chat__n"')}
+      ${red(ph ? 'M386 330 L412 208' : 'M386 330 L412 262', 2.2, 'class="chat__lead"')}
+      ${mono(420, ph ? 186 : 240, tr ? 'grup sohbeti' : 'group chat', T)}
+      ${mono(420, ph ? 216 : 270, tr ? '214 okunmamış' : '214 unread', T, 'class="chat__n"')}
     </g>`
 }
 
 /** The metro entrance the three walk into: a canopy on two posts over the steps down into the dark. */
-function metroEntrance() {
-  const x0 = STAIRS - 72
-  const x1 = STAIRS + 72
+function metroEntrance(at: number) {
+  const x0 = at - 72
+  const x1 = at + 72
   const top = 340
   // the steps' nosings, catching the light as they go down
   const steps = Array.from({ length: 8 }, (_, k) => {
@@ -365,9 +395,16 @@ function metroEntrance() {
     ${print(`M${x0 - 16} ${top} H${x1 + 16} L${x1 + 4} ${top - 24} H${x0 - 4} Z`, PALETTE.cream, [x0 - 16, top - 24, x1 - x0 + 32, 24], { sw: 3.8 })}`
 }
 
-const PLATES = [doors, crack, nest, incubate, pizza, hatch, afterglow]
+const PLATES: ((ph: boolean) => string)[] = [doors, crack, nest, incubate, pizza, hatch, afterglow]
 
-/** One step's plate: its props and notes, and (for the vertical programme) the cast as it is then. */
-export function plateSvg(step: number) {
-  return `<svg viewBox="0 0 ${PLATE} 600" aria-hidden="true" focusable="false">${PLATES[step]()}${castAt(step)}</svg>`
+/**
+ * One step's plate: its props and notes, and (for the vertical programme) the
+ * cast as it is then. `ph`: drawn for the phone story's tighter frame (PH);
+ * `crop`: and cut to that frame, from just over its highest ink to the floor.
+ */
+export function plateSvg(step: number, ph = false, crop = false) {
+  const [l, r] = PH.frame
+  const top = PH.top[step] - 12
+  const box = crop ? `${l} ${top} ${r - l} ${GROUND - top}` : `0 0 ${PLATE} 600`
+  return `<svg viewBox="${box}" aria-hidden="true" focusable="false">${PLATES[step](ph)}${castAt(step, ph)}</svg>`
 }

@@ -49,6 +49,15 @@ export function initPortal() {
   // The cabinet rises straight out of the footer: it starts as soon as the
   // stage comes up, has settled by ~70% of the way, and the last stretch is
   // a short hold before the game goes live — no screen of empty night.
+  // On a phone the screen is a cabinet tall, so rising from below its middle
+  // left a band of night under the footer: there it comes up just under the
+  // footer's last line and rides down into the middle as the night reaches
+  // the top (measured on every refresh).
+  const narrow = matchMedia('(max-width: 700px)')
+  let rides = narrow.matches
+  ScrollTrigger.addEventListener('refreshInit', () => (rides = narrow.matches))
+  const settle = gsap.parseEase('power3.out')
+  const ride = gsap.parseEase('power2.in')
   const reveal = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
   if (reduce) {
     reveal.set(stage, { '--r': '150%' }).set(cabinet, { opacity: 1 })
@@ -57,8 +66,15 @@ export function initPortal() {
       .fromTo(stage, { '--r': '0%' }, { '--r': '150%', duration: 0.4, ease: 'power2.in' }, 0)
       .fromTo(
         cabinet,
-        { opacity: 0, y: 90, scale: 0.86, rotateX: 18 },
-        { opacity: 1, y: 0, scale: 1, rotateX: 0, duration: 0.55, ease: 'power3.out' },
+        { opacity: 0, scale: 0.86, rotateX: 18 },
+        { opacity: 1, scale: 1, rotateX: 0, duration: 0.55, ease: 'power3.out' },
+        0.05,
+      )
+      .fromTo(
+        cabinet,
+        { y: () => (rides ? Math.min(90, 24 - cabinet.offsetTop) : 90) },
+        // (riding, it has settled by the time the night reaches the top: 0.53 of 0.85, as 100 of 160svh)
+        { y: 0, duration: 0.55, ease: (t: number) => (rides ? ride(Math.min(1, t / 0.87)) : settle(t)) },
         0.05,
       )
       .to({}, { duration: 0.25 })
@@ -70,6 +86,7 @@ export function initPortal() {
     end: 'bottom bottom',
     scrub: reduce ? true : 0.25,
     animation: reveal,
+    invalidateOnRefresh: true,
     onUpdate: (self) => setMode(self.progress > 0.85 ? 'live' : self.progress > 0.12 ? 'preview' : 'off'),
     onLeaveBack: () => setMode('off'),
   })

@@ -10,6 +10,7 @@ import {
   K,
   LANDED,
   MARK,
+  PH,
   PIECE,
   PLATE,
   STAGE,
@@ -73,6 +74,22 @@ const build = (d: number): [number, number] => {
   return [3, band(d, 0.75, 0.95)]
 }
 
+/**
+ * The plates as the wide layouts draw them, framed for the phone story, or
+ * framed so and cut to their ink for a narrow vertical programme. Drawn again
+ * only when the layout needs another kind (renderDay draws the wide ones).
+ */
+type Plates = 'wide' | 'phone' | 'crop'
+let drawn: Plates = 'wide'
+const drawPlates = (kind: Plates) => {
+  if (kind === drawn) return
+  drawn = kind
+  $$<HTMLElement>('#day .step__fig').forEach((fig, i) => (fig.innerHTML = plateSvg(i, kind !== 'wide', kind === 'crop')))
+}
+
+/** Air the phone story keeps at least above and below the step's copy. */
+const AIR = 22
+
 /** Draw the plates and the cast. Runs before anything measures the page. */
 export function renderDay() {
   installDayDefs()
@@ -93,9 +110,13 @@ export function renderDay() {
  * into the club's golden egg; then the three take the metro home and the
  * programme hands over to Apply. Phones held upright get the same walk, one
  * plate to a screen: the stage under the nav pins (with the heading, on a
- * screen tall enough to hold both), the plates slide past as the egg walks, a row of seven eggs keeps the programme, and the copy
- * changes with each step. Phones on their side, and reduced motion, read it
- * top to bottom, each plate drawn with the cast as it is at that hour.
+ * screen tall enough to hold both), a row of seven eggs keeps the programme,
+ * and the camera stays with the egg, framed close (PH) so the cast is drawn
+ * as large as the screen allows. Each step's copy stands just over its plate,
+ * and changes as the egg walks on; at the end the three go down to the metro
+ * with the camera, and Apply is written on the empty floor. Phones on their
+ * side, and reduced motion, read it top to bottom, each plate drawn with the
+ * cast as it is at that hour.
  */
 export function initDay() {
   const section = $('#day')
@@ -130,13 +151,20 @@ export function initDay() {
     let ink: HTMLElement | null = null
     /** The phone story's row of seven eggs. */
     let nodes: HTMLElement[] = []
-    /** Phones: what pins, and (when the screen is short for the plate) how wide the plate can be. */
+    /** Phones: what pins; then where the camera stands in a plate (its left edge, in plate units). */
     const box = tall ? $('.day__pin', section) : viewport
-    let fitCol = () => {}
+    if (!phone) drawPlates('wide')
+    let fit = () => {}
+    let cam = 0
+    let camHome = 0
+    const texts = phone ? steps.map((s) => $('.step__text', s)) : []
+    const bye = $('.day__end', track)
     if (phone) {
-      // the stage takes its phone shape before anything measures it
+      // the stage takes its phone shape, and the plates their phone framing, before anything measures them
       section.classList.add('day--story')
       section.classList.toggle('day--tall', tall)
+      drawPlates('phone')
+      steps.forEach((s, k) => s.style.setProperty('--top', String(PH.top[k])))
       const ticker = document.createElement('div')
       ticker.className = 'day__ticker'
       ticker.setAttribute('aria-hidden', 'true')
@@ -147,21 +175,31 @@ export function initDay() {
       ink = $<HTMLElement>('.ticker__ink', ticker)
       nodes = $$<HTMLElement>('.ticker__node', ticker)
       nodes[5]?.classList.add('is-hatch')
-      // The plate is as wide as the page unless the pinned box is too short for it under the
-      // heading, the programme and the tallest copy: then it narrows until they all fit, with a
-      // little air. The copy reads across the page whatever the plate's width, so one pass does.
-      const head = $('.day__head', section)
-      const px = (el: Element, prop: 'paddingTop' | 'paddingBottom') => parseFloat(getComputedStyle(el)[prop]) || 0
-      fitCol = () => {
-        section.style.removeProperty('--col')
-        const stage = track.getBoundingClientRect().bottom - ticker.getBoundingClientRect().top
-        const need = (tall ? head.offsetHeight : 0) + px(viewport, 'paddingTop') + stage + px(viewport, 'paddingBottom') + px(box, 'paddingTop') + px(box, 'paddingBottom') + 16
-        const over = need - box.clientHeight
-        if (over > 0) section.style.setProperty('--col', `${Math.max(200, steps[0].offsetWidth - over * (4 / 3)).toFixed(1)}px`)
+      // The camera frames PH.frame of each plate across the screen, unless the stage is too short
+      // for a plate that large under its copy: then the plate is drawn smaller (and more of it shows),
+      // until every step's copy, with air above and below, and its plate down from its highest ink
+      // fit the height under the programme. The copy reads across the page whatever the plate's
+      // scale, so one pass does. (--s is the scale, px to a plate unit; --col a plate's width.)
+      const [left, right] = PH.frame
+      fit = () => {
+        const w = viewport.clientWidth
+        const room = track.clientHeight - (parseFloat(getComputedStyle(track).paddingBottom) || 0)
+        let k = w / (right - left)
+        texts.forEach((t, i) => (k = Math.min(k, (room - t.offsetHeight - 2 * AIR) / (GROUND - PH.top[i]))))
+        k = Math.max(k, 0.2)
+        const span = w / k
+        cam = (left + right) / 2 - span / 2
+        // on the way home it goes with the three towards the metro, as far as the last plate goes
+        camHome = clamp(PLATE - span, cam, cam + 120)
+        section.style.setProperty('--s', k.toFixed(4))
+        section.style.setProperty('--col', `${(PLATE * k).toFixed(2)}px`)
       }
-      fitCol()
-      ScrollTrigger.addEventListener('refreshInit', fitCol)
+      fit()
+      ScrollTrigger.addEventListener('refreshInit', fit)
     }
+    const audience = phone ? PH.audience : AUDIENCE
+    const landed = phone ? PH.landed : LANDED
+    const stairs = phone ? PH.stairs : STAIRS
     const q = <T extends Element>(sel: string, el: ParentNode = cast) => el.querySelector<T>(sel)!
     const member = (id: string) => {
       const el = q<SVGGElement>('#' + id)
@@ -224,7 +262,7 @@ export function initDay() {
       const w = band(d, start, start + 0.2)
       const down = band(d, start + 0.2, start + 0.32)
       return {
-        x: lerp(from, PLATE * last + STAIRS, easeInOut(w)) + down * 40,
+        x: lerp(from, PLATE * last + stairs, easeInOut(w)) + down * 40,
         sink: easeIn(down) * 340,
         a: Math.max(stride(w), down > 0 && down < 1 ? 1 : 0),
       }
@@ -236,7 +274,6 @@ export function initDay() {
     /** Phones: the column's width, measured on refresh rather than on every frame. */
     let col = phone ? steps[0].offsetWidth : 0
     let told = -1
-    const texts = phone ? steps.map((s) => $('.step__text', s)) : []
     const frame = () => {
       const colW = phone ? col : steps[0].offsetWidth
       const pos = story.pos
@@ -252,14 +289,17 @@ export function initDay() {
 
       // the camera keeps the egg's plate in the first column, until the last walk: then it holds,
       // so the day ends on Hatch, Afterglow and the way to Apply; the programme line inks up to the egg.
-      // A phone shows one plate, so its camera stays with the egg all the way, and the row of eggs
-      // above the stage inks up instead; the copy holds its place while the plates slide under it,
-      // and changes halfway through each walk.
-      gsap.set(track, { x: -(phone ? pos : Math.min(pos, last - 1)) * colW })
+      // A phone shows one plate, so its camera stays with the egg all the way (and goes with the
+      // three towards the metro at the end), and the row of eggs above the stage inks up instead;
+      // the copy holds its place while the plates slide under it, and changes halfway through each walk.
+      const home = state === last && here
+      const camX = phone ? (colW / PLATE) * lerp(cam, camHome, home ? easeInOut(band(d, LEAVE[0], LEAVE[0] + 0.3)) : 0) : 0
+      gsap.set(track, { x: phone ? -(pos * colW + camX) : -Math.min(pos, last - 1) * colW })
       const along = MARK + PLATE * pos
       if (ink) {
         ink.style.transform = `scaleX(${(pos / last).toFixed(4)})`
-        texts.forEach((el, k) => (el.style.transform = `translate3d(${((pos - k) * colW).toFixed(1)}px, 0, 0)`))
+        texts.forEach((el, k) => (el.style.transform = `translate3d(${((pos - k) * colW + camX).toFixed(1)}px, 0, 0)`))
+        bye.style.transform = `translate3d(${((pos - last) * colW + camX).toFixed(1)}px, 0, 0)`
         const near = Math.round(pos)
         if (near !== told) {
           told = near
@@ -273,10 +313,9 @@ export function initDay() {
 
       // our egg, and the two who stand listening at Crack until it walks past, then fall in behind it
       const walking = here ? 0 : Math.sin(Math.PI * t)
-      const home = state === last && here
       const ours = home ? homeward(d, along, LEAVE[0]) : { x: along, sink: 0, a: walking }
       mates.forEach((m, k) => {
-        const stand = PLATE + AUDIENCE[k]
+        const stand = PLATE + audience[k]
         const behind = along - FOLLOW[k]
         let x = Math.max(stand, behind)
         let sink = 0
@@ -301,7 +340,7 @@ export function initDay() {
         if (!popped) return el.setAttribute('transform', heroTf)
         const f = hatching ? band(d, POP, POP + (p === 'top' ? 0.22 : 0.12)) : 1
         const [cx, cy] = PIECE[p]
-        const [lx, ly, lr] = LANDED[p]
+        const [lx, ly, lr] = landed[p]
         const x0 = PLATE * 5 + MARK + (cx - 100) * K.hero
         const y0 = GROUND - STAGE.h - (330 - cy) * K.hero
         const x = lerp(x0, PLATE * 5 + lx, f)
@@ -405,13 +444,18 @@ export function initDay() {
       delete section.dataset.end
       delete section.dataset.tl
       if (phone) {
-        ScrollTrigger.removeEventListener('refreshInit', fitCol)
+        ScrollTrigger.removeEventListener('refreshInit', fit)
         section.classList.remove('day--story', 'day--tall')
         section.style.removeProperty('--col')
+        section.style.removeProperty('--s')
         ink?.parentElement?.remove()
         nodes = []
-        steps.forEach((s) => s.classList.remove('is-told'))
+        steps.forEach((s) => {
+          s.classList.remove('is-told')
+          s.style.removeProperty('--top')
+        })
         texts.forEach((el) => el.style.removeProperty('transform'))
+        bye.style.removeProperty('transform')
         holdDock('day', false)
       }
     }
@@ -422,7 +466,14 @@ export function initDay() {
   mm.add('(max-width: 899px) and (orientation: portrait) and (min-height: 720px) and (prefers-reduced-motion: no-preference)', walk(true, true))
   mm.add('(max-width: 899px) and (orientation: portrait) and (max-height: 719.98px) and (prefers-reduced-motion: no-preference)', walk(true))
 
-  mm.add('(max-width: 899px) and (orientation: landscape), (prefers-reduced-motion: reduce)', () => {
+  /**
+   * The vertical programme: phones on their side, and reduced motion. Narrower than the wide
+   * layout (`narrow`), each plate is the phone story's, framed close and cut to its own ink, so the
+   * copy and its picture read together with no empty sky between them.
+   */
+  const book = (narrow: boolean) => () => {
+    drawPlates(narrow ? 'crop' : 'wide')
+    section.classList.toggle('day--crop', narrow)
     const setBook = (i: number) => {
       if (i === current) return
       current = i
@@ -461,6 +512,9 @@ export function initDay() {
       current = -1
       triggers.forEach((t) => t.kill())
       range.kill()
+      section.classList.remove('day--crop')
     }
-  })
+  }
+  mm.add('(max-width: 899px) and (orientation: landscape), (max-width: 899px) and (prefers-reduced-motion: reduce)', book(true))
+  mm.add('(min-width: 900px) and (prefers-reduced-motion: reduce)', book(false))
 }
