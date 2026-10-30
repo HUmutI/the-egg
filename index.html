@@ -763,9 +763,10 @@
     <footer class="foot" id="foot" data-bg="night">
       <div class="foot__scene">
         <picture>
-          <!-- phones: the rooftop without its empty band of sky, shown taller (main.css) -->
-          <source media="(max-width: 700px)" type="image/avif" srcset="/footer/rooftop-night-phone-2007.avif" width="2007" height="683" />
-          <source media="(max-width: 700px)" type="image/webp" srcset="/footer/rooftop-night-phone-2007.webp" width="2007" height="683" />
+          <!-- phones: the rooftop painted for an upright screen (4:5), the moon and the skyline over the party.
+               1200w is the painting's own resolution (a 390px phone at 3x needs 1170); 900w serves 2x phones -->
+          <source media="(max-width: 700px)" type="image/avif" srcset="/footer/rooftop-night-phone-600.avif 600w, /footer/rooftop-night-phone-900.avif 900w, /footer/rooftop-night-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1500" />
+          <source media="(max-width: 700px)" type="image/webp" srcset="/footer/rooftop-night-phone-600.webp 600w, /footer/rooftop-night-phone-900.webp 900w, /footer/rooftop-night-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1500" />
           <source type="image/avif" srcset="/footer/rooftop-night-1200.avif 1200w, /footer/rooftop-night-2007.avif 2007w" sizes="100vw" />
           <source type="image/webp" srcset="/footer/rooftop-night-1200.webp 1200w, /footer/rooftop-night-2007.webp 2007w" sizes="100vw" />
           <img
