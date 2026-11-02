@@ -8,7 +8,6 @@ import { initSky } from './sky'
 import { initReveals, initRules, initStatement } from './story'
 import { initDay, renderDay } from './day'
 import { initFlock } from './flock'
-import { initPortal } from './portal'
 import { initNextSunday } from './next'
 import { initShare } from './share'
 import { installInkDefs } from './riso'
@@ -40,7 +39,6 @@ const start = () => {
   initDay()
   initFlock()
   initRules()
-  initPortal()
   initPhone()
   // The sky (background colour + club clock) reads positions set up by the
   // sections above, so it goes last.
@@ -52,7 +50,33 @@ const start = () => {
 Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]).then(() => {
   start()
   ScrollTrigger.refresh()
+  loadPortal()
 })
+
+// The night-shift game (and the portal that opens onto it) lives past the
+// footer, so it is its own chunk: fetched once the page is idle, or sooner
+// if the reader is already heading down there. Its triggers sit below every
+// other one, so a refresh once it's in is all the page needs.
+function loadPortal() {
+  const portal = document.getElementById('portal')
+  if (!portal) return
+  let requested = false
+  const load = () => {
+    if (requested) return
+    requested = true
+    io.disconnect()
+    import('./portal').then(({ initPortal }) => {
+      initPortal()
+      ScrollTrigger.refresh()
+    })
+  }
+  const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && load(), {
+    rootMargin: '150% 0px',
+  })
+  io.observe(document.getElementById('foot') ?? portal)
+  if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 4000 })
+  else setTimeout(load, 2500)
+}
 
 // Anything that changes height after load (an FAQ answer opening, the
 // next-Sunday lines arriving from the app) moves every trigger below it, so
