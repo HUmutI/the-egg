@@ -82,12 +82,20 @@ export function initSky() {
   const sun = $<SVGCircleElement>('.clock__sun')
   const foot = $('#foot')
 
+  // The page's length and where the footer starts, measured on each refresh rather than
+  // read on every scroll frame (a read there forces a layout after the day's tweens wrote).
+  let max = 0
+  let footTop = 0
+  const measure = () => {
+    max = document.documentElement.scrollHeight - innerHeight
+    footTop = foot.offsetTop - innerHeight * 0.6
+  }
+  measure()
+
   const minutesAt = (y: number) => {
     if (clockState.dayMinutes !== null && y >= clockState.dayStart && y <= clockState.dayEnd) {
       return clockState.dayMinutes
     }
-    const max = document.documentElement.scrollHeight - innerHeight
-    const footTop = foot.offsetTop - innerHeight * 0.6
     const keys: [number, number][] = [
       [0, 10 * 60 + 10],
       [Math.max(1, clockState.dayStart), 10 * 60 + 30],
@@ -142,7 +150,10 @@ export function initSky() {
     },
     { passive: true },
   )
-  ScrollTrigger.addEventListener('refresh', render)
+  ScrollTrigger.addEventListener('refresh', () => {
+    measure()
+    render()
+  })
   clockState.onChange = render
   render()
 }

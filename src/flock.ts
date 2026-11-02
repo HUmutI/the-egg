@@ -130,6 +130,9 @@ export function initFlock() {
         moved = true
         el.classList.add('is-dragging')
         el.classList.remove('is-talking')
+        // its own layer while it's pulled about: the inked lines are filtered, and
+        // moving them as a picture beats repainting the wobble on every pointer move
+        art.style.willChange = 'transform'
       }
       // a rubber band: the further you pull, the harder it resists
       const k = (v: number) => Math.sign(v) * Math.pow(Math.abs(v), 0.82)
@@ -142,7 +145,15 @@ export function initFlock() {
       el.classList.remove('is-dragging')
       if (moved) {
         el.dataset.dragged = '1'
-        gsap.to(art, { x: 0, y: 0, rotation: 0, duration: 1.1, ease: 'elastic.out(1.1, 0.32)' })
+        gsap.to(art, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          duration: 1.1,
+          ease: 'elastic.out(1.1, 0.32)',
+          // settled, it's printed again at full sharpness
+          onComplete: () => art.style.removeProperty('will-change'),
+        })
         setTimeout(() => (el.dataset.dragged = ''), 50)
       }
     }

@@ -3893,6 +3893,10 @@ body.is-arcade .nav > * {
     transform 0.4s var(--ease-out),
     opacity 0.25s var(--ease-out);
 }
+/* nobody sees the pulse or the blink while it's tucked away */
+.live-badge.is-away:not(:focus-visible) * {
+  animation-play-state: paused;
+}
 .live-badge:focus-visible {
   opacity: 1;
   transform: none;
@@ -4108,4 +4112,14 @@ body.is-arcade .nav > * {
     padding-top: var(--sec-y);
     padding-bottom: var(--sec-y);
   }
+}
+
+/* A section off screen (util.ts sleepOffscreen) holds its loops still: an
+   infinite animation restyles, and on SVG re-lays out and repaints, every
+   frame even out of sight. Paused, it resumes where it stopped. */
+.is-asleep,
+.is-asleep *,
+.is-asleep *::before,
+.is-asleep *::after {
+  animation-play-state: paused !important;
 }

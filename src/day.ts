@@ -271,11 +271,11 @@ export function initDay() {
     let lastStage = ''
     let lastLabel = ''
     let lastChat = ''
-    /** Phones: the column's width, measured on refresh rather than on every frame. */
-    let col = phone ? steps[0].offsetWidth : 0
+    /** The column's width, measured on refresh rather than on every frame. */
+    let col = steps[0].offsetWidth
     let told = -1
     const frame = () => {
-      const colW = phone ? col : steps[0].offsetWidth
+      const colW = col
       const pos = story.pos
       const state = Math.min(Math.floor(pos + 1e-4), last)
       const t = Math.max(0, pos - state)
@@ -411,7 +411,7 @@ export function initDay() {
       invalidateOnRefresh: true,
       animation: tl,
       onRefresh: (self) => {
-        if (phone) col = steps[0].offsetWidth
+        col = steps[0].offsetWidth
         clockState.dayStart = self.start
         clockState.dayEnd = self.end
         frame()

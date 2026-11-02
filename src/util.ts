@@ -38,3 +38,20 @@ export const clockState = {
   dayMinutes: null as number | null,
   onChange: () => {},
 }
+
+/**
+ * Parts of the page sleep while they're off screen: `.is-asleep` pauses every
+ * CSS animation inside (main.css). An infinite loop keeps restyling (and, on
+ * SVG, re-laying out and repainting under the wobble filter) on every frame
+ * even where nobody can see it, so the twinkles, blinks and flickers only run
+ * near the viewport. A paused loop picks up where it stopped, so waking shows
+ * no jump.
+ */
+export function sleepOffscreen(els: Element[]) {
+  if (!('IntersectionObserver' in window)) return
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.target.classList.toggle('is-asleep', !e.isIntersecting)),
+    { rootMargin: '120px 0px' },
+  )
+  els.forEach((el) => io.observe(el))
+}

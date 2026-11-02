@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, reducedMotion } from './util'
+import { $, $$, reducedMotion, sleepOffscreen } from './util'
 
 /** Fade-ups, the hand-drawn strikethroughs and the first-rule correction. */
 export function initReveals() {
@@ -16,6 +16,8 @@ export function initReveals() {
     { threshold: 0.2, rootMargin: '0px 0px -8% 0px' },
   )
   $$('.reveal, .strikes').forEach((el) => io.observe(el))
+  // every section's loops (and the arcade's flicker) rest while it's off screen
+  sleepOffscreen($$('[data-bg], #portal'))
 }
 
 /**
