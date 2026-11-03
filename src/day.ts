@@ -108,7 +108,12 @@ export function initDay() {
   const last = steps.length - 1
 
   let current = -1
+  /** The programme's marks as last set, so a frame that changes nothing touches nothing. */
+  let marked = ''
   const markStep = (i: number, here: boolean, late: boolean) => {
+    const key = `${i} ${here} ${late}`
+    if (key === marked) return
+    marked = key
     steps.forEach((s, k) => {
       s.classList.toggle('is-now', k === i)
       s.classList.toggle('is-past', k < i)
@@ -183,7 +188,7 @@ export function initDay() {
     const q = <T extends Element>(sel: string, el: ParentNode = cast) => el.querySelector<T>(sel)!
     const member = (id: string) => {
       const el = q<SVGGElement>('#' + id)
-      return { el, l: q<SVGPathElement>('.leg--l', el), r: q<SVGPathElement>('.leg--r', el) }
+      return { el, l: q<SVGPathElement>('.leg--l', el), r: q<SVGPathElement>('.leg--r', el), tf: '', sw: '' }
     }
     const hero = member('walker')
     const mates = [member('mateA'), member('mateB')]
@@ -230,10 +235,14 @@ export function initDay() {
       const bob = -Math.abs(Math.sin(ph)) * 8 * a
       const rot = Math.sin(ph) * 4 * a + tilt
       const tf = `translate(${x.toFixed(1)} ${(GROUND - groundAt(x) + sink + bob).toFixed(1)}) rotate(${rot.toFixed(2)}) scale(${k}) translate(-100 -330)`
-      m.el.setAttribute('transform', tf)
-      const sw = Math.sin(ph * 2) * 18 * a
-      m.l.setAttribute('transform', `rotate(${sw.toFixed(2)} 82 246)`)
-      m.r.setAttribute('transform', `rotate(${(-sw).toFixed(2)} 118 246)`)
+      // (while it stands, nothing changes, so nothing is written)
+      if (tf !== m.tf) m.el.setAttribute('transform', (m.tf = tf))
+      const sw = (Math.sin(ph * 2) * 18 * a).toFixed(2)
+      if (sw !== m.sw) {
+        m.sw = sw
+        m.l.setAttribute('transform', `rotate(${sw} 82 246)`)
+        m.r.setAttribute('transform', `rotate(${(-sw).toFixed(2)} 118 246)`)
+      }
       return tf
     }
 
@@ -254,6 +263,7 @@ export function initDay() {
     /** The column's width, measured on refresh rather than on every frame. */
     let col = steps[0].offsetWidth
     let told = -1
+    const setX = gsap.quickSetter(track, 'x', 'px') as (x: number) => void
     const frame = () => {
       const colW = col
       const pos = story.pos
@@ -274,7 +284,7 @@ export function initDay() {
       // the copy holds its place while the plates slide under it, and changes halfway through each walk.
       const home = state === last && here
       const camX = phone ? (colW / PLATE) * lerp(cam, camHome, home ? easeInOut(band(d, LEAVE[0], LEAVE[0] + 0.3)) : 0) : 0
-      gsap.set(track, { x: phone ? -(pos * colW + camX) : -Math.min(pos, last - 1) * colW })
+      setX(phone ? -(pos * colW + camX) : -Math.min(pos, last - 1) * colW)
       const along = MARK + PLATE * pos
       if (ink) {
         ink.style.transform = `scaleX(${(pos / last).toFixed(4)})`
@@ -414,6 +424,7 @@ export function initDay() {
     return () => {
       clockState.dayMinutes = null
       current = -1
+      marked = ''
       gsap.set(track, { clearProps: 'transform' })
       progress.style.removeProperty('transform')
       hand.setAttribute('transform', rest.hand)
@@ -492,6 +503,7 @@ export function initDay() {
     return () => {
       clockState.dayMinutes = null
       current = -1
+      marked = ''
       triggers.forEach((t) => t.kill())
       range.kill()
       section.classList.remove('day--crop')
