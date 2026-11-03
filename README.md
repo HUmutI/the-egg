@@ -76,6 +76,27 @@ The first screen needs no scroll machinery, so the page arrives in three parts:
   first scroll, touch or key (or after a long idle, or when the footer is
   near), and its refresh waits for the scroll to stop.
 
+While you scroll, a phone has about 16 ms a frame, and ScrollTrigger reads
+the scroll position at the start of each one, which makes the browser
+restyle at once anything changed since the last frame. So the page changes
+little per frame, and nothing changes in a way that spreads:
+
+- A section off screen sleeps (`.is-asleep`, `src/util.ts`), and its loops
+  pause. The rule in `main.css` names each thing that animates; an
+  animation added to a section goes in that list. (With `*` there, every
+  sleep and wake restyled the whole section.) While the day sleeps, its
+  programme's eggs take the sky's colour at once instead of fading to it.
+- No rule ends in `> *` or a `[class…]` match behind a class that changes
+  at runtime: either makes each change of that class restyle everything
+  under the element. Name the children instead (the flock's moving pieces
+  are `fx__bit`s for this, and the arcade's rule names the nav's parts).
+- Nothing set on the body changes as you scroll except its background: a
+  custom property there restyles the whole page. That is why the night's
+  focus ring is a sheet that `src/sky.ts` turns on and off.
+- The day's frame writes an attribute only when it changes (`put()` in
+  `src/util.ts`): an SVG element is restyled on every write, even one with
+  the same value.
+
 The built `index.html` drops its comments and the indentation at the start of
 each line (`vite.config.ts`), so it compresses to under ~14.6 KB and arrives
 in the first round trip; comment freely in the source. The hero and the
