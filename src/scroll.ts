@@ -23,7 +23,7 @@ export async function start() {
   await nextTask()
   await initStatement()
   await nextTask()
-  initDay()
+  await initDay()
   await nextTask()
   await initFlock()
   await nextTask()

@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, PALETTE, clamp, clockState, holdFor, lerp } from './util'
+import { $, $$, PALETTE, clamp, clockState, holdFor, lerp, nextTask } from './util'
 import { lang } from './i18n'
 import { holdDock } from './dock'
 import {
@@ -94,7 +94,7 @@ const AIR = 22
  * side, and reduced motion, read it top to bottom, each plate drawn with the
  * cast as it is at that hour.
  */
-export function initDay() {
+export async function initDay() {
   const section = $('#day')
   const viewport = $('.day__viewport', section)
   const track = $('#dayTrack')
@@ -122,6 +122,73 @@ export function initDay() {
     })
   }
 
+  /**
+   * Phones: the stage takes its phone shape, the plates their phone framing, and a row of seven
+   * eggs over the stage keeps the programme (made once, and kept while a phone walk holds).
+   */
+  let ticker: HTMLElement | null = null
+  const stagePhone = (tall: boolean) => {
+    section.classList.add('day--story')
+    section.classList.toggle('day--tall', tall)
+    drawPlates('phone')
+    steps.forEach((s, k) => s.style.setProperty('--top', String(PH.top[k])))
+    if (!ticker) {
+      ticker = document.createElement('div')
+      ticker.className = 'day__ticker'
+      ticker.setAttribute('aria-hidden', 'true')
+      ticker.innerHTML =
+        '<span class="ticker__ink"></span>' +
+        steps.map((s) => `<span class="ticker__node">${$('.step__time', s).textContent ?? ''}</span>`).join('')
+      viewport.prepend(ticker)
+      ticker.querySelectorAll('.ticker__node')[5]?.classList.add('is-hatch')
+    }
+    resetSky()
+    return ticker
+  }
+  const texts = steps.map((s) => $('.step__text', s))
+  /**
+   * The camera frames PH.frame of each plate across the screen, unless the stage is too short
+   * for a plate that large under its copy: then the plate is drawn smaller (and more of it shows),
+   * until every step's copy, with air above and below, and its plate down from its highest ink
+   * fit the height under the programme. The copy reads across the page whatever the plate's
+   * scale, so one pass does. (--s is the scale, px to a plate unit; --col a plate's width.)
+   * Returns the span of plate units the screen shows.
+   */
+  const scalePhone = () => {
+    const [left, right] = PH.frame
+    const w = viewport.clientWidth
+    const room = track.clientHeight - (parseFloat(getComputedStyle(track).paddingBottom) || 0)
+    let k = w / (right - left)
+    texts.forEach((t, i) => (k = Math.min(k, (room - t.offsetHeight - 2 * AIR) / (GROUND - PH.top[i]))))
+    k = Math.max(k, 0.2)
+    section.style.setProperty('--s', k.toFixed(4))
+    section.style.setProperty('--col', `${(PLATE * k).toFixed(2)}px`)
+    return w / k
+  }
+  const unstagePhone = () => {
+    section.classList.remove('day--story', 'day--tall')
+    section.style.removeProperty('--col')
+    section.style.removeProperty('--s')
+    ticker?.remove()
+    ticker = null
+    resetSky()
+    steps.forEach((s) => s.style.removeProperty('--top'))
+  }
+
+  // A phone's walk is set up ahead, each half in a task of its own: the stage in its phone shape
+  // (all of the day restyled and laid out again), then the plates' scale (laid out once more).
+  // The walk then finds both done. (Should the phone have turned meanwhile, it goes back.)
+  const phoneNow = (['phoneTall', 'phoneShort'] as const).find((q) => matchMedia(DAY_MEDIA[q]).matches)
+  if (phoneNow) {
+    stagePhone(phoneNow === 'phoneTall')
+    void section.offsetHeight
+    await nextTask()
+    scalePhone()
+    void steps[0].offsetWidth
+    await nextTask()
+    if (!matchMedia(DAY_MEDIA[phoneNow]).matches) unstagePhone()
+  }
+
   const mm = gsap.matchMedia()
 
   /**
@@ -141,43 +208,18 @@ export function initDay() {
     let fit = () => {}
     let cam = 0
     let camHome = 0
-    const texts = phone ? steps.map((s) => $('.step__text', s)) : []
     const bye = $('.day__end', track)
     if (phone) {
       // the stage takes its phone shape, and the plates their phone framing, before anything measures them
-      section.classList.add('day--story')
-      section.classList.toggle('day--tall', tall)
-      drawPlates('phone')
-      steps.forEach((s, k) => s.style.setProperty('--top', String(PH.top[k])))
-      const ticker = document.createElement('div')
-      ticker.className = 'day__ticker'
-      ticker.setAttribute('aria-hidden', 'true')
-      ticker.innerHTML =
-        '<span class="ticker__ink"></span>' +
-        steps.map((s) => `<span class="ticker__node">${$('.step__time', s).textContent ?? ''}</span>`).join('')
-      viewport.prepend(ticker)
-      ink = $<HTMLElement>('.ticker__ink', ticker)
-      nodes = $$<HTMLElement>('.ticker__node', ticker)
-      nodes[5]?.classList.add('is-hatch')
-      resetSky()
-      // The camera frames PH.frame of each plate across the screen, unless the stage is too short
-      // for a plate that large under its copy: then the plate is drawn smaller (and more of it shows),
-      // until every step's copy, with air above and below, and its plate down from its highest ink
-      // fit the height under the programme. The copy reads across the page whatever the plate's
-      // scale, so one pass does. (--s is the scale, px to a plate unit; --col a plate's width.)
+      const row = stagePhone(tall)
+      ink = $<HTMLElement>('.ticker__ink', row)
+      nodes = $$<HTMLElement>('.ticker__node', row)
       const [left, right] = PH.frame
       fit = () => {
-        const w = viewport.clientWidth
-        const room = track.clientHeight - (parseFloat(getComputedStyle(track).paddingBottom) || 0)
-        let k = w / (right - left)
-        texts.forEach((t, i) => (k = Math.min(k, (room - t.offsetHeight - 2 * AIR) / (GROUND - PH.top[i]))))
-        k = Math.max(k, 0.2)
-        const span = w / k
+        const span = scalePhone()
         cam = (left + right) / 2 - span / 2
         // on the way home it goes with the three towards the metro, as far as the last plate goes
         camHome = clamp(PLATE - span, cam, cam + 120)
-        section.style.setProperty('--s', k.toFixed(4))
-        section.style.setProperty('--col', `${(PLATE * k).toFixed(2)}px`)
       }
       fit()
       ScrollTrigger.addEventListener('refreshInit', fit)
@@ -438,16 +480,9 @@ export function initDay() {
       delete section.dataset.tl
       if (phone) {
         ScrollTrigger.removeEventListener('refreshInit', fit)
-        section.classList.remove('day--story', 'day--tall')
-        section.style.removeProperty('--col')
-        section.style.removeProperty('--s')
-        ink?.parentElement?.remove()
-        resetSky()
+        unstagePhone()
         nodes = []
-        steps.forEach((s) => {
-          s.classList.remove('is-told')
-          s.style.removeProperty('--top')
-        })
+        steps.forEach((s) => s.classList.remove('is-told'))
         texts.forEach((el) => el.style.removeProperty('transform'))
         bye.style.removeProperty('transform')
         holdDock('day', false)
