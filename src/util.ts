@@ -110,6 +110,20 @@ export const holdFor = (el: Element) => {
 }
 
 /**
+ * Give a holder back as it was once its pin is gone (a matchMedia cleanup, run after the trigger is
+ * reverted): ScrollTrigger puts back the inline styles it saved, but leaves its class and the
+ * flex-basis and overflow it set (defaults, so nothing on the page changes; only a count of
+ * `.pin-spacer` would).
+ */
+export const unhold = (hold: Element | undefined) => {
+  if (!(hold instanceof HTMLElement)) return
+  hold.classList.remove('pin-spacer')
+  hold.style.removeProperty('flex-basis')
+  hold.style.removeProperty('overflow')
+  if (!hold.style.length) hold.removeAttribute('style')
+}
+
+/**
  * Write an attribute only when it changes. A browser restyles (and an SVG lays out and repaints)
  * an element on every setAttribute, even one that writes what is already there; most of what the
  * scroll moves stands still on most frames.
@@ -117,3 +131,4 @@ export const holdFor = (el: Element) => {
 export const put = (el: Element, name: string, value: string) => {
   if (el.getAttribute(name) !== value) el.setAttribute(name, value)
 }
+

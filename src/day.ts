@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, PALETTE, clamp, clockState, holdFor, lerp, nextTask, put } from './util'
+import { $, $$, PALETTE, clamp, clockState, holdFor, lerp, nextTask, put, unhold } from './util'
 import { lang } from './i18n'
 import { holdDock } from './dock'
 import {
@@ -433,10 +433,11 @@ export async function initDay() {
     }
 
     const nav = $('#nav')
+    const hold = holdFor(phone ? box : section)
     const st = ScrollTrigger.create({
       trigger: phone ? box : section,
       pin: phone ? box : true,
-      pinSpacer: holdFor(phone ? box : section),
+      pinSpacer: hold,
       pinSpacing: true,
       // a phone pins just under the nav: the heading and the stage, or the stage once the heading has gone by
       start: phone ? () => `top ${nav.offsetHeight}px` : 'top top',
@@ -478,6 +479,7 @@ export async function initDay() {
       chatLead.style.removeProperty('opacity')
       delete section.dataset.end
       delete section.dataset.tl
+      unhold(hold)
       if (phone) {
         ScrollTrigger.removeEventListener('refreshInit', fit)
         unstagePhone()
