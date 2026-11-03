@@ -49,7 +49,9 @@ export function initFlock() {
     el.className = `bird bird--${b.kind}`
     el.style.setProperty('--tilt', `${b.tilt}deg`)
     el.style.setProperty('--i', String(i))
-    el.setAttribute('aria-label', `${b.name}: “${b.say}”`)
+    // The name reads the card in the order it's printed, so it contains the
+    // visible text (voice control: "click fig. 01").
+    el.setAttribute('aria-label', `${FIG} ${String(i + 1).padStart(2, '0')}, “${b.say}”, ${b.name}`)
     el.innerHTML = `
       <span class="bird__fig" aria-hidden="true">${FIG} ${String(i + 1).padStart(2, '0')}</span>
       <span class="bird__say" aria-hidden="true">“${b.say}”</span>
@@ -65,7 +67,9 @@ export function initFlock() {
   you.style.setProperty('--tilt', '-3deg')
   you.setAttribute(
     'aria-label',
-    lang === 'tr' ? 'Sen? Üzerinde adın yazan bir sandalye var — katıl' : 'You? There’s a seat with your name on it — join',
+    lang === 'tr'
+      ? `${FIG} 09, “üzerinde adın yazan bir sandalye var.”, devamı var — katıl`
+      : `${FIG} 09, “there’s a seat with your name on it.”, to be continued — join`,
   )
   you.innerHTML = `
     <span class="bird__fig" aria-hidden="true">${FIG} 09</span>

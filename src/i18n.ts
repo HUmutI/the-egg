@@ -73,6 +73,7 @@ export function initLangToggle() {
   // The label is written in the language it switches to, so tell screen
   // readers which voice to read it in.
   btn.lang = other
-  btn.setAttribute('aria-label', other === 'en' ? 'Switch to English' : 'Türkçeye geç')
+  // Start with the visible text, so "click TR" works for voice control.
+  btn.setAttribute('aria-label', other === 'en' ? 'EN – Switch to English' : 'TR – Türkçeye geç')
   btn.addEventListener('click', () => setLang(other))
 }

@@ -856,7 +856,8 @@
       <a class="btn btn--ink dock__apply" href="https://app.the-egg.club" target="_blank" rel="noopener" data-apply><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
     </div>
 
-    <!-- ───────────── LIVE BADGE: the site rebuilds itself ───────────── -->
+    <!-- ───────────── LIVE BADGE: the site rebuilds itself (in an aside so it sits in a landmark; the badge is fixed, the aside has no box of its own) ───────────── -->
+    <aside aria-label="Site status" data-i18n-tr-attr-aria-label="Site durumu">
     <a
       class="live-badge"
       href="https://github.com/HUmutI/the-egg"
@@ -871,6 +872,7 @@
         <span data-i18n-tr="bu site şu an kendini güncelliyor">this site is updating itself, live</span>
       </span>
     </a>
+    </aside>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
