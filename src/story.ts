@@ -95,7 +95,12 @@ export function initStatement() {
       // The sentence takes the stage's height under its running head, at the largest size that
       // fits it without breaking a word, so the scene has no empty foot to leave behind when it
       // lets go. Measured again on every refresh (a turned phone, the other language).
-      const words = tokens.filter((t) => !t.matches(UNITS))
+      // (the indices of the words among the tokens, so a copy's words can be found again)
+      const words = tokens.flatMap((t, i) => (t.matches(UNITS) ? [] : [i]))
+      // Every refresh (and there are a few while the page loads) asks again; the answer only
+      // changes with the stage's size, its padding, the sentence's width or the fonts arriving.
+      let last = ''
+      let size = ''
       const fit = () => {
         // (the stage grows with the sentence, and holds its size while pinned: the room is a
         // screen under the nav, its min-height, less the running head's row)
@@ -103,14 +108,32 @@ export function initStatement() {
         const pad = parseFloat(getComputedStyle(st).paddingTop) || 0
         const head = parseFloat(cs.gridTemplateRows) || 0
         const room = parseFloat(cs.minHeight) - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - head - pad
+        const key = [stage.clientWidth, room, document.fonts.status].join()
+        if (key === last) {
+          st.style.fontSize = size
+          return
+        }
+        // Search on a hidden copy laid over the stage, out of the page's flow: each try then
+        // lays out the copy alone, not the whole page below it. (It keeps the sentence's own
+        // classes, so its grid area, width and type are the sentence's.)
+        const copy = st.cloneNode(true) as HTMLElement
+        copy.removeAttribute('id')
+        copy.setAttribute('aria-hidden', 'true')
+        copy.style.cssText = 'position:absolute;left:0;right:0;top:0;visibility:hidden;contain:layout style;pointer-events:none'
+        stage.append(copy)
+        const toks = copy.querySelectorAll('.tok')
+        const copyWords = words.map((i) => toks[i])
         let [lo, hi] = [30, Math.min(96, stage.clientWidth * 0.19)]
         for (let i = 0; i < 9; i++) {
           const f = (lo + hi) / 2
-          st.style.fontSize = `${f}px`
-          if (st.offsetHeight - pad <= room && words.every((w) => w.getClientRects().length < 2)) lo = f
+          copy.style.fontSize = `${f}px`
+          if (copy.offsetHeight - pad <= room && copyWords.every((w) => w.getClientRects().length < 2)) lo = f
           else hi = f
         }
-        st.style.fontSize = `${lo.toFixed(1)}px`
+        copy.remove()
+        last = key
+        size = `${lo.toFixed(1)}px`
+        st.style.fontSize = size
       }
       fit()
       ScrollTrigger.addEventListener('refreshInit', fit)
@@ -127,6 +150,7 @@ export function initStatement() {
       })
       return () => {
         ScrollTrigger.removeEventListener('refreshInit', fit)
+        last = ''
         st.style.removeProperty('font-size')
       }
     })
