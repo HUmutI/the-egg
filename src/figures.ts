@@ -8,7 +8,9 @@ import { handEgg, inkEgg, type EggShape } from './riso'
  * dry annotation, with just enough of a face to read the mood: two dots, a
  * line, never a cartoon. Every egg stands on a halftone shadow, and the
  * small moving parts (steam, sparks, notes) are tagged `fx-*` so the plate
- * can wake them on hover (main.css).
+ * can wake them on hover (main.css); the pieces of one that move each on
+ * their own (a wisp, a bar, a note) are `fx__bit`s, so a section going to
+ * sleep can name them.
  */
 
 export type Kind = 'owl' | 'designer' | 'hardware' | 'founder' | 'researcher' | 'musician' | 'firstTimer' | 'pizza'
@@ -60,7 +62,7 @@ const dots = (x1: number, x2: number, y: number, r = 3.2) =>
 /** Rising steam: three wisps, drawn upward. */
 const steam = (x: number, y: number, h = 34) =>
   `<g class="fx-steam">${[0, 11, 22]
-    .map((dx, k) => pen(`M${x + dx} ${y}c-7 -${h * 0.25} 7 -${h * 0.5} 0 -${h * 0.75}s6 -${h * 0.2} 2 -${h * 0.3}`, 2, I, `opacity=".55" style="--k:${k}"`))
+    .map((dx, k) => pen(`M${x + dx} ${y}c-7 -${h * 0.25} 7 -${h * 0.5} 0 -${h * 0.75}s6 -${h * 0.2} 2 -${h * 0.3}`, 2, I, `class="fx__bit" opacity=".55" style="--k:${k}"`))
     .join('')}</g>`
 
 function owl() {
@@ -124,10 +126,10 @@ function hardware() {
     <g transform="rotate(-2 100 180)">
       <rect x="74" y="150" width="52" height="64" rx="5" fill="${P.cream}" fill-opacity=".55" stroke="${I}" stroke-width="2"/>
       <g class="fx-bars">
-        <rect x="80" y="156" width="40" height="11" rx="2" fill="${T}" opacity=".18" style="--k:3"/>
-        <rect x="80" y="170" width="40" height="11" rx="2" fill="${P.mintDeep}" style="--k:2"/>
-        <rect x="80" y="184" width="40" height="11" rx="2" fill="${P.mintDeep}" style="--k:1"/>
-        <rect x="80" y="198" width="40" height="11" rx="2" fill="${P.mintDeep}" style="--k:0"/>
+        <rect class="fx__bit" x="80" y="156" width="40" height="11" rx="2" fill="${T}" opacity=".18" style="--k:3"/>
+        <rect class="fx__bit" x="80" y="170" width="40" height="11" rx="2" fill="${P.mintDeep}" style="--k:2"/>
+        <rect class="fx__bit" x="80" y="184" width="40" height="11" rx="2" fill="${P.mintDeep}" style="--k:1"/>
+        <rect class="fx__bit" x="80" y="198" width="40" height="11" rx="2" fill="${P.mintDeep}" style="--k:0"/>
       </g>
     </g>
      <text x="100" y="80" text-anchor="middle" ${SERIF} font-size="40" fill="${I}">+</text>
@@ -208,8 +210,8 @@ function musician() {
     ${rule('M184 150V-12', 4.5, I)}
     ${pen('M184 -12C188 20 222 30 214 72', 4.5)}
     <g class="fx-notes">
-      <g style="--k:0"><ellipse cx="236" cy="128" rx="6" ry="4.5" transform="rotate(-20 236 128)" fill="${T}"/>${rule('M241.5 126V104', 2, T)}</g>
-      <g style="--k:1"><ellipse cx="226" cy="190" rx="6" ry="4.5" transform="rotate(-20 226 190)" fill="${T}"/>${rule('M231.5 188V166', 2, T)}${pen('M231.5 166q6 4 6 12', 2, T)}</g>
+      <g class="fx__bit" style="--k:0"><ellipse cx="236" cy="128" rx="6" ry="4.5" transform="rotate(-20 236 128)" fill="${T}"/>${rule('M241.5 126V104', 2, T)}</g>
+      <g class="fx__bit" style="--k:1"><ellipse cx="226" cy="190" rx="6" ry="4.5" transform="rotate(-20 226 190)" fill="${T}"/>${rule('M231.5 188V166', 2, T)}${pen('M231.5 166q6 4 6 12', 2, T)}</g>
     </g>
     <g opacity=".8">
       <ellipse cx="-27" cy="45" rx="7" ry="5" transform="rotate(-20 -27 45)" fill="${I}"/>
