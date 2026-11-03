@@ -55,7 +55,9 @@ const LABELS: [number, string][] =
  */
 let targets: HTMLElement[] | null = null
 const paintSky = (c: string) => {
-  targets ??= $$<HTMLElement>('#nav, #dock, .step__node, .day__ticker, .plate__sky')
+  // (a phone's day shows its programme as the row of eggs, and the steps' own markers are hidden:
+  // painting those costs a restyle on every frame and shows nothing)
+  targets ??= $$<HTMLElement>('#nav, #dock, .day:not(.day--story) .step__node, .day__ticker, .plate__sky')
   document.body.style.backgroundColor = c
   for (const el of targets) el.style.setProperty('--page', c)
 }
