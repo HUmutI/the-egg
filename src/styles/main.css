@@ -4,6 +4,8 @@
    peach sunset, pink dusk, yolk evening, plum night.
    ────────────────────────────────────────────────────────────── */
 
+@import './fonts.css';
+
 /* Reenie Beanie has no ğ Ğ ş Ş İ (Google serves it latin-only), so Turkish
    notes fell back to another hand. This supplement builds those five letters
    from the font's own g G s S I and its own breve, cedilla and dot accent,

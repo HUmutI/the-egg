@@ -41,9 +41,7 @@
       })()
     </script>
 
-    <!-- Critical path: fonts origin, the hero art (LCP), then CSS. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Critical path: the hero art (LCP), then CSS (the fonts are ours, declared in it: src/styles/fonts.css). -->
     <!-- the next-Sunday lines come from the app (a CORS fetch, hence crossorigin) -->
     <link rel="preconnect" href="https://app.the-egg.club" crossorigin />
     <!-- Mirror the hero <picture>'s AVIF <source>s (media + srcset + sizes): change them together. -->
@@ -65,19 +63,7 @@
       imagesizes="100vw"
       fetchpriority="high"
     />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=Reenie+Beanie&display=swap"
-    />
     <link rel="stylesheet" href="/src/styles/main.css" />
-    <!-- Silkscreen is only for the hidden game at the very bottom: keep it off the critical path. -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" /></noscript>
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

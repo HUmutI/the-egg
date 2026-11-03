@@ -46,7 +46,10 @@ the live badge, `public/favicon.svg`/`favicon.ico` and `public/icons/*`
 Link previews use `public/og/the-egg-club-og.jpg` (1200×630, small enough for
 WhatsApp); `public/og/the-egg-club-og-tr.jpg` is ready for a Turkish URL. The
 `<head>` also carries the manifest (`public/site.webmanifest`), JSON-LD for the
-club and its recurring Sunday, and a non-blocking Silkscreen load for the game.
+club and its recurring Sunday. The fonts are served from the site itself
+(`src/fonts/`, declared in `src/styles/fonts.css`: Google Fonts' own files and
+subsets, OFL), so no third-party stylesheet holds up the first paint; the
+game's Silkscreen is only fetched once its text is laid out.
 Unknown paths get the standalone `public/404.html`.
 
 ### The next Sunday
