@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, reducedMotion, sleepOffscreen } from './util'
+import { $, $$, nextTask, reducedMotion, sleepOffscreen } from './util'
 
 /** Fade-ups, the hand-drawn strikethroughs and the first-rule correction. */
 export function initReveals() {
@@ -74,12 +74,18 @@ function tokenize(root: HTMLElement): HTMLElement[] {
  * large as the screen holds so it fills the scene to its foot. A phone on
  * its side is too short to hold it, so there it reads as it scrolls by.
  */
-export function initStatement() {
+export async function initStatement() {
   const stage = $('#whatStage')
   const st = $('#statement')
   if (!stage || !st || reducedMotion()) return
 
   const tokens = tokenize(st)
+  // (the indices of the words among the tokens, so a copy's words can be found again)
+  const words = tokens.flatMap((t, i) => (t.matches(UNITS) ? [] : [i]))
+  const sizer = statementSizer(stage, st, words)
+  // A phone held upright sets the sentence to fill its stage, a search that lays the sentence out
+  // nine times over: done ahead, a few tries a task, it is waiting when the scene is set up.
+  if (matchMedia(PORTRAIT).matches) await sizer.prepare()
 
   const tl = gsap.timeline({ defaults: { ease: 'none' } })
   tokens.forEach((t, i) => {
@@ -101,53 +107,14 @@ export function initStatement() {
     .add('(min-width: 861px)', () => {
       ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=70%', scrub: 0.2, animation: tl })
     })
-    .add('(max-width: 860px) and (orientation: portrait)', () => {
+    .add(PORTRAIT, () => {
       // the stage is a screen tall under the nav (main.css), so it holds there.
       // (refreshPriority: see the day's pin in day.ts)
       const nav = $('#nav')
       // The sentence takes the stage's height under its running head, at the largest size that
       // fits it without breaking a word, so the scene has no empty foot to leave behind when it
       // lets go. Measured again on every refresh (a turned phone, the other language).
-      // (the indices of the words among the tokens, so a copy's words can be found again)
-      const words = tokens.flatMap((t, i) => (t.matches(UNITS) ? [] : [i]))
-      // Every refresh (and there are a few while the page loads) asks again; the answer only
-      // changes with the stage's size, its padding, the sentence's width or the fonts arriving.
-      let last = ''
-      let size = ''
-      const fit = () => {
-        // (the stage grows with the sentence, and holds its size while pinned: the room is a
-        // screen under the nav, its min-height, less the running head's row)
-        const cs = getComputedStyle(stage)
-        const pad = parseFloat(getComputedStyle(st).paddingTop) || 0
-        const head = parseFloat(cs.gridTemplateRows) || 0
-        const room = parseFloat(cs.minHeight) - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - head - pad
-        const key = [stage.clientWidth, room, document.fonts.status].join()
-        if (key === last) {
-          st.style.fontSize = size
-          return
-        }
-        // Search on a hidden copy laid over the stage, out of the page's flow: each try then
-        // lays out the copy alone, not the whole page below it. (It keeps the sentence's own
-        // classes, so its grid area, width and type are the sentence's.)
-        const copy = st.cloneNode(true) as HTMLElement
-        copy.removeAttribute('id')
-        copy.setAttribute('aria-hidden', 'true')
-        copy.style.cssText = 'position:absolute;left:0;right:0;top:0;visibility:hidden;contain:layout style;pointer-events:none'
-        stage.append(copy)
-        const toks = copy.querySelectorAll('.tok')
-        const copyWords = words.map((i) => toks[i])
-        let [lo, hi] = [30, Math.min(96, stage.clientWidth * 0.19)]
-        for (let i = 0; i < 9; i++) {
-          const f = (lo + hi) / 2
-          copy.style.fontSize = `${f}px`
-          if (copy.offsetHeight - pad <= room && copyWords.every((w) => w.getClientRects().length < 2)) lo = f
-          else hi = f
-        }
-        copy.remove()
-        last = key
-        size = `${lo.toFixed(1)}px`
-        st.style.fontSize = size
-      }
+      const fit = sizer.fit
       fit()
       ScrollTrigger.addEventListener('refreshInit', fit)
       ScrollTrigger.create({
@@ -163,13 +130,93 @@ export function initStatement() {
       })
       return () => {
         ScrollTrigger.removeEventListener('refreshInit', fit)
-        last = ''
+        sizer.forget()
         st.style.removeProperty('font-size')
       }
     })
     .add('(max-width: 860px) and (orientation: landscape)', () => {
       ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })
     })
+}
+
+/** Phones and tablets held upright: the statement pins under the nav, set to fill the stage. */
+const PORTRAIT = '(max-width: 860px) and (orientation: portrait)'
+
+/**
+ * The size that sets the statement to fill its stage: the largest that fits the stage's height
+ * under its running head without breaking a word. `fit` sets it, measuring again only when the
+ * answer can change (and every refresh asks: a turned phone, the other language, the fonts
+ * arriving); `prepare` runs the same search ahead of time, a few tries a task, for `fit` to find.
+ */
+function statementSizer(stage: HTMLElement, st: HTMLElement, words: number[]) {
+  let last = ''
+  let size = ''
+  /** What the answer depends on: the stage's size, its padding, the sentence's width, the fonts. */
+  const room = () => {
+    // (the stage grows with the sentence, and holds its size while pinned: the room is a
+    // screen under the nav, its min-height, less the running head's row)
+    const cs = getComputedStyle(stage)
+    const pad = parseFloat(getComputedStyle(st).paddingTop) || 0
+    const head = parseFloat(cs.gridTemplateRows) || 0
+    const room = parseFloat(cs.minHeight) - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - head - pad
+    return { pad, room, key: [stage.clientWidth, room, document.fonts.status].join() }
+  }
+  /** The search, one try a step. */
+  function* search(pad: number, room: number) {
+    // Search on a hidden copy laid over the stage, out of the page's flow: each try then lays out
+    // the copy alone, not the whole page below it. (It keeps the sentence's own classes, so its
+    // grid area, width and type are the sentence's.)
+    const copy = st.cloneNode(true) as HTMLElement
+    copy.removeAttribute('id')
+    copy.setAttribute('aria-hidden', 'true')
+    copy.style.cssText = 'position:absolute;left:0;right:0;top:0;visibility:hidden;contain:layout style;pointer-events:none'
+    stage.append(copy)
+    try {
+      const toks = copy.querySelectorAll('.tok')
+      const copyWords = words.map((i) => toks[i])
+      let [lo, hi] = [30, Math.min(96, stage.clientWidth * 0.19)]
+      for (let i = 0; i < 9; i++) {
+        const f = (lo + hi) / 2
+        copy.style.fontSize = `${f}px`
+        if (copy.offsetHeight - pad <= room && copyWords.every((w) => w.getClientRects().length < 2)) lo = f
+        else hi = f
+        yield
+      }
+      return `${lo.toFixed(1)}px`
+    } finally {
+      copy.remove()
+    }
+  }
+  return {
+    fit() {
+      const { pad, room: r, key } = room()
+      if (key !== last) {
+        const steps = search(pad, r)
+        let step = steps.next()
+        while (!step.done) step = steps.next()
+        last = key
+        size = step.value
+      }
+      st.style.fontSize = size
+    },
+    async prepare() {
+      const { pad, room: r, key } = room()
+      const steps = search(pad, r)
+      let step = steps.next()
+      for (let n = 1; !step.done; n++) {
+        if (n % 3 === 0) await nextTask()
+        step = steps.next()
+      }
+      // (kept only if nothing it depends on changed while it ran)
+      if (room().key === key) {
+        last = key
+        size = step.value
+      }
+    },
+    forget() {
+      last = ''
+    },
+  }
 }
 
 /**

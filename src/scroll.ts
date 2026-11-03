@@ -21,7 +21,7 @@ ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,resize' })
 export async function start() {
   initReveals()
   await nextTask()
-  initStatement()
+  await initStatement()
   await nextTask()
   initDay()
   await nextTask()
