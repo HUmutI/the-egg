@@ -11,33 +11,7 @@
     <link rel="canonical" href="https://the-egg.club/" />
     <meta name="theme-color" content="#fdf3d7" />
 
-    <!-- Critical path: fonts origin, the hero art (LCP), then CSS. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Mirror the hero <picture>'s AVIF <source>s (media + srcset + sizes): change them together. -->
-    <link
-      rel="preload"
-      as="image"
-      type="image/avif"
-      media="(min-width: 601px)"
-      imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w"
-      imagesizes="(max-width: 860px) 100vw, 1400px"
-      fetchpriority="high"
-    />
-    <link
-      rel="preload"
-      as="image"
-      type="image/avif"
-      media="(max-width: 600px)"
-      imagesrcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w"
-      imagesizes="100vw"
-      fetchpriority="high"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=Reenie+Beanie&display=swap"
-    />
-    <link rel="stylesheet" href="/src/styles/main.css" />
+    <!-- Runs before any stylesheet, so a pending (cross-origin) one never holds it, or the parser, up. -->
     <script>
       // Mirrors getLang() in src/i18n.ts: a Turkish visitor shouldn't see the
       // English source flash first, so its translatable text waits for
@@ -66,6 +40,36 @@
         }
       })()
     </script>
+
+    <!-- Critical path: fonts origin, the hero art (LCP), then CSS. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- the next-Sunday lines come from the app (a CORS fetch, hence crossorigin) -->
+    <link rel="preconnect" href="https://app.the-egg.club" crossorigin />
+    <!-- Mirror the hero <picture>'s AVIF <source>s (media + srcset + sizes): change them together. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="(min-width: 601px)"
+      imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w"
+      imagesizes="(max-width: 860px) 100vw, 1400px"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="(max-width: 600px)"
+      imagesrcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=Reenie+Beanie&display=swap"
+    />
+    <link rel="stylesheet" href="/src/styles/main.css" />
     <!-- Silkscreen is only for the hidden game at the very bottom: keep it off the critical path. -->
     <link
       rel="stylesheet"
