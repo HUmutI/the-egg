@@ -1,4 +1,5 @@
 import { $, $$, reducedMotion } from './util'
+import { lang } from './i18n'
 
 /**
  * The hero is a single finished illustration. It arrives gently once it has
@@ -18,8 +19,12 @@ export function initHero() {
     if (!sheets.length) return
     // The notes are handwriting: wait for that font so they don't redraw
     // in a fallback face, but never hold them back for long.
-    // (the TR supplement too, so ğ ş İ don't arrive a beat after the rest)
-    const hand = Promise.all([document.fonts.load('40px "Reenie Beanie"'), document.fonts.load('40px "Reenie Beanie TR"', 'ğşİ')])
+    // (in Turkish the TR supplement too, so ğ ş İ don't arrive a beat after the rest;
+    // English never draws those, so it doesn't fetch it)
+    const hand = Promise.all([
+      document.fonts.load('40px "Reenie Beanie"'),
+      lang === 'tr' && document.fonts.load('40px "Reenie Beanie TR"', 'ğşİ'),
+    ])
     const fonts = Promise.race([hand, new Promise((r) => setTimeout(r, 1200))])
     const delay = new Promise((r) => setTimeout(r, reducedMotion() ? 0 : 350))
     Promise.all([fonts, delay]).then(() => sheets.forEach((s) => s.classList.add('is-drawn')))
