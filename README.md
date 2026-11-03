@@ -69,6 +69,20 @@ The first screen needs no scroll machinery, so the page arrives in three parts:
   first scroll, touch or key (or after a long idle, or when the footer is
   near), and its refresh waits for the scroll to stop.
 
+The built `index.html` drops its comments and the indentation at the start of
+each line (`vite.config.ts`), so it compresses to under ~14.6 KB and arrives
+in the first round trip; comment freely in the source. The hero and the
+rooftop come in several widths, and each `<source>`'s `sizes` says how wide
+the picture is shown (the hero's follows `.hero__frame` in `main.css`; keep
+them in step, and the hero's preload with them), so a laptop takes the
+1200 poster and the 1440 rooftop, never a file narrower than its space.
+
+The words the statement reads in, and the house rules, start faint. A faint
+statement word is decoration (its own background, clipped to the glyphs, at
+14%) with the ink fading in over it from 0, and the rules dim only a screen
+before the reader reaches them (`src/story.ts`), so contrast checks never
+find faint text waiting on the page.
+
 ### The next Sunday
 
 `src/next.ts` reads the app's `/api/next-event` (4 s timeout) and fills in the
