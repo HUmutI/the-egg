@@ -71,7 +71,10 @@ The first screen needs no scroll machinery, so the page arrives in three parts:
   four at a time, each pinned scene is first measured in the task after it is
   made, and the far sections go to sleep one a frame. The day's pins sit in
   spacers of their own (`.pin-hold`, made when the plates are drawn), so a
-  refresh never takes the day out of the page and rebuilds it.
+  refresh never takes the day out of the page and rebuilds it. A reload or
+  a step back lands where the reader was once that refresh is done
+  (`keepPlace()` in `src/util.ts`): the browser's own restoring is switched
+  off while the page starts, since it lands before anything is pinned.
 - `src/portal.ts` (the cabinet and Night Shift): fetched on the reader's
   first scroll, touch or key (or after a long idle, or when the footer is
   near), and its refresh waits for the scroll to stop.
