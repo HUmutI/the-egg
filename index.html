@@ -20,6 +20,12 @@
         var d = document.documentElement
         var l = null
         d.classList.add('js')
+        // A page that may open further down (a reload, back/forward, a #link) dims the house
+        // rules from the first paint; one read from the top dims them as the reader nears (story.ts).
+        try {
+          var n = performance.getEntriesByType('navigation')[0]
+          if (location.hash || (n && n.type !== 'navigate')) d.classList.add('dim-ahead')
+        } catch (e) {}
         try {
           l = localStorage.getItem('eggclub:lang')
         } catch (e) {}

@@ -25,6 +25,10 @@ export function initReveals() {
  * one by one. Elements matching `units` (chips, highlights, the struck-out
  * correction…) stay whole and count as a single token; other inline
  * elements (italics) keep their styling and have their words split inside.
+ * A word is `.tok.tok--w > .tok__ink`: the faint word waiting to be read is
+ * the outer span's background clipped to the glyphs (main.css), and the ink
+ * fades in over it from 0, so the faint state is decoration, not text that
+ * fails contrast.
  */
 const UNITS = '.chip, .hl, .rule__fix, strong'
 function tokenize(root: HTMLElement): HTMLElement[] {
@@ -36,8 +40,11 @@ function tokenize(root: HTMLElement): HTMLElement[] {
       if (/^\s+$/.test(part)) frag.append(part)
       else {
         const w = document.createElement('span')
-        w.className = 'tok'
-        w.textContent = part
+        w.className = 'tok tok--w'
+        const ink = document.createElement('span')
+        ink.className = 'tok__ink'
+        ink.textContent = part
+        w.append(ink)
         frag.append(w)
         tokens.push(w)
       }
@@ -76,7 +83,13 @@ export function initStatement() {
 
   const tl = gsap.timeline({ defaults: { ease: 'none' } })
   tokens.forEach((t, i) => {
-    tl.to(t, { opacity: 1, duration: 1 }, i * 0.55)
+    // (a word: its ink over the faint copy, 0 → 1 over 0.14 reads as 0.14 → 1; once inked
+    // the faint copy goes, so the read word is exactly the ink)
+    const ink = t.firstElementChild
+    if (t.classList.contains('tok--w') && ink) {
+      tl.to(ink, { opacity: 1, duration: 1 }, i * 0.55)
+      tl.set(t, { '--g': '0%' }, i * 0.55 + 1)
+    } else tl.to(t, { opacity: 1, duration: 1 }, i * 0.55)
     if (t.classList.contains('hl')) tl.to(t, { '--p': '100%', duration: 1.4 }, i * 0.55 + 0.3)
   })
   tl.to('.what__cue', { opacity: 0, duration: 1 }, '>-1')
@@ -178,7 +191,22 @@ export function initRules() {
   }
 
   const lines = rules.map((rule) => rule.querySelectorAll('.rule__num, .rule__n, p'))
-  lines.forEach((l) => gsap.set(l, { opacity: 0.14 }))
+  // The rules go faint only once the reader is a screen away from them (or further down), so
+  // nobody sees them change, and a page read from the top holds no faint text waiting below.
+  // (Made before the play triggers, so on a page that opens further down it fires first. A page
+  // that may open at them is faint from the first paint: .dim-ahead in main.css. One scrolled to
+  // them before this ran shows them inked; they don't go faint in front of the reader.)
+  const dimAhead = document.documentElement.classList.contains('dim-ahead')
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top bottom+=100%',
+    end: 'max',
+    once: true,
+    onEnter: () => {
+      if (!dimAhead && section.getBoundingClientRect().top < innerHeight) return
+      lines.forEach((l) => gsap.set(l, { opacity: 0.14 }))
+    },
+  })
   const tl = gsap.timeline({ paused: true })
   lines.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.5, ease: 'power2.out' }, i * 0.22))
   const fix = section.querySelector('.rule__fix')

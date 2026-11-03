@@ -1198,6 +1198,19 @@ h2 {
 .statement .tok {
   opacity: 0.14;
 }
+/* A word waiting to be read (story.ts): the faint word is its own background in the text's
+   colour at 14%, clipped to the glyphs; the ink fades in over it from 0. Same look as the
+   word at opacity 0.14, but a reader's contrast check sees no faint text, only ink to come. */
+.statement .tok--w {
+  --g: 100%;
+  opacity: 1;
+  background: linear-gradient(color-mix(in srgb, currentColor 14%, transparent), color-mix(in srgb, currentColor 14%, transparent)) no-repeat 0 0 / var(--g) 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.statement .tok__ink {
+  opacity: 0;
+}
 .statement .hl {
   background-size: var(--p, 100%) 100%;
   background-repeat: no-repeat;
@@ -1381,7 +1394,8 @@ h2 {
   transition-delay: 0ms;
 }
 @media (prefers-reduced-motion: reduce) {
-  .statement .tok {
+  .statement .tok,
+  .statement .tok__ink {
     opacity: 1;
   }
   .js .statement .hl {
@@ -2948,10 +2962,11 @@ h2 {
   letter-spacing: -0.01em;
   color: var(--tomato);
 }
-/* the rules are read in as you scroll (see initRules) */
-.js .rules .tok,
-.js .rules .rule__num,
-.js .rules .rule__n {
+/* the rules are read in as you scroll (see initRules); on a page that may open at them,
+   faint from the first paint (.dim-ahead: the inline script in index.html) */
+.js.dim-ahead .rules .tok,
+.js.dim-ahead .rules .rule__num,
+.js.dim-ahead .rules .rule__n {
   opacity: 0.14;
 }
 .rules.is-read .tok,
