@@ -52,6 +52,23 @@ subsets, OFL), so no third-party stylesheet holds up the first paint; the
 game's Silkscreen is only fetched once its text is laid out.
 Unknown paths get the standalone `public/404.html`.
 
+### How it loads
+
+The first screen needs no scroll machinery, so the page arrives in three parts:
+
+- `src/main.ts` (the entry, ~11 KB gzip): language, hero, badge, dock, share,
+  the next Sunday, then the day's plates in a task of their own. The hero
+  poster fades in from its own `onload` in `index.html`, so the LCP image
+  never waits for a script.
+- `src/scroll.ts` (gsap, ScrollTrigger and every scene): fetched at once,
+  alongside the entry, and started once the fonts are in (or after 1.2 s).
+  Each scene is set up in its own task, with one ScrollTrigger refresh at
+  the end; later height changes (an FAQ answer, the next-Sunday lines, a late
+  font or image at load) re-measure from there.
+- `src/portal.ts` (the cabinet and Night Shift): fetched on the reader's
+  first scroll, touch or key (or after a long idle, or when the footer is
+  near), and its refresh waits for the scroll to stop.
+
 ### The next Sunday
 
 `src/next.ts` reads the app's `/api/next-event` (4 s timeout) and fills in the
