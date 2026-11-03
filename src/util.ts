@@ -132,3 +132,38 @@ export const put = (el: Element, name: string, value: string) => {
   if (el.getAttribute(name) !== value) el.setAttribute(name, value)
 }
 
+/**
+ * Where a reload, or a step back to the page, should land: where the reader was. Left to itself the
+ * browser puts them back while the page is still short (nothing pinned yet), and again later from
+ * an anchor it noted inside a scene that may be pinned, and the pins' room, measured in between,
+ * carries them somewhere else each time. So while the page starts the browser is told to leave the
+ * scroll alone (`scrollRestoration`), the place is kept here (on pagehide), and the function this
+ * returns, once everything is measured, goes back to it (unless the reader has moved the page
+ * meanwhile) and hands scrolling back to the browser (a #link and back again, say).
+ */
+export const keepPlace = (): (() => void) => {
+  const KEY = 'eggclub:y'
+  const hist = 'scrollRestoration' in history
+  if (hist) history.scrollRestoration = 'manual'
+  addEventListener('pagehide', () => {
+    try {
+      sessionStorage.setItem(KEY, String(Math.round(scrollY)))
+    } catch {}
+  })
+  let y = 0
+  try {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+    if (nav?.type === 'reload' || nav?.type === 'back_forward') y = Number(sessionStorage.getItem(KEY)) || 0
+  } catch {}
+  const INTENT = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const
+  let moved = false
+  const mark = () => (moved = true)
+  if (y) INTENT.forEach((type) => addEventListener(type, mark, { capture: true, passive: true }))
+  return () => {
+    if (y) {
+      INTENT.forEach((type) => removeEventListener(type, mark, { capture: true }))
+      if (!moved && Math.abs(scrollY - y) > 1) scrollTo({ top: y, behavior: 'instant' })
+    }
+    if (hist) history.scrollRestoration = 'auto'
+  }
+}
