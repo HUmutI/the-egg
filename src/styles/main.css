@@ -1906,6 +1906,8 @@ h2 {
   height: calc(var(--col) * 0.75);
   overflow: visible;
   pointer-events: none;
+  /* a layer of its own, so the cast's every step repaints only the cast, not the plates under it */
+  will-change: transform;
 }
 /* the shell collects a crack or two through the day */
 .day .crack {
