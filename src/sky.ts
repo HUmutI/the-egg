@@ -46,15 +46,50 @@ const LABELS: [number, string][] =
         [99 * 60, 'night owls'],
       ]
 
+/**
+ * Where the sky colour is painted. --page is read only by the body's background and a handful of
+ * small things drawn in it (the nav's band, the dock's fade, the programme's egg markers, a
+ * plate's patch of sky), so it is written on those alone: set on :root it would restyle the whole
+ * document on every frame of a colour change. (The plates and the phone's row of eggs are drawn
+ * anew on a layout change; day.ts calls resetSky() then.)
+ */
+let targets: HTMLElement[] | null = null
+const paintSky = (c: string) => {
+  targets ??= $$<HTMLElement>('#nav, #dock, .step__node, .day__ticker, .plate__sky')
+  document.body.style.backgroundColor = c
+  for (const el of targets) el.style.setProperty('--page', c)
+}
+
+/**
+ * The current sky colour. gsap tweens and sets `c` here (it reads and writes it like any other
+ * property), and every write paints it.
+ */
+export const sky = {
+  _c: '',
+  get c() {
+    return this._c
+  },
+  set c(v: string) {
+    this._c = v
+    paintSky(v)
+  },
+}
+
+/** The day has drawn new things that wear the sky: find them again and paint them. */
+export const resetSky = () => {
+  targets = null
+  if (sky.c) paintSky(sky.c)
+}
+
 export function initSky() {
   const root = document.documentElement
   const body = document.body
   const nav = $('#nav')
   const meta = $<HTMLMetaElement>('meta[name="theme-color"]')
 
-  // The sky is one custom property, --page: the body paints it and the
-  // nav's backdrop band tints itself with it, so both drift together.
-  gsap.set(root, { '--page': PALETTE.butter })
+  // The sky is one colour, --page: the body paints it and the nav's backdrop band tints itself
+  // with it, so both drift together (see paintSky).
+  gsap.set(sky, { c: PALETTE.butter })
   $$('[data-bg]').forEach((el) => {
     // The day section paints its own sky as it goes (day.ts keeps data-sky
     // current); every other section is one colour.
@@ -69,7 +104,7 @@ export function initSky() {
         if (!self.isActive) return
         const color = colorOf()
         root.dataset.sky = el.id
-        gsap.to(root, { '--page': color, duration: 0.9, ease: 'power2.out', overwrite: true })
+        gsap.to(sky, { c: color, duration: 0.9, ease: 'power2.out', overwrite: true })
         body.classList.toggle('is-night', el.dataset.bg === 'night')
         meta?.setAttribute('content', color)
       },

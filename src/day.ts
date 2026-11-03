@@ -19,6 +19,7 @@ import {
   DAY_MEDIA,
   drawPlates,
 } from './dayplates'
+import { resetSky, sky as page } from './sky'
 
 const toMin = (s: string) => {
   const [h, m] = s.split(':').map(Number)
@@ -128,7 +129,10 @@ export function initDay() {
     let nodes: HTMLElement[] = []
     /** Phones: what pins; then where the camera stands in a plate (its left edge, in plate units). */
     const box = tall ? $('.day__pin', section) : viewport
-    if (!phone) drawPlates('wide')
+    if (!phone) {
+      drawPlates('wide')
+      resetSky()
+    }
     let fit = () => {}
     let cam = 0
     let camHome = 0
@@ -150,6 +154,7 @@ export function initDay() {
       ink = $<HTMLElement>('.ticker__ink', ticker)
       nodes = $$<HTMLElement>('.ticker__node', ticker)
       nodes[5]?.classList.add('is-hatch')
+      resetSky()
       // The camera frames PH.frame of each plate across the screen, unless the stage is too short
       // for a plate that large under its copy: then the plate is drawn smaller (and more of it shows),
       // until every step's copy, with air above and below, and its plate down from its highest ink
@@ -371,8 +376,8 @@ export function initDay() {
       let sky = here ? SKY[state] : mix(SKY[state], SKY[state + 1], fine(t))
       if (hatching && popped) sky = mix(sky, PALETTE.cream, fine(0.8 * (1 - easeOut(band(d, POP, POP + 0.16)))))
       if (section.dataset.sky !== sky) section.dataset.sky = sky
-      // (every new --page restyles the whole page, so a phone only sends real changes)
-      if (root.dataset.sky === 'day' && (!phone || root.style.getPropertyValue('--page') !== sky)) gsap.set(root, { '--page': sky })
+      // (a phone only sends real changes)
+      if (root.dataset.sky === 'day' && (!phone || page.c !== sky)) gsap.set(page, { c: sky })
     }
 
     const nav = $('#nav')
@@ -424,6 +429,7 @@ export function initDay() {
         section.style.removeProperty('--col')
         section.style.removeProperty('--s')
         ink?.parentElement?.remove()
+        resetSky()
         nodes = []
         steps.forEach((s) => {
           s.classList.remove('is-told')
@@ -448,13 +454,14 @@ export function initDay() {
    */
   const book = (narrow: boolean) => () => {
     drawPlates(narrow ? 'crop' : 'wide')
+    resetSky()
     section.classList.toggle('day--crop', narrow)
     const setBook = (i: number) => {
       if (i === current) return
       current = i
       markStep(i, true, true)
       section.dataset.sky = SKY[i]
-      if (root.dataset.sky === 'day') gsap.to(root, { '--page': SKY[i], duration: 0.9, ease: 'power2.out', overwrite: true })
+      if (root.dataset.sky === 'day') gsap.to(page, { c: SKY[i], duration: 0.9, ease: 'power2.out', overwrite: true })
     }
     // the clock reads the step you're on: its time, ticking towards the next
     const triggers = steps.map((s, i) =>

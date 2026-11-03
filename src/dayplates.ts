@@ -299,7 +299,7 @@ function incubate(ph: boolean) {
       ${ph ? '</g>' : ''}
     </g>
     ${ph ? '</g>' : ''}
-    <rect x="772" y="586" width="16" height="32" style="fill: var(--page)"/>
+    <rect class="plate__sky" x="772" y="586" width="16" height="32" style="fill: var(--page)"/>
     ${line('M764 620 L778 582 M782 620 L796 582', 2.6)}
     ${mono(714, 566, tr ? '≈ 6 sa' : '≈ 6 h', I, 'fill-opacity=".72"')}`
 }
