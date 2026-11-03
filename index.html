@@ -56,8 +56,8 @@
       as="image"
       type="image/avif"
       media="(min-width: 601px)"
-      imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w"
-      imagesizes="(max-width: 860px) 100vw, 1400px"
+      imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w"
+      imagesizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))"
       fetchpriority="high"
     />
     <link
@@ -238,13 +238,17 @@
                  1200w is the master's own resolution (a 390px phone at 3x needs 1170); 900w serves 2x phones -->
             <source media="(max-width: 600px)" type="image/avif" srcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1000" />
             <source media="(max-width: 600px)" type="image/webp" srcset="/hero/the-egg-club-phone-600.webp 600w, /hero/the-egg-club-phone-900.webp 900w, /hero/the-egg-club-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1000" />
-            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
-            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, 1400px" />
+            <!-- wider screens: sizes is the frame's width (main.css .hero__frame: the screen's height less
+                 the nav and 264px, times 1.75, or the column), so a laptop takes the 1200 and a tall or
+                 2x screen the 1660; short landscape screens (a phone on its side) size the frame by
+                 another rule, so they say 100vw. -->
+            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))" />
+            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1200.webp 1200w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))" />
             <img
               id="heroArt"
               src="/hero/the-egg-club.png"
               srcset="/hero/the-egg-club-830.png 830w, /hero/the-egg-club.png 1660w"
-              sizes="(max-width: 860px) 100vw, 1400px"
+              sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))"
               width="1660"
               height="948"
               fetchpriority="high"
@@ -765,8 +769,8 @@
                1200w is the painting's own resolution (a 390px phone at 3x needs 1170); 900w serves 2x phones -->
           <source media="(max-width: 700px)" type="image/avif" srcset="/footer/rooftop-night-phone-600.avif 600w, /footer/rooftop-night-phone-900.avif 900w, /footer/rooftop-night-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1500" />
           <source media="(max-width: 700px)" type="image/webp" srcset="/footer/rooftop-night-phone-600.webp 600w, /footer/rooftop-night-phone-900.webp 900w, /footer/rooftop-night-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1500" />
-          <source type="image/avif" srcset="/footer/rooftop-night-1200.avif 1200w, /footer/rooftop-night-2007.avif 2007w" sizes="100vw" />
-          <source type="image/webp" srcset="/footer/rooftop-night-1200.webp 1200w, /footer/rooftop-night-2007.webp 2007w" sizes="100vw" />
+          <source type="image/avif" srcset="/footer/rooftop-night-1200.avif 1200w, /footer/rooftop-night-1440.avif 1440w, /footer/rooftop-night-2007.avif 2007w" sizes="100vw" />
+          <source type="image/webp" srcset="/footer/rooftop-night-1200.webp 1200w, /footer/rooftop-night-1440.webp 1440w, /footer/rooftop-night-2007.webp 2007w" sizes="100vw" />
           <img
             class="foot__img"
             id="footArt"
