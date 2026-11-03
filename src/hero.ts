@@ -13,6 +13,7 @@ export function initHero() {
   if (!img) return
 
   const show = () => {
+    // (index.html's onload already faded it in, without waiting for this script: it's the LCP)
     img.classList.add('is-in')
     if (!sheets.length) return
     // The notes are handwriting: wait for that font so they don't redraw
