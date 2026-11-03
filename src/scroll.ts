@@ -23,7 +23,11 @@ export async function start() {
   await nextTask()
   await initStatement()
   await nextTask()
+  measureNew()
+  await nextTask()
   await initDay()
+  await nextTask()
+  measureNew()
   await nextTask()
   await initFlock()
   await nextTask()
@@ -37,6 +41,16 @@ export async function start() {
   ScrollTrigger.refresh()
   watchLayout()
   loadPortal()
+}
+
+/**
+ * A trigger that drives a timeline first measures itself on the tick after it is made (ScrollTrigger
+ * waits for the timeline to be filled in), in the frame that also measures the page again for its
+ * pin; measured here, in a task of its own, it finds that one already done. (update() is still the
+ * stand-in that does exactly that measuring, once.)
+ */
+function measureNew() {
+  ScrollTrigger.getAll().forEach((t) => t.start || t.end || t.update())
 }
 
 /**
