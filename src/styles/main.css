@@ -2529,9 +2529,12 @@ h2 {
     stroke-dashoffset: -30;
   }
 }
-/* each figure's small moving part wakes when you look at it (src/figures.ts tags them fx-*) */
-.bird [class^='fx-'],
-.bird [class^='fx-'] > * {
+/* each figure's small moving part wakes when you look at it (src/figures.ts tags them fx-*). They
+   are named one by one: a rule on [class^='fx-'] > * would have every class change anywhere on the
+   page restyle everything under the element that changed (the browser can't tell which of its
+   children might now match). */
+.bird :is(.fx-steam, .fx-lamp, .fx-swatch, .fx-bars, .fx-spark, .fx-human, .fx-glint, .fx-notes, .fx-sweat),
+.bird :is(.fx-steam, .fx-lamp, .fx-swatch, .fx-bars, .fx-spark, .fx-human, .fx-glint, .fx-notes, .fx-sweat) > * {
   transform-box: fill-box;
   transform-origin: 50% 100%;
 }
@@ -2677,8 +2680,8 @@ h2 {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bird [class^='fx-'],
-  .bird [class^='fx-'] > *,
+  .bird :is(.fx-steam, .fx-lamp, .fx-swatch, .fx-bars, .fx-spark, .fx-human, .fx-glint, .fx-notes, .fx-sweat),
+  .bird :is(.fx-steam, .fx-lamp, .fx-swatch, .fx-bars, .fx-spark, .fx-human, .fx-glint, .fx-notes, .fx-sweat) > *,
   .bird .egg__eyes,
   .bird--you .egg__dash {
     animation: none !important;
