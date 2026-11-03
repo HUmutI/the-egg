@@ -149,12 +149,16 @@ export function initSky() {
     return 10 * 60 + 30
   }
 
+  // Where the page is, as ScrollTrigger last read it. Reading scrollY here would make the browser
+  // lay the page out again on the spot, after the scroll's tweens have written to it (inside the
+  // day's frame, twice a frame); ScrollTrigger reads it once per scroll, before any of them.
+  let y = scrollY
   let last = ''
   let scrolled: boolean | null = null
   const render = () => {
-    const s = scrollY > 8
+    const s = y > 8
     if (s !== scrolled) nav?.classList.toggle('is-scrolled', (scrolled = s))
-    const m = Math.round(minutesAt(scrollY))
+    const m = Math.round(minutesAt(y))
     const hh = String(Math.floor(m / 60) % 24).padStart(2, '0')
     const mm = String(m % 60).padStart(2, '0')
     const str = `${hh}:${mm}`
@@ -172,21 +176,18 @@ export function initSky() {
     }
   }
 
-  let ticking = false
-  addEventListener(
-    'scroll',
-    () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        ticking = false
-        render()
-      })
+  // the whole page, start to end: every scroll it reports
+  ScrollTrigger.create({
+    start: 0,
+    end: 'max',
+    onUpdate: (self) => {
+      y = self.scroll()
+      render()
     },
-    { passive: true },
-  )
+  })
   ScrollTrigger.addEventListener('refresh', () => {
     measure()
+    y = scrollY
     render()
   })
   clockState.onChange = render
