@@ -108,3 +108,12 @@ export const holdFor = (el: Element) => {
   const p = el.parentElement
   return p?.classList.contains('pin-hold') ? p : undefined
 }
+
+/**
+ * Write an attribute only when it changes. A browser restyles (and an SVG lays out and repaints)
+ * an element on every setAttribute, even one that writes what is already there; most of what the
+ * scroll moves stands still on most frames.
+ */
+export const put = (el: Element, name: string, value: string) => {
+  if (el.getAttribute(name) !== value) el.setAttribute(name, value)
+}

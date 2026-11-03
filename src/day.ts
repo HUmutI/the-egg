@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, PALETTE, clamp, clockState, holdFor, lerp, nextTask } from './util'
+import { $, $$, PALETTE, clamp, clockState, holdFor, lerp, nextTask, put } from './util'
 import { lang } from './i18n'
 import { holdDock } from './dock'
 import {
@@ -369,7 +369,7 @@ export async function initDay() {
       const heroTf = pose(hero, ours.x, ours.sink, ours.a, tilt, K.hero)
       ;(['top', 'bot'] as const).forEach((p) => {
         const el = pieces[p]
-        if (!popped) return el.setAttribute('transform', heroTf)
+        if (!popped) return put(el, 'transform', heroTf)
         const f = hatching ? band(d, POP, POP + (p === 'top' ? 0.22 : 0.12)) : 1
         const [cx, cy] = PIECE[p]
         const [lx, ly, lr] = landed[p]
@@ -378,20 +378,20 @@ export async function initDay() {
         const x = lerp(x0, PLATE * 5 + lx, f)
         const y = lerp(y0, ly, f) - (p === 'top' ? 250 : 70) * Math.sin(Math.PI * f)
         const r = lerp(0, lr + (p === 'top' ? 360 : 0), easeOut(f))
-        el.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${r.toFixed(1)}) scale(${K.hero}) translate(${-cx} ${-cy})`)
+        put(el, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${r.toFixed(1)}) scale(${K.hero}) translate(${-cx} ${-cy})`)
       })
-      golden.setAttribute('opacity', popped ? '1' : '0')
+      put(golden, 'opacity', popped ? '1' : '0')
       if (hatching && popped) {
         const s1 = band(d, POP, POP + 0.05)
         const s2 = band(d, POP + 0.05, POP + 0.16)
         const sy = s2 > 0 ? lerp(1.1, 1, easeOut(s2)) : lerp(0.86, 1.1, easeOut(s1))
-        golden.setAttribute('transform', `translate(100 266) scale(${(2 - sy).toFixed(3)} ${sy.toFixed(3)}) translate(-100 -266)`)
+        put(golden, 'transform', `translate(100 266) scale(${(2 - sy).toFixed(3)} ${sy.toFixed(3)}) translate(-100 -266)`)
         const r = band(d, POP, POP + 0.2)
-        rays.setAttribute('opacity', (r > 0 && r < 1 ? 1 - r : 0).toFixed(2))
-        rays.setAttribute('transform', `translate(100 146) scale(${(0.85 + 0.45 * r).toFixed(3)}) translate(-100 -146)`)
+        put(rays, 'opacity', (r > 0 && r < 1 ? 1 - r : 0).toFixed(2))
+        put(rays, 'transform', `translate(100 146) scale(${(0.85 + 0.45 * r).toFixed(3)}) translate(-100 -146)`)
       } else {
         golden.removeAttribute('transform')
-        rays.setAttribute('opacity', '0')
+        put(rays, 'opacity', '0')
       }
       const [th, before, after] = CRACKS[state]
       const stage = String(!here || d >= th ? after : before)
@@ -399,13 +399,13 @@ export async function initDay() {
 
       // the door opens on it, standing in the doorway
       const open = state === 0 && here ? easeInOut(band(d, 0.12, 0.55)) : 1
-      door.setAttribute('transform', `translate(230 250) scale(${lerp(1, -0.34, open).toFixed(3)} 1)`)
+      put(door, 'transform', `translate(230 250) scale(${lerp(1, -0.34, open).toFixed(3)} 1)`)
       // sixty seconds on the stopwatch
       const sweep = state === 1 ? (here ? 360 * d : 360) : pos > 1 ? 360 : 0
-      hand.setAttribute('transform', `rotate(${sweep.toFixed(1)} ${WATCH[0]} ${WATCH[1]})`)
+      put(hand, 'transform', `rotate(${sweep.toFixed(1)} ${WATCH[0]} ${WATCH[1]})`)
       // the build, the break, the build again
       const [v, p] = state === 3 && here ? build(d) : pos > 3 ? [3, 1] : [1, 0]
-      bar.setAttribute('width', (194 * Math.max(p, 0)).toFixed(1))
+      put(bar, 'width', (194 * Math.max(p, 0)).toFixed(1))
       const label = `v0.${v} · ${p < 0 ? 'ERR' : Math.round(p * 100) + '%'}`
       if (label !== lastLabel) barLabel.textContent = lastLabel = label
       // and the group chat, which carries on once they've gone

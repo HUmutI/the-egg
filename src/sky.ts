@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, PALETTE, clamp, clockState, lerp } from './util'
+import { $, $$, PALETTE, clamp, clockState, lerp, put } from './util'
 import { lang } from './i18n'
 
 /**
@@ -172,8 +172,9 @@ export function initSky() {
       // the moon takes over around pizza.
       const t = clamp((m - 7 * 60) / (11 * 60), 0, 1)
       const a = Math.PI * (1 - t)
-      sun.setAttribute('cx', String(32 + Math.cos(a) * 29))
-      sun.setAttribute('cy', String(24 - Math.sin(a) * 22))
+      // (from 18:00 on, it stands still: put writes only a change)
+      put(sun, 'cx', String(32 + Math.cos(a) * 29))
+      put(sun, 'cy', String(24 - Math.sin(a) * 22))
       sun.style.fill = m > 17 * 60 + 30 ? PALETTE.lav : PALETTE.yolk
     }
   }
