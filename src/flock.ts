@@ -184,8 +184,17 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
   cells.forEach((c, k) => c.style.setProperty('--n', String(k)))
   const [prev, next] = Array.from(nav.querySelectorAll<HTMLButtonElement>('.flock__arrow'))
 
-  const step = () => Math.max(1, (cells[1]?.offsetLeft ?? 1) - (cells[0]?.offsetLeft ?? 0))
-  const at = () => clamp(Math.round(field.scrollLeft / step()), 0, cells.length - 1)
+  // The row's geometry, measured when it changes size rather than on every scroll frame: reading
+  // it after the counter's text was written would lay the page out again, mid-frame.
+  let stepPx = 1
+  let maxLeft = 0
+  let left = 0
+  const measure = () => {
+    stepPx = Math.max(1, (cells[1]?.offsetLeft ?? 1) - (cells[0]?.offsetLeft ?? 0))
+    maxLeft = field.scrollWidth - field.clientWidth
+    left = field.scrollLeft
+  }
+  const at = () => clamp(Math.round(left / stepPx), 0, cells.length - 1)
   let seen = false
   const talk = () => {
     if (!phone.matches || !seen) return
@@ -197,22 +206,26 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
     if (phone.matches) talk()
     else cells.forEach((c) => c.classList.remove('is-talking'))
   })
+  let shown = -1
   const update = () => {
     const i = at()
-    count.textContent = `${FIG} ${String(i + 1).padStart(2, '0')}`
-    prev.disabled = field.scrollLeft < 4
-    next.disabled = field.scrollLeft > field.scrollWidth - field.clientWidth - 4
+    if (i !== shown) count.textContent = `${FIG} ${String((shown = i) + 1).padStart(2, '0')}`
+    const first = left < 4
+    const end = left > maxLeft - 4
+    if (prev.disabled !== first) prev.disabled = first
+    if (next.disabled !== end) next.disabled = end
   }
 
   nav.addEventListener('click', (e) => {
     const dir = Number((e.target as HTMLElement).closest<HTMLElement>('[data-dir]')?.dataset.dir)
-    if (dir) field.scrollBy({ left: dir * step(), behavior: reducedMotion() ? 'auto' : 'smooth' })
+    if (dir) field.scrollBy({ left: dir * stepPx, behavior: reducedMotion() ? 'auto' : 'smooth' })
   })
   let frame = 0
   let settle = 0
   field.addEventListener(
     'scroll',
     () => {
+      left = field.scrollLeft
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(update)
       clearTimeout(settle)
@@ -238,5 +251,10 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
     },
     { threshold: 0.6 },
   ).observe(field)
-  update()
+  // (its first call comes once the row is laid out)
+  const ro = new ResizeObserver(() => {
+    measure()
+    update()
+  })
+  ;[field, cells[0], cells[cells.length - 1]].forEach((el) => el && ro.observe(el))
 }
