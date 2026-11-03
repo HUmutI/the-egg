@@ -64,7 +64,14 @@ The first screen needs no scroll machinery, so the page arrives in three parts:
   alongside the entry, and started once the fonts are in (or after 1.2 s).
   Each scene is set up in its own task, with one ScrollTrigger refresh at
   the end; later height changes (an FAQ answer, the next-Sunday lines, a late
-  font or image at load) re-measure from there.
+  font or image at load) re-measure from there. Anything that lays the page
+  out at length gets tasks of its own, so none runs past ~50 ms on a slow
+  phone: the statement's size is searched a few tries a task, a phone's day
+  stage and plate scale are set before its walk, the who-comes figures go up
+  four at a time, each pinned scene is first measured in the task after it is
+  made, and the far sections go to sleep one a frame. The day's pins sit in
+  spacers of their own (`.pin-hold`, made when the plates are drawn), so a
+  refresh never takes the day out of the page and rebuilds it.
 - `src/portal.ts` (the cabinet and Night Shift): fetched on the reader's
   first scroll, touch or key (or after a long idle, or when the footer is
   near), and its refresh waits for the scroll to stop.
