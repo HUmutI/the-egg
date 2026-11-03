@@ -59,11 +59,14 @@ export function initPortal() {
   const settle = gsap.parseEase('power3.out')
   const ride = gsap.parseEase('power2.in')
   const reveal = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
+  // the night's radius goes on the sky itself: on the stage, every frame of the reveal restyled
+  // the whole cabinet and the game inside it
+  const sky = $('.portal__sky', stage)
   if (reduce) {
-    reveal.set(stage, { '--r': '150%' }).set(cabinet, { opacity: 1 })
+    reveal.set(sky, { '--r': '150%' }).set(cabinet, { opacity: 1 })
   } else {
     reveal
-      .fromTo(stage, { '--r': '0%' }, { '--r': '150%', duration: 0.4, ease: 'power2.in' }, 0)
+      .fromTo(sky, { '--r': '0%' }, { '--r': '150%', duration: 0.4, ease: 'power2.in' }, 0)
       .fromTo(
         cabinet,
         { opacity: 0, scale: 0.86, rotateX: 18 },
