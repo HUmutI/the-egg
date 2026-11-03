@@ -69,26 +69,34 @@ function watchLayout() {
 }
 
 // The night-shift game (and the portal that opens onto it) lives past the
-// footer, so it is its own chunk: fetched once the page is idle, or sooner
-// if the reader is already heading down there. Its triggers sit below every
-// other one, so a refresh once it's in is all the page needs.
+// footer, so it is its own chunk: fetched as soon as the reader does anything
+// (a scroll, a touch, a key), or when the page has long been idle, and sooner
+// still if the reader is already heading down there. Its triggers sit below
+// every other one, so a refresh once it's in is all the page needs; if the
+// reader is mid-scroll, that waits for the scroll to stop, so it never costs
+// a frame under their finger.
 function loadPortal() {
   const portal = document.getElementById('portal')
   if (!portal) return
+  const INTENT = ['scroll', 'pointerdown', 'touchstart', 'keydown'] as const
   let requested = false
   const load = () => {
     if (requested) return
     requested = true
     io.disconnect()
-    import('./portal').then(({ initPortal }) => {
+    INTENT.forEach((type) => removeEventListener(type, load))
+    import('./portal').then(async ({ initPortal }) => {
       initPortal()
-      ScrollTrigger.refresh()
+      await nextTask()
+      ScrollTrigger.refresh(true)
     })
   }
   const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && load(), {
     rootMargin: '150% 0px',
   })
   io.observe(document.getElementById('foot') ?? portal)
-  if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 4000 })
-  else setTimeout(load, 2500)
+  INTENT.forEach((type) => addEventListener(type, load, { once: true, passive: true }))
+  const idle = () => setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(load) : load()), 6000)
+  if (document.readyState === 'complete') idle()
+  else addEventListener('load', idle, { once: true })
 }
