@@ -49,8 +49,27 @@ export const clockState = {
  */
 export function sleepOffscreen(els: Element[]) {
   if (!('IntersectionObserver' in window)) return
+  // Putting a section to sleep restyles everything in it, and the first report has nearly every
+  // section off screen: put together, that is one long frame. So those first sleeps go one
+  // section a frame (nobody sees a section off screen a few frames longer awake); waking, and
+  // every later report, is at once.
+  const first = new Set(els)
+  const queue: Element[] = []
+  const drowse = () => {
+    const el = queue.shift()
+    if (el && first.delete(el)) el.classList.add('is-asleep')
+    if (queue.length) requestAnimationFrame(drowse)
+  }
   const io = new IntersectionObserver(
-    (entries) => entries.forEach((e) => e.target.classList.toggle('is-asleep', !e.isIntersecting)),
+    (entries) =>
+      entries.forEach(({ target, isIntersecting }) => {
+        if (first.has(target) && !isIntersecting) {
+          if (queue.push(target) === 1) requestAnimationFrame(drowse)
+          return
+        }
+        first.delete(target)
+        target.classList.toggle('is-asleep', !isIntersecting)
+      }),
     { rootMargin: '120px 0px' },
   )
   els.forEach((el) => io.observe(el))
