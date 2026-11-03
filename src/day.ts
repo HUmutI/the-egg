@@ -16,9 +16,8 @@ import {
   STAGE,
   STAIRS,
   WATCH,
-  castSvg,
-  installDayDefs,
-  plateSvg,
+  DAY_MEDIA,
+  drawPlates,
 } from './dayplates'
 
 const toMin = (s: string) => {
@@ -74,32 +73,8 @@ const build = (d: number): [number, number] => {
   return [3, band(d, 0.75, 0.95)]
 }
 
-/**
- * The plates as the wide layouts draw them, framed for the phone story, or
- * framed so and cut to their ink for a narrow vertical programme. Drawn again
- * only when the layout needs another kind (renderDay draws the wide ones).
- */
-type Plates = 'wide' | 'phone' | 'crop'
-let drawn: Plates = 'wide'
-const drawPlates = (kind: Plates) => {
-  if (kind === drawn) return
-  drawn = kind
-  $$<HTMLElement>('#day .step__fig').forEach((fig, i) => (fig.innerHTML = plateSvg(i, kind !== 'wide', kind === 'crop')))
-}
-
 /** Air the phone story keeps at least above and below the step's copy. */
 const AIR = 22
-
-/** Draw the plates and the cast. Runs before anything measures the page. */
-export function renderDay() {
-  installDayDefs()
-  $$<HTMLElement>('#day .step').forEach((s, i) => {
-    const fig = s.querySelector('.step__fig')
-    if (fig && !fig.childElementCount) fig.innerHTML = plateSvg(i)
-  })
-  const cast = document.getElementById('dayCast')
-  if (cast && !cast.childElementCount) cast.innerHTML = castSvg()
-}
 
 /**
  * "A day at the club": a programme from 10:30 to 20:00, set on a hairline,
@@ -461,10 +436,10 @@ export function initDay() {
     }
   }
 
-  mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', walk(false))
+  mm.add(DAY_MEDIA.wide, walk(false))
   // a phone at least 720px tall keeps the heading on the stage (.day--tall); a shorter one gives the plate the room
-  mm.add('(max-width: 899px) and (orientation: portrait) and (min-height: 720px) and (prefers-reduced-motion: no-preference)', walk(true, true))
-  mm.add('(max-width: 899px) and (orientation: portrait) and (max-height: 719.98px) and (prefers-reduced-motion: no-preference)', walk(true))
+  mm.add(DAY_MEDIA.phoneTall, walk(true, true))
+  mm.add(DAY_MEDIA.phoneShort, walk(true))
 
   /**
    * The vertical programme: phones on their side, and reduced motion. Narrower than the wide
@@ -515,6 +490,6 @@ export function initDay() {
       section.classList.remove('day--crop')
     }
   }
-  mm.add('(max-width: 899px) and (orientation: landscape), (max-width: 899px) and (prefers-reduced-motion: reduce)', book(true))
-  mm.add('(min-width: 900px) and (prefers-reduced-motion: reduce)', book(false))
+  mm.add(DAY_MEDIA.crop, book(true))
+  mm.add(DAY_MEDIA.still, book(false))
 }

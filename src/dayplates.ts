@@ -1,4 +1,4 @@
-import { PALETTE } from './util'
+import { $$, PALETTE } from './util'
 import { handEgg } from './riso'
 import { lang } from './i18n'
 
@@ -407,4 +407,46 @@ export function plateSvg(step: number, ph = false, crop = false) {
   const top = PH.top[step] - 12
   const box = crop ? `${l} ${top} ${r - l} ${GROUND - top}` : `0 0 ${PLATE} 600`
   return `<svg viewBox="${box}" aria-hidden="true" focusable="false">${PLATES[step](ph)}${castAt(step, ph)}</svg>`
+}
+
+/**
+ * The day's layouts: day.ts runs one walk or programme per query, and each wants its own plates
+ * (`wide` and `still`: as the wide layouts draw them; the phone walks: framed for the phone story;
+ * `crop`: framed so and cut to their ink, for a narrow vertical programme).
+ */
+export const DAY_MEDIA = {
+  wide: '(min-width: 900px) and (prefers-reduced-motion: no-preference)',
+  phoneTall: '(max-width: 899px) and (orientation: portrait) and (min-height: 720px) and (prefers-reduced-motion: no-preference)',
+  phoneShort: '(max-width: 899px) and (orientation: portrait) and (max-height: 719.98px) and (prefers-reduced-motion: no-preference)',
+  crop: '(max-width: 899px) and (orientation: landscape), (max-width: 899px) and (prefers-reduced-motion: reduce)',
+  still: '(min-width: 900px) and (prefers-reduced-motion: reduce)',
+} as const
+
+type Plates = 'wide' | 'phone' | 'crop'
+let drawn: Plates | null = null
+/** Draw the plates for a layout; drawn again only when the layout needs another kind. */
+export const drawPlates = (kind: Plates) => {
+  if (kind === drawn) return
+  drawn = kind
+  $$<HTMLElement>('#day .step__fig').forEach((fig, i) => (fig.innerHTML = plateSvg(i, kind !== 'wide', kind === 'crop')))
+}
+
+/**
+ * Draw the plates and the cast. Runs before anything measures the page, and draws the plates
+ * the layout on screen will want, so a phone doesn't draw the wide ones only to throw them away.
+ */
+export function renderDay() {
+  installDayDefs()
+  const on = (q: string) => matchMedia(q).matches
+  const kind: Plates = on(DAY_MEDIA.crop) ? 'crop' : on(DAY_MEDIA.phoneTall) || on(DAY_MEDIA.phoneShort) ? 'phone' : 'wide'
+  // Every stroke takes its gap from the order it's drawn in (print, inkEgg), and the wide plates
+  // have always been written first, then the cast, then any other framing: write them still, so
+  // each line keeps its gap, but only put the plates on the page that the layout will show.
+  const wide = PLATES.map((_, i) => plateSvg(i))
+  const cast = document.getElementById('dayCast')
+  if (cast && !cast.childElementCount) cast.innerHTML = castSvg()
+  if (kind === 'wide') {
+    drawn = 'wide'
+    $$<HTMLElement>('#day .step__fig').forEach((fig, i) => (fig.innerHTML = wide[i]))
+  } else drawPlates(kind)
 }
