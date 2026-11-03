@@ -1,4 +1,4 @@
-import { $$, PALETTE } from './util'
+import { $, $$, PALETTE, holdPin } from './util'
 import { handEgg } from './riso'
 import { lang } from './i18n'
 
@@ -437,6 +437,14 @@ export const drawPlates = (kind: Plates) => {
  */
 export function renderDay() {
   installDayDefs()
+  // What pins in the day gets its spacer now, before the plates are written into it: the
+  // section on wide screens, the stage (with its heading) on tall phones, the stage alone on short ones.
+  const day = document.getElementById('day')
+  if (day) {
+    holdPin(day, 'day')
+    holdPin($('.day__pin', day), 'stage')
+    holdPin($('.day__viewport', day), 'view')
+  }
   const on = (q: string) => matchMedia(q).matches
   const kind: Plates = on(DAY_MEDIA.crop) ? 'crop' : on(DAY_MEDIA.phoneTall) || on(DAY_MEDIA.phoneShort) ? 'phone' : 'wide'
   // Every stroke takes its gap from the order it's drawn in (print, inkEgg), and the wide plates

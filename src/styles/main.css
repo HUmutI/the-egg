@@ -1724,6 +1724,21 @@ h2 {
   /* one column per step; its 4:3 plate has to fit under the heading and the copy */
   --col: clamp(300px, min(31vw, calc((100svh - 450px) * 1.333)), 560px);
 }
+/* What pins in the day is held in a spacer of its own (holdPin in src/util.ts, put around it
+   when the plates are drawn), not one ScrollTrigger makes: its own is taken out of the page on
+   every refresh with the scene in it, and put back, and a scene put back (some six hundred
+   elements here, most of them the plates' ink) is styled and laid out anew. A holder stays, and
+   is only restyled. Pinned, ScrollTrigger gives a holder the display of what it holds, so a
+   holder already has it where its scene pins, and the scene is never rebuilt; there it is laid
+   out as ScrollTrigger's own spacer was (a row, its scene as wide as it). Where its scene doesn't
+   pin it is no box. */
+.pin-hold--day {
+  display: block;
+}
+.pin-hold--stage,
+.pin-hold--view {
+  display: contents;
+}
 .day__pin {
   position: relative;
   min-height: 100svh;
@@ -2158,6 +2173,12 @@ h2 {
     flex: 1;
     height: auto;
     min-height: 0;
+  }
+  /* (the holders: the stage pins with the heading on a tall screen, the stage alone on a short one) */
+  .day--tall .pin-hold--stage,
+  .day--story:not(.day--tall) .pin-hold--view {
+    display: flex;
+    align-items: flex-start;
   }
   /* the programme, then the step in the height that's left */
   .day--story .day__viewport {

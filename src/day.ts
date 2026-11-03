@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, PALETTE, clamp, clockState, lerp } from './util'
+import { $, $$, PALETTE, clamp, clockState, holdFor, lerp } from './util'
 import { lang } from './i18n'
 import { holdDock } from './dock'
 import {
@@ -394,6 +394,8 @@ export function initDay() {
     const st = ScrollTrigger.create({
       trigger: phone ? box : section,
       pin: phone ? box : true,
+      pinSpacer: holdFor(phone ? box : section),
+      pinSpacing: true,
       // a phone pins just under the nav: the heading and the stage, or the stage once the heading has gone by
       start: phone ? () => `top ${nav.offsetHeight}px` : 'top top',
       end: () => '+=' + innerHeight * 0.55 * tl.duration(),

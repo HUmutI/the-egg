@@ -65,3 +65,27 @@ export const nextTask = (): Promise<void> => {
   const s = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler
   return s?.yield ? s.yield() : new Promise((r) => setTimeout(r, 0))
 }
+
+/**
+ * Hold an element that will pin in a spacer of our own, a `.pin-hold` (main.css), put around it
+ * before ScrollTrigger needs one (holdFor finds it). ScrollTrigger takes its own spacer out of the
+ * page on every refresh, with the scene in it, and puts the scene back, and a scene put back is
+ * styled and laid out anew, every element in it. One that stays in its holder is only restyled.
+ */
+export const holdPin = (el: Element | null, kind: string) => {
+  if (!el?.parentElement) return
+  const hold = document.createElement('div')
+  hold.className = `pin-hold pin-hold--${kind}`
+  el.before(hold)
+  hold.append(el)
+}
+
+/**
+ * The spacer a pin is held in (holdPin), else none, and ScrollTrigger makes its own. (A holder may
+ * be a flex box, and ScrollTrigger leaves out the spacing under a pin whose parent is one unless
+ * told, so a pin held in one asks for it: `pinSpacing: true`.)
+ */
+export const holdFor = (el: Element) => {
+  const p = el.parentElement
+  return p?.classList.contains('pin-hold') ? p : undefined
+}
