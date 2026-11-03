@@ -55,3 +55,13 @@ export function sleepOffscreen(els: Element[]) {
   )
   els.forEach((el) => io.observe(el))
 }
+
+/**
+ * Hand the main thread back (to input, to a frame) before going on, so long boot work runs as
+ * several short tasks instead of one long one. scheduler.yield() resumes ahead of other queued
+ * work; elsewhere a new task does.
+ */
+export const nextTask = (): Promise<void> => {
+  const s = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler
+  return s?.yield ? s.yield() : new Promise((r) => setTimeout(r, 0))
+}
