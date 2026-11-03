@@ -1,4 +1,5 @@
 import { lang } from './i18n'
+import { nextTask } from './util'
 
 const API = 'https://app.the-egg.club/api/next-event'
 
@@ -30,6 +31,16 @@ function fill(el: HTMLElement | null, key: string, vars: Record<string, string>)
   return true
 }
 
+/** The dates as the club writes them, on Istanbul's clock (made once). */
+let made: { short: Intl.DateTimeFormat; long: Intl.DateTimeFormat } | null = null
+function formats() {
+  if (made) return made
+  const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
+  const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale, { ...o, timeZone: 'Europe/Istanbul' })
+  made = { short: fmt({ weekday: 'short', day: 'numeric', month: 'short' }), long: fmt({ weekday: 'long', day: 'numeric', month: 'long' }) }
+  return made
+}
+
 const escape = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
@@ -42,6 +53,8 @@ const escape = (s: string) =>
  */
 export async function initNextSunday() {
   let event: NextEvent | null
+  // The first date format in a time zone is slow (it loads the zone data): do it while the app answers.
+  void nextTask().then(formats)
   try {
     const res = await fetch(API, { signal: AbortSignal.timeout(4000) })
     if (!res.ok) return
@@ -61,13 +74,11 @@ export async function initNextSunday() {
   const state: State =
     age > 0 ? 'live' : event.applicationsOpen === true ? 'open' : event.applicationsOpen === false ? 'soon' : 'next'
 
-  const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
-  const tz = 'Europe/Istanbul'
-  const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale, { ...o, timeZone: tz }).format(start)
+  const { short, long } = formats()
   const vars = {
     n: String(event.number).padStart(3, '0'),
-    short: fmt({ weekday: 'short', day: 'numeric', month: 'short' }),
-    long: fmt({ weekday: 'long', day: 'numeric', month: 'long' }),
+    short: short.format(start),
+    long: long.format(start),
     place: event.location?.trim() || (lang === 'tr' ? 'ODTÜ, Ankara' : 'METU, Ankara'),
   }
 
