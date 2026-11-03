@@ -3422,7 +3422,9 @@ body.is-arcade .nav {
   opacity: 0;
   pointer-events: none;
 }
-body.is-arcade .nav > * {
+/* (the nav's three parts by name: `.nav > *` would have the arcade's class on the body restyle the
+   whole page as you arrive, the browser unable to tell what under the body might now match) */
+body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   pointer-events: none;
 }
 .nav {
