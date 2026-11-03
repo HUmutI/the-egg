@@ -4182,3 +4182,12 @@ body.is-arcade .nav > * {
 .is-asleep .screen::after {
   animation-play-state: paused !important;
 }
+/* The programme's eggs fade to their colour as the day reaches them, and the
+   hollow ones wear the page's colour, which drifts on every frame of a colour
+   change: each change starts their fade over, so they keep a transition
+   running for as long as the sky moves, all the way down the page. Out of
+   sight they take the colour at once. */
+.is-asleep .step__node,
+.is-asleep .ticker__node::before {
+  transition: transform 0.5s var(--ease-spring);
+}
