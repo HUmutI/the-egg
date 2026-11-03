@@ -642,9 +642,14 @@ export function createNightShift(opts: {
     screenEl.style.aspectRatio = `${VW} / ${H}`
     screenEl.classList.toggle('is-narrow', narrow)
     ctx.imageSmoothingEnabled = false
+    // the floats' type, set here once (a new canvas size resets it) and again when a font arrives:
+    // setting it in the loop made the browser bring the page's style up to date every frame
+    ctx.font = '8px Silkscreen, monospace'
+    ctx.textAlign = 'center'
   }
   new ResizeObserver(fit).observe(screenEl.parentElement!)
   fit()
+  document.fonts.addEventListener('loadingdone', fit)
 
   const bg = document.createElement('canvas')
   bg.width = W
@@ -1127,8 +1132,6 @@ export function createNightShift(opts: {
     }
 
     for (const s of sparks) pix(ctx, s.x, s.y, s.c, 2, 2)
-    ctx.font = '8px Silkscreen, monospace'
-    ctx.textAlign = 'center'
     for (const f of floats) {
       ctx.globalAlpha = Math.max(0, 1 - f.t / 1.2)
       ctx.fillStyle = DARK
