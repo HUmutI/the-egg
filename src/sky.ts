@@ -92,6 +92,13 @@ export function initSky() {
   // The sky is one colour, --page: the body paints it and the nav's backdrop band tints itself
   // with it, so both drift together (see paintSky).
   gsap.set(sky, { c: PALETTE.butter })
+  // At night the focus ring turns yolk (main.css). That rule is a sheet of its own, switched on
+  // with the night, rather than a custom property set on the body's class: one there restyles
+  // every element on the page as night falls; the sheet restyles only what has focus.
+  const nightRing = document.createElement('style')
+  nightRing.textContent = ':focus-visible { --focus: var(--yolk); }'
+  document.head.append(nightRing)
+  nightRing.disabled = true
   $$('[data-bg]').forEach((el) => {
     // The day section paints its own sky as it goes (day.ts keeps data-sky
     // current); every other section is one colour.
@@ -108,6 +115,7 @@ export function initSky() {
         root.dataset.sky = el.id
         gsap.to(sky, { c: color, duration: 0.9, ease: 'power2.out', overwrite: true })
         body.classList.toggle('is-night', el.dataset.bg === 'night')
+        nightRing.disabled = el.dataset.bg !== 'night'
         meta?.setAttribute('content', color)
       },
     })

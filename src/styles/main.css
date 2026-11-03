@@ -125,15 +125,15 @@ p {
 }
 
 /* one focus ring everywhere: ink on the day's paper, yolk once it's night
-   (tomato fell under 3:1 on lavender, pink and yolk) */
+   (tomato fell under 3:1 on lavender, pink and yolk; at night src/sky.ts
+   switches on a sheet that turns every ring yolk) */
 :focus-visible {
   outline: 2.5px solid var(--focus);
   outline-offset: 3px;
   border-radius: 6px;
 }
 .foot,
-.stage,
-body.is-night {
+.stage {
   --focus: var(--yolk);
 }
 
