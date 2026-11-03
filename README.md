@@ -90,9 +90,10 @@ little per frame, and nothing changes in a way that spreads:
   at runtime: either makes each change of that class restyle everything
   under the element. Name the children instead (the flock's moving pieces
   are `fx__bit`s for this, and the arcade's rule names the nav's parts).
-- Nothing set on the body changes as you scroll except its background: a
-  custom property there restyles the whole page. That is why the night's
-  focus ring is a sheet that `src/sky.ts` turns on and off.
+- No custom property changes on the body (or `:root`) as you scroll, not
+  even through a class there: one changed there restyles the whole page.
+  That is why the night's focus ring is a sheet that `src/sky.ts` turns on
+  and off.
 - The day's frame writes an attribute only when it changes (`put()` in
   `src/util.ts`): an SVG element is restyled on every write, even one with
   the same value.
