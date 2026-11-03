@@ -17,6 +17,12 @@
       href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=Reenie+Beanie&display=swap"
     />
     <style>
+      @font-face {
+        font-family: 'Reenie Beanie TR';
+        src: url('/fonts/ReenieBeanieTR-supplement.woff2') format('woff2');
+        unicode-range: U+011E-011F, U+0130, U+015E-015F;
+        font-display: swap;
+      }
       :root {
         --butter: #fdf3d7;
         --cream: #fdf8ef;
@@ -27,7 +33,7 @@
         --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
         --f-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
         --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-        --f-hand: 'Reenie Beanie', 'Bradley Hand', cursive;
+        --f-hand: 'Reenie Beanie', 'Reenie Beanie TR', 'Bradley Hand', cursive;
         --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
         --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       }

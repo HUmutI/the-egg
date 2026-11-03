@@ -23,7 +23,7 @@ export const FIG_VIEWBOX = '-40 -50 290 370'
 
 const MONO = `font-family="DM Mono, ui-monospace, monospace"`
 const SERIF = `font-family="Fraunces, Georgia, serif"`
-const HAND = `font-family="Reenie Beanie, cursive"`
+const HAND = `font-family="'Reenie Beanie', 'Reenie Beanie TR', cursive"`
 
 /** A pen line: thin, round-capped, slightly wobbly. */
 const pen = (d: string, w = 3, c: string = I, extra = '') =>

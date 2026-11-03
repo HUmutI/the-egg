@@ -17,7 +17,9 @@ export function initHero() {
     if (!sheets.length) return
     // The notes are handwriting: wait for that font so they don't redraw
     // in a fallback face, but never hold them back for long.
-    const fonts = Promise.race([document.fonts.load('40px "Reenie Beanie"'), new Promise((r) => setTimeout(r, 1200))])
+    // (the TR supplement too, so ğ ş İ don't arrive a beat after the rest)
+    const hand = Promise.all([document.fonts.load('40px "Reenie Beanie"'), document.fonts.load('40px "Reenie Beanie TR"', 'ğşİ')])
+    const fonts = Promise.race([hand, new Promise((r) => setTimeout(r, 1200))])
     const delay = new Promise((r) => setTimeout(r, reducedMotion() ? 0 : 350))
     Promise.all([fonts, delay]).then(() => sheets.forEach((s) => s.classList.add('is-drawn')))
   }

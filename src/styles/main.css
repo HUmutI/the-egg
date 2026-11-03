@@ -4,6 +4,18 @@
    peach sunset, pink dusk, yolk evening, plum night.
    ────────────────────────────────────────────────────────────── */
 
+/* Reenie Beanie has no ğ Ğ ş Ş İ (Google serves it latin-only), so Turkish
+   notes fell back to another hand. This supplement builds those five letters
+   from the font's own g G s S I and its own breve, cedilla and dot accent,
+   placed the way its ă, ç and ė are; the browser takes only these letters
+   from it (OFL, see /fonts/ReenieBeanie-OFL.txt). */
+@font-face {
+  font-family: 'Reenie Beanie TR';
+  src: url('/fonts/ReenieBeanieTR-supplement.woff2') format('woff2');
+  unicode-range: U+011E-011F, U+0130, U+015E-015F;
+  font-display: swap;
+}
+
 :root {
   --butter: #fdf3d7;
   --cream: #fdf8ef;
@@ -33,7 +45,7 @@
   --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --f-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
   --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --f-hand: 'Reenie Beanie', 'Bradley Hand', cursive;
+  --f-hand: 'Reenie Beanie', 'Reenie Beanie TR', 'Bradley Hand', cursive;
 
   /* notch and home bar (only non-zero with viewport-fit=cover) */
   --safe-t: env(safe-area-inset-top, 0px);
