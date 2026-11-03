@@ -25,7 +25,7 @@ export async function start() {
   await nextTask()
   initDay()
   await nextTask()
-  initFlock()
+  await initFlock()
   await nextTask()
   initRules()
   initPhone()

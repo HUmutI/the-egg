@@ -1,5 +1,5 @@
 import { gsap } from 'gsap'
-import { $, clamp, reducedMotion } from './util'
+import { $, clamp, nextTask, reducedMotion } from './util'
 import { FIG_VIEWBOX, emptyEgg, figure, type Kind } from './figures'
 import { lang } from './i18n'
 
@@ -38,7 +38,7 @@ const FIG = lang === 'tr' ? 'şek.' : 'fig.'
 
 const svg = (inner: string) => `<svg viewBox="${FIG_VIEWBOX}" aria-hidden="true" focusable="false">${inner}</svg>`
 
-export function initFlock() {
+export async function initFlock() {
   const field = $('#flockField')
   if (!field) return
 
@@ -57,7 +57,6 @@ export function initFlock() {
       <span class="bird__say" aria-hidden="true">“${b.say}”</span>
       <span class="bird__body">${svg(figure(b.kind, lang))}</span>
       <span class="bird__name" aria-hidden="true">${b.name}</span>`
-    field.append(el)
     cells.push(el)
   })
 
@@ -76,7 +75,6 @@ export function initFlock() {
     <span class="bird__say" aria-hidden="true">“${lang === 'tr' ? 'üzerinde adın yazan bir sandalye var.' : 'there’s a seat with your name on it.'}”</span>
     <span class="bird__body">${svg(emptyEgg(lang))}</span>
     <span class="bird__name" aria-hidden="true">${lang === 'tr' ? 'devamı var' : 'to be continued'}</span>`
-  field.append(you)
   cells.push(you)
 
   const note = document.createElement('div')
@@ -86,7 +84,15 @@ export function initFlock() {
     lang === 'tr'
       ? `<p class="hand">birini çek.<br/>geri sıçrar.</p><p class="mono">levha 02 · müdavimler</p>`
       : `<p class="hand">pull one.<br/>it bounces back.</p><p class="mono">plate 02 · the regulars</p>`
-  field.append(note)
+
+  // The plate goes up a few figures at a time, each few laid out in a task of its own: nine
+  // inked figures laid out at once (by whatever reads the page next) are one long task.
+  const parts = [...cells, note]
+  for (let i = 0; i < parts.length; i += 4) {
+    if (i) await nextTask()
+    field.append(...parts.slice(i, i + 4))
+    void field.offsetHeight
+  }
 
   // Tap to read the quote on touch.
   cells.forEach((el) => {
