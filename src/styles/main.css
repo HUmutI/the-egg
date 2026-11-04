@@ -728,7 +728,10 @@ body.is-night .nav::before {
   width: 100%;
   height: auto;
   aspect-ratio: 1660 / 948;
-  opacity: 0;
+  /* not quite 0: an element at opacity 0 isn't counted as painted, so the poster's
+     paint (the page's largest) would only be recorded once the fade starts. 0.01 is
+     invisible on the cream and lets it count the moment it arrives. */
+  opacity: 0.01;
   transition: opacity 0.4s var(--ease-out);
 }
 .hero__art img.is-in {
