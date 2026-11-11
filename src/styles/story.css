@@ -49,6 +49,8 @@
   align-items: center;
   gap: 6px 10px;
   color: var(--ink);
+  letter-spacing: 0.08em;
+  text-wrap: balance;
 }
 /* the status rides in a pill, so on a narrow phone it drops to its own line cleanly */
 .hero__pill {
