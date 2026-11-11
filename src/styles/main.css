@@ -2788,8 +2788,11 @@ html:not(.js) .rule__fix,
   padding: 10px var(--gut) calc(26px + var(--safe-b));
   color: rgba(253, 248, 239, 0.66);
 }
-/* phones: every footer link is a full finger tall */
+/* phones: every footer link is a full finger tall, and the base line keeps to the essentials */
 @media (max-width: 700px) {
+  .foot__made {
+    display: none;
+  }
   .foot__cols ul {
     gap: 0;
   }
@@ -3751,6 +3754,7 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
    this list. */
 .is-asleep :is(.spark, .dash, .built__track, .chip--sun i, .egg__eyes, .egg__dash, .fx-lamp, .fx-swatch, .fx-spark, .fx-human, .fx-glint, .fx-sweat, .fx__bit, .faq__a, .foot__arrow, .live-badge__dot, .mark__eyes, .crt--scan, .gd__more),
 .is-asleep .ticket__status::before,
+.is-asleep .hero__next::before,
 .is-asleep .screen::after {
   animation-play-state: paused !important;
 }

@@ -69,6 +69,11 @@
   background: var(--yolk);
   box-shadow: 0 0 0 1.5px var(--ink);
 }
+/* on the day itself the little egg goes tomato and beats, like the ticket's */
+.hero__info .hero__next[data-state='live']::before {
+  background: var(--tomato);
+  animation: ticket-live 1.6s ease-in-out infinite;
+}
 
 /* phones: the two facts (time · where) side by side on one line */
 @media (max-width: 600px) {
