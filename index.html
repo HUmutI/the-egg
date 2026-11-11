@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title data-i18n-tr="The Egg Club — Ankara’da bir şeyler üretenlerin pazar kulübü">The Egg Club — a free Sunday build club in Ankara</title>
+    <title>The Egg Club — a free Sunday build club in Ankara</title>
     <meta
       name="description"
       content="Every other Sunday at METU: doors at 10:30, build all day, pitches at 17:30. Bir şeyler üretenlerin Pazar kulübü: iki haftada bir ODTÜ’de, ücretsiz."
@@ -13,12 +13,9 @@
 
     <!-- Runs before any stylesheet, so a pending (cross-origin) one never holds it, or the parser, up. -->
     <script>
-      // Mirrors getLang() in src/i18n.ts: a Turkish visitor shouldn't see the
-      // English source flash first, so its translatable text waits for
-      // applyI18n() (or 3 s, if the script never arrives).
+      // Marks the page as scripted (the drawn-in notes, the reveals) before the first paint.
       ;(function () {
         var d = document.documentElement
-        var l = null
         d.classList.add('js')
         // A page that may open further down (a reload, back/forward, a #link) dims the house
         // rules from the first paint; one read from the top dims them as the reader nears (story.ts).
@@ -26,7 +23,6 @@
           var n = performance.getEntriesByType('navigation')[0]
           if (location.hash || (n && n.type !== 'navigate')) d.classList.add('dim-ahead')
         } catch (e) {}
-        // (English only: no Turkish swap to wait for)
       })()
     </script>
 
@@ -65,7 +61,6 @@
     <meta property="og:site_name" content="The Egg Club" />
     <meta property="og:url" content="https://the-egg.club/" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="tr_TR" />
     <meta property="og:title" content="The Egg Club — a free Sunday build club in Ankara" />
     <meta
       property="og:description"
@@ -117,7 +112,7 @@
             "@id": "https://the-egg.club/#site",
             "name": "The Egg Club",
             "url": "https://the-egg.club/",
-            "inLanguage": ["en", "tr"],
+            "inLanguage": "en",
             "publisher": { "@id": "https://the-egg.club/#org" }
           },
           {
@@ -176,11 +171,11 @@
         </filter>
       </defs>
     </svg>
-    <a class="skip" href="#what" data-i18n-tr="İçeriğe geç">Skip to content</a>
+    <a class="skip" href="#what">Skip to content</a>
 
     <!-- ───────────── NAV + CLUB CLOCK ───────────── -->
     <header class="nav" id="nav">
-      <a class="nav__logo" href="#top" aria-label="The Egg Club, back to top" data-i18n-tr-attr-aria-label="The Egg Club, başa dön">
+      <a class="nav__logo" href="#top" aria-label="The Egg Club, back to top">
         <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><clipPath id="navMark"><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z"/></clipPath><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z" fill="#d39100"/><g clip-path="url(#navMark)"><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z" fill="#f4b52a" transform="translate(-5 -4)"/><ellipse cx="20.5" cy="20" rx="3.6" ry="6.6" transform="rotate(30 20.5 20)" fill="#fdf3d7"/></g><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z" fill="none" stroke="#1f1722" stroke-width="4.2" stroke-linejoin="round"/><g class="mark__eyes"><ellipse cx="24" cy="36" rx="4" ry="5" fill="#1f1722"/><ellipse cx="40" cy="36" rx="4" ry="5" fill="#1f1722"/></g></svg>
         <span>the egg club</span>
       </a>
@@ -191,15 +186,15 @@
           <circle class="clock__sun" r="4" cx="3" cy="24" />
         </svg>
         <span class="clock__time">09:00</span>
-        <span class="clock__label" data-i18n-tr="kapılar yakında">doors soon</span>
+        <span class="clock__label">doors soon</span>
       </div>
 
-      <nav class="nav__links" aria-label="Primary" data-i18n-tr-attr-aria-label="Ana menü">
-        <a href="#day" data-i18n-tr="Gün">The day</a>
-        <a href="#who" data-i18n-tr="Kimler geliyor">Who comes</a>
-        <a href="#faq" data-i18n-tr="SSS">FAQ</a>
-        <a href="https://app.the-egg.club/projects" class="btn btn--cream btn--sm nav__app" target="_blank" rel="noopener"><span class="nav__app-long" data-i18n-tr="Projeler ↗">Projects ↗</span><span class="nav__app-short" data-i18n-tr="Projeler">Projects</span></a>
-        <a href="https://luma.com/r5khs24x" class="btn btn--ink btn--sm" target="_blank" rel="noopener"><span data-i18n-tr="Başvur">Apply</span></a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#day">The day</a>
+        <a href="#who">Who comes</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://app.the-egg.club/projects" class="btn btn--cream btn--sm nav__app" target="_blank" rel="noopener"><span class="nav__app-long">Projects ↗</span><span class="nav__app-short">Projects</span></a>
+        <a href="https://luma.com/r5khs24x" class="btn btn--ink btn--sm" target="_blank" rel="noopener"><span>Apply</span></a>
       </nav>
     </header>
 
@@ -207,7 +202,7 @@
       <!-- ───────────── 09:00 · HERO ───────────── -->
       <section class="hero" id="top" data-bg="butter" aria-labelledby="heroTitle">
         <div class="hero__meta">
-          <p class="mh__title hide-sm"><em data-i18n-tr="bir şeyler yapan insanlar için bir pazar kulübü">a Sunday club for people who make things</em></p>
+          <p class="mh__title hide-sm"><em>a Sunday club for people who make things</em></p>
         </div>
 
         <h1 class="visually-hidden" id="heroTitle">The Egg Club</h1>
@@ -237,18 +232,17 @@
               onload="this.classList.add('is-in')"
               onerror="this.classList.add('is-in')"
               alt="“the egg club” in large serif letters. A golden egg has cracked open in the middle, and people tumble out of it with laptops, books, pizza, coffee, a camera, headphones and a disco ball."
-              data-i18n-tr-attr-alt="Büyük serif harflerle “the egg club” yazısı. Ortada altın rengi bir yumurta çatlamış; içinden laptoplar, kitaplar, pizza, kahve, bir fotoğraf makinesi, kulaklıklar ve bir disko topuyla insanlar dökülüyor."
             />
           </picture>
             <svg class="doodles doodles--wide" id="doodles" viewBox="0 0 1660 948" aria-hidden="true">
               <!-- good ideas hatch here → the crack -->
               <g class="dd dd--a" data-redraw style="--d: 0.15s">
-                <text x="104" y="136" transform="rotate(-5 104 136)" class="ink-red" data-i18n-tr="fikirler burada doğar">good ideas hatch here</text>
+                <text x="104" y="136" transform="rotate(-5 104 136)" class="ink-red">good ideas hatch here</text>
                 <path class="draw ink-red" pathLength="1" d="M478 126 C 538 98 598 112 636 172" />
                 <path class="draw ink-red" pathLength="1" d="M636 172 L 631 150 M636 172 L 615 166" />
               </g>
               <g class="dd dd--am" data-redraw style="--d: 0.15s">
-                <text x="56" y="150" transform="rotate(-5 56 150)" class="ink-red" data-i18n-tr="fikir yuvası">ideas hatch here</text>
+                <text x="56" y="150" transform="rotate(-5 56 150)" class="ink-red">ideas hatch here</text>
                 <path class="draw ink-red" pathLength="1" d="M520 120 C 566 98 610 120 634 170" />
                 <path class="draw ink-red" pathLength="1" d="M634 170 L 630 146 M634 170 L 612 162" />
               </g>
@@ -263,12 +257,12 @@
               <!-- the disco ball, circled -->
               <g class="dd dd--b" data-redraw style="--d: 0.7s">
                 <path class="draw ink-red" pathLength="1" d="M1340 328 C 1302 296 1234 314 1230 372 C 1226 430 1292 448 1332 420 C 1368 396 1358 336 1318 324 C 1300 318 1282 322 1268 332" />
-                <text x="1188" y="300" transform="rotate(-7 1188 300)" class="ink-red" data-i18n-tr="sonra.">later.</text>
+                <text x="1188" y="300" transform="rotate(-7 1188 300)" class="ink-red">later.</text>
               </g>
 
               <!-- free pizza → the slice -->
               <g class="dd dd--c" data-redraw style="--d: 0.95s">
-                <text x="1388" y="258" transform="rotate(5 1388 258)" class="ink-orange sm" data-i18n-tr="bedava pizza">free pizza</text>
+                <text x="1388" y="258" transform="rotate(5 1388 258)" class="ink-orange sm">free pizza</text>
                 <path class="draw ink-orange" pathLength="1" d="M1470 282 C 1466 356 1416 420 1318 456" />
                 <path class="draw ink-orange" pathLength="1" d="M1318 456 L 1338 440 M1318 456 L 1340 462" />
               </g>
@@ -281,17 +275,17 @@
 
               <!-- crack something. -->
               <g class="dd dd--e" data-redraw style="--d: 1.4s">
-                <text x="70" y="906" transform="rotate(-2 70 906)" class="ink" data-i18n-tr="kabuğunu kır.">crack something.</text>
+                <text x="70" y="906" transform="rotate(-2 70 906)" class="ink">crack something.</text>
                 <path class="draw ink-red" pathLength="1" d="M378 872 l 12 16 l 11 -14 l 11 18 l 12 -13 l 9 16" />
               </g>
               <g class="dd dd--em" data-redraw style="--d: 1.4s">
-                <text x="40" y="918" transform="rotate(-2 40 918)" class="ink" data-i18n-tr="kabuğunu kır.">crack something.</text>
+                <text x="40" y="918" transform="rotate(-2 40 918)" class="ink">crack something.</text>
               </g>
 
               <!-- an empty egg: this could be you -->
               <g class="dd dd--f" style="--d: 1.6s">
                 <path class="dash ink" d="M996 820 C 1020 820 1036 856 1036 880 C 1036 902 1018 914 996 914 C 974 914 956 902 956 880 C 956 856 972 820 996 820 Z" />
-                <text x="1050" y="900" transform="rotate(-3 1050 900)" class="ink" data-i18n-tr="bu sen olabilirsin">this could be you</text>
+                <text x="1050" y="900" transform="rotate(-3 1050 900)" class="ink">this could be you</text>
               </g>
 
               <!-- sparks -->
@@ -304,7 +298,7 @@
             <!-- the same notes, written on the phone poster (its own layout, so its own sheet) -->
             <svg class="doodles doodles--tall" viewBox="0 0 1200 1000" aria-hidden="true">
               <g class="dd dd--ta" data-redraw style="--d: 0.15s">
-                <text x="440" y="57" text-anchor="end" transform="rotate(-5 440 57)" class="ink-red" data-i18n-tr="fikir yuvası">ideas hatch here</text>
+                <text x="440" y="57" text-anchor="end" transform="rotate(-5 440 57)" class="ink-red">ideas hatch here</text>
                 <path class="draw ink-red" pathLength="1" d="M452 46 C 488 52 496 96 462 124" />
                 <path class="draw ink-red" pathLength="1" d="M462 124 L 482 122 M462 124 L 467 105" />
               </g>
@@ -316,7 +310,7 @@
                 <path class="draw ink-red" pathLength="1" d="M784 930 C 890 920 1010 926 1130 920" />
               </g>
               <g class="dd dd--te" data-redraw style="--d: 1.4s">
-                <text x="40" y="966" transform="rotate(-2 40 966)" class="ink" data-i18n-tr="kabuğunu kır.">crack something.</text>
+                <text x="40" y="966" transform="rotate(-2 40 966)" class="ink">crack something.</text>
               </g>
               <g class="dd dd--s" style="--d: 1.8s">
                 <path class="spark ink-red" d="M560 18 q 2 12 12 14 q -10 2 -12 14 q -2 -12 -12 -14 q 10 -2 12 -14 Z" />
@@ -328,12 +322,12 @@
         </figure>
 
         <div class="hero__cta">
-          <a class="btn btn--ink" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
-          <a class="btn btn--cream hero__projects" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span data-i18n-tr="Önceki projeleri gör ↗">See what got built ↗</span></a>
+          <a class="btn btn--ink" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
+          <a class="btn btn--cream hero__projects" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>See what got built ↗</span></a>
           <div class="hero__info">
-            <ul class="hero__facts mono" aria-label="At a glance" data-i18n-tr-attr-aria-label="Kısaca">
+            <ul class="hero__facts mono" aria-label="At a glance">
               <li>10:30–18:30</li>
-              <li data-i18n-tr="ODTÜ, Ankara">METU, Ankara</li>
+              <li>METU, Ankara</li>
             </ul>
             <p
               class="hero__next mono"
@@ -343,19 +337,15 @@
               data-open="Next: {short}"
               data-soon="Next: {short}"
               data-next="Next: {short}"
-              data-i18n-tr-attr-data-live="Nº{n} <span class='hero__pill'>şu an sürüyor</span>"
-              data-i18n-tr-attr-data-open="Sıradaki: {short}"
-              data-i18n-tr-attr-data-soon="Sıradaki: {short}"
-              data-i18n-tr-attr-data-next="Sıradaki: {short}"
             ></p>
           </div>
         </div>
 
         <div class="hero__built">
-          <p class="built__label" data-i18n-tr="Sevgiyle yapanlar şuralardan:">Built with love by people from</p>
+          <p class="built__label">Built with love by people from</p>
           <div class="built__window">
-            <ul class="built__track" aria-label="Where our people come from" data-i18n-tr-attr-aria-label="Ekibimizin geldiği yerler">
-              <li class="built__logo built__logo--odtu"><img src="/logos/odtu.svg" alt="ODTÜ — Middle East Technical University" data-i18n-tr-attr-alt="ODTÜ — Orta Doğu Teknik Üniversitesi" width="396" height="61" loading="eager" decoding="async" /></li><li class="built__logo built__logo--tk"><img src="/logos/odtu-teknokent.svg" alt="ODTÜ Teknokent" width="231" height="20" loading="eager" decoding="async" /></li>
+            <ul class="built__track" aria-label="Where our people come from">
+              <li class="built__logo built__logo--odtu"><img src="/logos/odtu.svg" alt="ODTÜ — Middle East Technical University" width="396" height="61" loading="eager" decoding="async" /></li><li class="built__logo built__logo--tk"><img src="/logos/odtu-teknokent.svg" alt="ODTÜ Teknokent" width="231" height="20" loading="eager" decoding="async" /></li>
             </ul>
           </div>
         </div>
@@ -364,14 +354,9 @@
       <!-- ───────────── 09:40 · WHAT ───────────── -->
       <section class="what" id="what" data-bg="butter">
         <div class="what__stage" id="whatStage">
-          <p class="label mono"><span>01</span> <span class="label__txt" data-i18n-tr="Bu ne?">What is this</span></p>
+          <p class="label mono"><span>01</span> <span class="label__txt">What is this</span></p>
 
-          <p class="statement" id="statement" data-i18n-tr-html="Egg Club,
-          <span class=&quot;chip chip--eggs&quot; aria-hidden=&quot;true&quot;><i></i><i></i><i></i></span>
-          <span class=&quot;st__quiet&quot;>bir şey yapmaktan bahsetmek yerine</span>
-          <mark class=&quot;hl hl--lav&quot;><em class=&quot;st__make&quot;>oturup yapmayı</em> seçenler</mark> için
-          <span class=&quot;chip chip--sun&quot; aria-hidden=&quot;true&quot;><i></i></span>
-          bir <mark class=&quot;hl hl--yolk&quot;>pazar ritüeli.</mark>">
+          <p class="statement" id="statement">
           The Egg Club is a
           <span class="chip chip--sun" aria-hidden="true"><i></i></span>
           <mark class="hl hl--yolk">Sunday ritual</mark> for
@@ -379,7 +364,7 @@
           people who’d rather <mark class="hl hl--lav"><em class="st__make">make</em> something</mark>
           <span class="st__quiet">than talk about making something.</span>
           </p>
-          <p class="what__cue mono" aria-hidden="true" data-i18n-tr="aşağı kaydır">keep scrolling</p>
+          <p class="what__cue mono" aria-hidden="true">keep scrolling</p>
         </div>
 
       </section>
@@ -387,17 +372,17 @@
       <!-- ───────────── 09:50 · WHO COMES ───────────── -->
       <section class="flock" id="who" data-bg="pink" aria-labelledby="flockTitle">
         <div class="flock__head">
-          <p class="label mono"><span>02</span> <span class="label__txt" data-i18n-tr="Kimler geliyor">Who comes</span></p>
-          <h2 id="flockTitle" class="reveal" data-i18n-tr-html="Her seferinde <em>bambaşka bir kalabalık.</em>">A different mix <em>every time.</em></h2>
-          <p class="reveal" data-i18n-tr="Girişimci ya da mühendis olmana, hatta ne yapmak istediğini bilmene bile gerek yok. Meraklı ve biraz sabırsız olman yeter.">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
+          <p class="label mono"><span>02</span> <span class="label__txt">Who comes</span></p>
+          <h2 id="flockTitle" class="reveal">A different mix <em>every time.</em></h2>
+          <p class="reveal">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
         </div>
-        <p class="who__v flock__everyone reveal" data-i18n-tr="— herkesin burada bir sebebi var">— everyone has a reason to be here</p>
+        <p class="who__v flock__everyone reveal">— everyone has a reason to be here</p>
         <div class="flock__field" id="flockField"></div>
       </section>
 
       <!-- ───────────── 10:20 · WHY ───────────── -->
       <section class="why why--mini" id="why" data-bg="butter">
-        <p class="why__mini reveal" data-i18n-tr-html="Ankara’da altı milyona yakın insan yaşıyor. Sen yine de gecenin <em>2’sinde</em> tek başına bir şeyler yapıyorsun.">
+        <p class="why__mini reveal">
           Ankara has almost six million people. Somehow you’re still building alone at <em>2am.</em>
         </p>
       </section>
@@ -407,10 +392,10 @@
       <section class="day" id="day" data-bg="day" aria-labelledby="dayTitle">
         <div class="day__pin">
           <header class="day__head">
-            <p class="label mono"><span>03</span> <span class="label__txt" data-i18n-tr="Kulüpte bir gün">A day at the club</span></p>
+            <p class="label mono"><span>03</span> <span class="label__txt">A day at the club</span></p>
             <div class="day__headrow">
-              <h2 id="dayTitle" data-i18n-tr-html="Sabahtan akşama,<br /> <em>aşağı yukarı.</em>">Morning to evening,<br /> <em>roughly.</em></h2>
-              <p class="day__deck mono" data-i18n-tr="Bir yumurta, 10:30 → 18:30. Ölçeksizdir.">One egg, 10:30 → 18:30. Not to scale.</p>
+              <h2 id="dayTitle">Morning to evening,<br /> <em>roughly.</em></h2>
+              <p class="day__deck mono">One egg, 10:30 → 18:30. Not to scale.</p>
             </div>
           </header>
 
@@ -422,8 +407,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">10:30</time>
-                    <h3 data-i18n-tr="Kapılar açılır">Doors</h3>
-                    <p data-i18n-tr="Kahve, tanışma faslı, post-it’lerle dolu bir duvar. Yaka kartı isteğe bağlı. Fikir beyan etmek zorunlu.">Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
+                    <h3>Doors</h3>
+                    <p>Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -431,8 +416,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">11:00</time>
-                    <h3 data-i18n-tr="Çatlak">Crack</h3>
-                    <p data-i18n-tr="İsteyen altmış saniyede bir fikir anlatır. Rafadan fikirler evin spesiyalitesidir.">Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
+                    <h3>Crack</h3>
+                    <p>Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -440,8 +425,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">11:30</time>
-                    <h3 data-i18n-tr="Yuva">Nest</h3>
-                    <p data-i18n-tr="Takımlar en eğlenceli görünen fikrin etrafında toplanır. Birbirini hiç tanımayanlar, çok saçma bir şeyin kurucu ortağı olur.">Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
+                    <h3>Nest</h3>
+                    <p>Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -449,8 +434,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">12:00</time>
-                    <h3 data-i18n-tr="Kuluçka">Incubate</h3>
-                    <p data-i18n-tr="Herkes işine gömülür. Yap, boz, yeniden yap. Mentorlar bir elinde atıştırmalık, bir elinde fikirlerle masaları dolaşır.">Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
+                    <h3>Incubate</h3>
+                    <p>Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -458,8 +443,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">16:30</time>
-                    <h3 data-i18n-tr="Pizza">Pizza</h3>
-                    <p data-i18n-tr="Pazarlığı yok. Laptoplar kapanır, on iki kutu açılır, ananas tartışması bir türlü bitmez. İkinci ve daha iyi fikir genelde burada gelir.">Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
+                    <h3>Pizza</h3>
+                    <p>Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -467,8 +452,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">17:30</time>
-                    <h3 data-i18n-tr="Doğuş">Hatch</h3>
-                    <p data-i18n-tr="Klavyeler bırakılır. Beşer dakikalık sunumlar, herkes alkışlar. Çalışması teşvik edilir. İddialı ama bozuk olması da sayılır.">Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
+                    <h3>Hatch</h3>
+                    <p>Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -476,8 +461,8 @@
                   <span class="step__node" aria-hidden="true"></span>
                   <div class="step__text">
                     <time class="step__time">18:30</time>
-                    <h3 data-i18n-tr="Tatlı yorgunluk">Afterglow</h3>
-                    <p data-i18n-tr="Saat 18:30’da ışıklar kapanır. Soğuk pizza, metroyla eve dönüş ve bütün hafta susmayan bir mesaj grubu.">Lights out at 18:30. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
+                    <h3>Afterglow</h3>
+                    <p>Lights out at 18:30. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
                   </div>
                   <div class="step__fig" aria-hidden="true"></div>
                 </li>
@@ -485,13 +470,13 @@
 
               <!-- the way out: the programme hands over to Apply -->
               <div class="day__end">
-                <p class="day__bye hand" data-i18n-tr-html="iki pazar sonra<br />görüşürüz">see you in<br />two Sundays</p>
+                <p class="day__bye hand">see you in<br />two Sundays</p>
                 <div class="day__go">
                   <svg class="day__arrow" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
                     <path d="M10 6 C 14 46 48 66 108 62" />
                     <path d="M90 48 L 110 62 L 90 76" />
                   </svg>
-                  <a class="btn btn--ink day__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
+                  <a class="btn btn--ink day__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
                 </div>
               </div>
 
@@ -503,48 +488,48 @@
       </section>
       <!-- ───────────── WHAT GOT BUILT → the app ───────────── -->
       <section class="built-on" id="built" data-bg="butter" aria-labelledby="builtTitle">
-        <h2 id="builtTitle" class="built-on__title reveal" data-i18n-tr-html="Her pazar demolarla biter. <em>Hepsi uygulamada.</em>">Every Sunday ends in demos. <em>They all live in the app.</em></h2>
-        <p class="built-on__deck reveal" data-i18n-tr="Önceki pazarlarda yapılan projeler, takımlar, GitHub linkleri ve oylar: app.the-egg.club">Past projects, the teams behind them, their GitHub links and the hearts they got: app.the-egg.club</p>
+        <h2 id="builtTitle" class="built-on__title reveal">Every Sunday ends in demos. <em>They all live in the app.</em></h2>
+        <p class="built-on__deck reveal">Past projects, the teams behind them, their GitHub links and the hearts they got: app.the-egg.club</p>
         <div class="built-on__ctas reveal">
-          <a class="btn btn--ink" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span data-i18n-tr="Projelere göz at ↗">Browse the projects ↗</span></a>
-          <a class="btn btn--cream" href="https://app.the-egg.club" target="_blank" rel="noopener"><span data-i18n-tr="Uygulamayı aç ↗">Open the app ↗</span></a>
+          <a class="btn btn--ink" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>Browse the projects ↗</span></a>
+          <a class="btn btn--cream" href="https://app.the-egg.club" target="_blank" rel="noopener"><span>Open the app ↗</span></a>
         </div>
       </section>
 
 
       <!-- ───────────── 18:30 · RULES ───────────── -->
       <section class="rules" id="rules" data-bg="pink" aria-labelledby="rulesTitle">
-        <p class="label mono"><span>04</span> <span class="label__txt" data-i18n-tr="Kulüp kuralları">House rules</span></p>
+        <p class="label mono"><span>04</span> <span class="label__txt">House rules</span></p>
         <header class="rules__head">
-          <h2 id="rulesTitle" class="rules__title" data-i18n-tr-html="Egg Club’ın <em>kuralları.</em>">The rules of <em>Egg Club.</em></h2>
+          <h2 id="rulesTitle" class="rules__title">The rules of <em>Egg Club.</em></h2>
         </header>
         <ol class="rules__list">
           <li class="rule rule--first">
             <span class="rule__num" aria-hidden="true">1</span>
             <div class="rule__body">
-              <span class="rule__n mono" data-i18n-tr="Egg Club’ın birinci kuralı">The first rule of Egg Club</span>
-              <p data-i18n-tr-html="Egg Club’ı <span class=&quot;rule__fix&quot;><span class=&quot;rule__strike&quot; aria-hidden=&quot;true&quot;>konuşmazsın</span><span class=&quot;hand rule__do rule__do--after&quot;>KONUŞ</span></span>.">You <span class="rule__fix"><span class="rule__strike" aria-hidden="true">do not</span><span class="hand rule__do">DO</span></span> talk about Egg Club.</p>
+              <span class="rule__n mono">The first rule of Egg Club</span>
+              <p>You <span class="rule__fix"><span class="rule__strike" aria-hidden="true">do not</span><span class="hand rule__do">DO</span></span> talk about Egg Club.</p>
             </div>
           </li>
           <li class="rule rule--second">
             <span class="rule__num" aria-hidden="true">2</span>
             <div class="rule__body">
-              <span class="rule__n mono" data-i18n-tr="Egg Club’ın ikinci kuralı">The second rule of Egg Club</span>
-              <p data-i18n-tr-html="Egg Club’ı <strong>bolca</strong> konuşursun.">You <strong>DO</strong> talk about Egg Club.</p>
+              <span class="rule__n mono">The second rule of Egg Club</span>
+              <p>You <strong>DO</strong> talk about Egg Club.</p>
             </div>
           </li>
           <li class="rule">
             <span class="rule__num" aria-hidden="true">3</span>
             <div class="rule__body">
-              <span class="rule__n mono" data-i18n-tr="Egg Club’ın üçüncü kuralı">The third rule of Egg Club</span>
-              <p data-i18n-tr-html="Biri “çalışıyor!” diye bağırırsa, <em>herkes elindeki işi bırakıp bakar.</em>">If someone yells “it works!”, <em>everyone stops and looks.</em></p>
+              <span class="rule__n mono">The third rule of Egg Club</span>
+              <p>If someone yells “it works!”, <em>everyone stops and looks.</em></p>
             </div>
           </li>
           <li class="rule rule--last">
             <span class="rule__num" aria-hidden="true">4</span>
             <div class="rule__body">
-              <span class="rule__n mono" data-i18n-tr="Ve son kural">And the last rule</span>
-              <p data-i18n-tr-html="Egg Club’daki ilk pazarınsa, <em>bir şey yapmak zorundasın.</em>">If this is your first Sunday at Egg Club, <em>you have to build.</em></p>
+              <span class="rule__n mono">And the last rule</span>
+              <p>If this is your first Sunday at Egg Club, <em>you have to build.</em></p>
             </div>
           </li>
         </ol>
@@ -553,86 +538,86 @@
       <!-- ───────────── 19:00 · GOOD QUESTIONS (FAQ) ───────────── -->
       <section class="faq" id="faq" data-bg="peach" aria-labelledby="faqTitle">
         <div class="faq__head">
-          <p class="label mono"><span>05</span> <span class="label__txt" data-i18n-tr="Güzel sorular">Good questions</span></p>
-          <h2 id="faqTitle" class="faq__title" data-i18n-tr-html="Sormadan <em>önce.</em>">Before you <em>ask.</em></h2>
-          <p class="faq__more" data-i18n-tr-html="Aklında başka bir soru mu var? <a href=&quot;mailto:theeggclubb@gmail.com&quot;>theeggclubb@gmail.com</a>’a yaz.">Something else? Email <a href="mailto:theeggclubb@gmail.com">theeggclubb@gmail.com</a>.</p>
+          <p class="label mono"><span>05</span> <span class="label__txt">Good questions</span></p>
+          <h2 id="faqTitle" class="faq__title">Before you <em>ask.</em></h2>
+          <p class="faq__more">Something else? Email <a href="mailto:theeggclubb@gmail.com">theeggclubb@gmail.com</a>.</p>
         </div>
 
         <div class="faq__list">
           <details class="faq__item" open>
-            <summary><span class="faq__q" data-i18n-tr="Gerçekten ücretsiz mi?">Is it really free?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Is it really free?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Evet. Bilet yok, ücret yok, işin içinde iş yok. Pizza da bizden.">Yes. No ticket, no fee, no catch. The pizza’s on us too.</p>
+              <p>Yes. No ticket, no fee, no catch. The pizza’s on us too.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Kimler gelebilir?">Who can come?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Who can come?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Meraklı olan ve bir şey yapmak isteyen herkes. Hangi üniversiteden olursa olsun öğrenciler (ODTÜ, Bilkent, Hacettepe…), çalışanlar, iş arayanlar, tasarımcılar, yazılımcılar, donanım kurcalayanlar, araştırmacılar, müzisyenler. ODTÜ’lü olman da, daha önce bir şey yapmış olman da gerekmiyor.">Anyone curious who wants to make something. Students from any university (ODTÜ, Bilkent, Hacettepe…), people with jobs and people between them, designers, developers, hardware tinkerers, researchers, musicians. You don’t have to be from ODTÜ, and you don’t have to have built anything before.</p>
+              <p>Anyone curious who wants to make something. Students from any university (ODTÜ, Bilkent, Hacettepe…), people with jobs and people between them, designers, developers, hardware tinkerers, researchers, musicians. You don’t have to be from ODTÜ, and you don’t have to have built anything before.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Takımım, fikrim ya da tecrübem olmalı mı?">Do I need a team, an idea or skills?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Do I need a team, an idea or skills?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Hayır, hayır ve hayır. 11:00’de isteyen fikrini bir dakikada anlatır, 11:30’da takımlar en eğlenceli fikirlerin etrafında kurulur. Fikrin varsa getir, yoksa birininkine katıl. İlk kez gelenlere kapımız açık; tek şart, izlemeye değil yapmaya gelmen.">No, no and no. At 11:00 anyone can pitch an idea in sixty seconds, and by 11:30 teams form around the ones that sound most fun. Bring an idea if you have one; join someone else’s if you don’t. First-timers are welcome — just come to make something, not to watch.</p>
+              <p>No, no and no. At 11:00 anyone can pitch an idea in sixty seconds, and by 11:30 teams form around the ones that sound most fun. Bring an idea if you have one; join someone else’s if you don’t. First-timers are welcome — just come to make something, not to watch.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Yanımda ne getireyim?">What should I bring?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">What should I bring?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Laptopunu ve şarj aletini. Bir fikir getir ya da hiç getirme. Projen neye ihtiyaç duyuyorsa onu da: bir breadboard, bir eskiz defteri, bir gitar. Çoklu priz getirirsen bir anda herkesin gözdesi olursun.">A laptop and its charger. An idea, or none. Whatever your project needs — a breadboard, a sketchbook, a guitar. Bring a power strip and you’re instantly everyone’s favourite.</p>
+              <p>A laptop and its charger. An idea, or none. Whatever your project needs — a breadboard, a sketchbook, a guitar. Bring a power strip and you’re instantly everyone’s favourite.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Tam olarak nerede?">Where exactly?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Where exactly?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Ankara’da, ODTÜ kampüsünde. Tam yeri ve kampüse girişle ilgili bilmen gerekenleri onayınla birlikte öğrenirsin.">On the ODTÜ (METU) campus in Ankara. The exact room — and anything you need to know about getting onto campus — comes with your confirmation.</p>
+              <p>On the ODTÜ (METU) campus in Ankara. The exact room — and anything you need to know about getting onto campus — comes with your confirmation.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Türkçe mi, İngilizce mi?">Turkish or English?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Turkish or English?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="İkisi de olur. Hangi dilde rahatsan onunla anlat, yap, sun. Esprileri çevirecek biri mutlaka çıkar.">Both. Pitch, build and demo in whichever you’re comfortable with. Someone will always translate the jokes.</p>
+              <p>Both. Pitch, build and demo in whichever you’re comfortable with. Someone will always translate the jokes.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Yemek ne olacak?">What about food?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">What about food?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr-html="Sandviçler, pizzalar ve atıştırmalıklar bizden. Vejetaryen ya da vegan mısın, alerjin ya da özel bir beslenme düzenin mi var? Pazardan önce <a href=&quot;mailto:theeggclubb@gmail.com&quot;>theeggclubb@gmail.com</a>’a yaz, elimizden geleni yapalım. Her ihtimale karşı kendi atıştırmalığını da getir.">Sandwiches, pizzas and snacks are on us. Vegetarian, vegan, allergic, or eating something specific? Email <a href="mailto:theeggclubb@gmail.com">theeggclubb@gmail.com</a> before Sunday and we’ll do our best — and bring a snack of your own, just in case.</p>
+              <p>Sandwiches, pizzas and snacks are on us. Vegetarian, vegan, allergic, or eating something specific? Email <a href="mailto:theeggclubb@gmail.com">theeggclubb@gmail.com</a> before Sunday and we’ll do our best — and bring a snack of your own, just in case.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Günün sadece bir kısmına gelebilir miyim?">Can I come for part of the day?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Can I come for part of the day?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Hayat bu, olur. Ama fikirler 11:00’de anlatılıyor, takımlar o zaman kuruluyor; herkes de yaptığını 17:30’da sunuyor. İkisini de kaçırmamaya çalış.">Life happens, so yes. But ideas get pitched and teams form at 11:00, and everyone shows what they built at 17:30. Try to catch both.</p>
+              <p>Life happens, so yes. But ideas get pitched and teams form at 11:00, and everyone shows what they built at 17:30. Try to catch both.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Kimin geleceğine nasıl karar veriyorsunuz?">How do you pick who comes?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">How do you pick who comes?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr="Her başvuruyu kendimiz okuyor, iyi bir karışım olsun istiyoruz. Bu pazar olmazsa, iki hafta sonra bir pazar daha var.">We read every application ourselves and aim for a good mix of people. If it’s not this Sunday, there’s another one two weeks later.</p>
+              <p>We read every application ourselves and aim for a good mix of people. If it’s not this Sunday, there’s another one two weeks later.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Arkadaşımı getirebilir miyim?">Can I bring a friend?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">Can I bring a friend?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr-html="Lütfen getir. Herkes kendi başvurusunu yapıyor; linki gönder, <a href=&quot;#share&quot;>hemen aşağıda</a> bunun için bir düğme var.">Please do. Everyone applies on their own, so send them the link — there’s a button for that <a href="#share">just below</a>.</p>
+              <p>Please do. Everyone applies on their own, so send them the link — there’s a button for that <a href="#share">just below</a>.</p>
             </div>
           </details>
 
           <details class="faq__item">
-            <summary><span class="faq__q" data-i18n-tr="Bir sonrakinden nasıl haberim olur?">How do I hear about the next one?</span><span class="faq__mark" aria-hidden="true"></span></summary>
+            <summary><span class="faq__q">How do I hear about the next one?</span><span class="faq__mark" aria-hidden="true"></span></summary>
             <div class="faq__a">
-              <p data-i18n-tr-html="Her tarih <a href=&quot;https://app.the-egg.club&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>app.the-egg.club</a>’a eklenir, sıradaki de bu sayfada görünür. Orada bir hesap açarsan, başvurular açıldığında tek tıkla başvurabilirsin.">Every date goes up on <a href="https://app.the-egg.club" target="_blank" rel="noopener">app.the-egg.club</a>, and the next one shows up on this page too. Make an account there and you’re one tap away when applications open.</p>
+              <p>Every date goes up on <a href="https://app.the-egg.club" target="_blank" rel="noopener">app.the-egg.club</a>, and the next one shows up on this page too. Make an account there and you’re one tap away when applications open.</p>
             </div>
           </details>
         </div>
@@ -642,24 +627,24 @@
       <section class="join" id="join" data-bg="yolk" aria-labelledby="joinTitle">
         <div class="join__grid">
           <div class="join__main">
-            <p class="label mono"><span>06</span> <span class="label__txt" data-i18n-tr="Koliye katıl">Get in the carton</span></p>
-            <h2 id="joinTitle" class="join__title" data-i18n-tr-html="Laptopunu getir.<br /><em>Bir şeyle dön.</em>">Bring a laptop.<br /><em>Leave with a thing.</em></h2>
+            <p class="label mono"><span>06</span> <span class="label__txt">Get in the carton</span></p>
+            <h2 id="joinTitle" class="join__title">Bring a laptop.<br /><em>Leave with a thing.</em></h2>
 
             <!-- the next Sunday: general until the app answers (see src/next.ts) -->
             <div class="ticket" id="ticket" data-state="none">
               <p class="ticket__head mono">
-                <span data-i18n-tr="Sıradaki pazar">Next Sunday</span>
+                <span>Next Sunday</span>
                 <span class="ticket__no" id="ticketNo" hidden data-tpl="Nº{n}"></span>
               </p>
-              <p class="ticket__date" id="ticketDate" data-tpl="{long}" data-i18n-tr="İki haftada bir pazar">Every other Sunday</p>
+              <p class="ticket__date" id="ticketDate" data-tpl="{long}">Every other Sunday</p>
               <dl class="ticket__times mono">
-                <div><dt data-i18n-tr="Kapılar">Doors</dt><dd>10:30</dd></div>
-                <div><dt data-i18n-tr="Sunumlar">Pitches</dt><dd>17:30</dd></div>
-                <div><dt data-i18n-tr="Bitiş">Wrap</dt><dd>18:30</dd></div>
+                <div><dt>Doors</dt><dd>10:30</dd></div>
+                <div><dt>Pitches</dt><dd>17:30</dd></div>
+                <div><dt>Wrap</dt><dd>18:30</dd></div>
               </dl>
               <p class="ticket__meta mono">
-                <span data-tpl="{place}" data-i18n-tr="ODTÜ, Ankara">METU, Ankara</span>
-                <span data-i18n-tr="Ücretsiz">Free</span>
+                <span data-tpl="{place}">METU, Ankara</span>
+                <span>Free</span>
               </p>
               <p
                 class="ticket__status"
@@ -668,11 +653,6 @@
                 data-open="Applications are open."
                 data-soon="Applications open soon."
                 data-next="See you there."
-                data-i18n-tr-attr-data-live="Şu an sürüyor."
-                data-i18n-tr-attr-data-open="Başvurular açık."
-                data-i18n-tr-attr-data-soon="Başvurular yakında açılıyor."
-                data-i18n-tr-attr-data-next="Orada görüşürüz."
-                data-i18n-tr-html="Sıradaki tarih <a href=&quot;https://app.the-egg.club&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>app.the-egg.club</a>’da."
               >The next date is on <a href="https://app.the-egg.club" target="_blank" rel="noopener">app.the-egg.club</a>.</p>
             </div>
 
@@ -680,57 +660,54 @@
               <span
                 id="joinCtaLabel"
                 data-soon="See it on app.the-egg.club →"
-                data-i18n-tr-attr-data-soon="app.the-egg.club’da gör →"
-                data-i18n-tr="app.the-egg.club’da başvur →"
               >Apply at app.the-egg.club →</span>
             </a>
           </div>
 
           <div class="join__side">
             <div class="join__after">
-              <h3 class="join__h mono" data-i18n-tr="Başvurduktan sonra">After you apply</h3>
+              <h3 class="join__h mono">After you apply</h3>
               <ol class="join__steps" role="list">
                 <li>
-                  <strong data-i18n-tr="Okuyoruz.">We read it.</strong>
-                  <span data-i18n-tr="Her başvuruyu gerçek bir insan okuyor.">Every application, by an actual person.</span>
+                  <strong>We read it.</strong>
+                  <span>Every application, by an actual person.</span>
                 </li>
                 <li>
-                  <strong data-i18n-tr="Haber veriyoruz.">You hear back.</strong>
-                  <span data-i18n-tr="Seçildiysen, onayınla birlikte tam yeri ve saati öğrenirsin.">If you’re in, your confirmation comes with the exact room and time.</span>
+                  <strong>You hear back.</strong>
+                  <span>If you’re in, your confirmation comes with the exact room and time.</span>
                 </li>
                 <li>
-                  <strong data-i18n-tr="Bu sefer olmadı mı?">Not this time?</strong>
-                  <span data-i18n-tr="İki hafta sonra bir pazar daha var.">There’s another Sunday two weeks later.</span>
+                  <strong>Not this time?</strong>
+                  <span>There’s another Sunday two weeks later.</span>
                 </li>
                 <li>
-                  <strong data-i18n-tr="Pazar.">Sunday.</strong>
-                  <span data-i18n-tr="Kapılar 10:30’da açılıyor. Laptopunu ve şarj aletini al, aç gel.">Doors at 10:30. Bring a laptop, a charger and an appetite.</span>
+                  <strong>Sunday.</strong>
+                  <span>Doors at 10:30. Bring a laptop, a charger and an appetite.</span>
                 </li>
               </ol>
             </div>
 
             <!-- bring a friend: native share sheet where there is one, otherwise WhatsApp; copy link always (src/share.ts) -->
             <div class="share" id="share">
-              <h3 class="share__title" data-i18n-tr-html="Bir arkadaşını <em>getir.</em>">Bring a <em>friend.</em></h3>
-              <p class="share__deck" data-i18n-tr="Tanıdık bir yüzle daha eğlenceli. Şunu gönder:">It’s more fun with someone you know. Send them this:</p>
+              <h3 class="share__title">Bring a <em>friend.</em></h3>
+              <p class="share__deck">It’s more fun with someone you know. Send them this:</p>
               <figure class="share__bubble">
                 <blockquote
                   class="share__msg"
                   id="shareMsg"
-                  data-i18n-tr="baksana, ODTÜ’de iki haftada bir pazar toplanıp bir şeyler yapılan ücretsiz bir kulüp varmış. 10.30’da başlıyor akşam 6.30’da bitiyor, pizza var, sonunda herkes yaptığını sunuyor. benimle gelsene?"
                 >ok look — there’s a free build club at METU every other Sunday. 10:30 to 6:30pm, free pizza, everyone shows what they built at the end. come with me?</blockquote>
                 <figcaption class="share__link mono">the-egg.club</figcaption>
               </figure>
               <div class="share__btns">
-                <button class="btn btn--ink btn--sm" id="shareNative" type="button" hidden><span data-i18n-tr="Arkadaşına gönder">Send it to a friend</span></button>
+                <button class="btn btn--ink btn--sm" id="shareNative" type="button" hidden><span>Send it to a friend</span></button>
                 <a
                   class="btn btn--ink btn--sm"
                   id="shareWa"
                   href="https://wa.me/?text=ok%20look%20%E2%80%94%20there%E2%80%99s%20a%20free%20build%20club%20at%20METU%20every%20other%20Sunday.%2010%3A30%20to%206%3A30pm%2C%20free%20pizza%2C%20everyone%20shows%20what%20they%20built%20at%20the%20end.%20come%20with%20me%3F%20https%3A%2F%2Fthe-egg.club%2F"
                   target="_blank"
                   rel="noopener"
-                ><span data-i18n-tr="WhatsApp’tan gönder">Send on WhatsApp</span></a>
-                <button class="btn btn--cream btn--sm" id="shareCopy" type="button" hidden data-done="Copied ✓" data-i18n-tr-attr-data-done="Kopyalandı ✓"><span data-i18n-tr="Linki kopyala">Copy link</span></button>
+                ><span>Send on WhatsApp</span></a>
+                <button class="btn btn--cream btn--sm" id="shareCopy" type="button" hidden data-done="Copied ✓"><span>Copy link</span></button>
               </div>
               <p
                 class="share__status mono"
@@ -740,9 +717,6 @@
                 data-copied="Link copied. Paste it anywhere."
                 data-failed="Couldn’t copy. The link is the-egg.club"
                 data-shared="Sent. Good friend."
-                data-i18n-tr-attr-data-copied="Link kopyalandı. İstediğin yere yapıştır."
-                data-i18n-tr-attr-data-failed="Kopyalanamadı. Link: the-egg.club"
-                data-i18n-tr-attr-data-shared="Gönderildi. İyi arkadaşsın."
               ></p>
             </div>
           </div>
@@ -769,41 +743,40 @@
             loading="lazy"
             decoding="async"
             alt="Night on an Ankara rooftop: egg-shaped friends with a guitar, a laptop and an open pizza box, a dog asleep on the rug and a white Ankara cat on the wall, and beyond it the lit apartment blocks of the city, the castle with its flag, Anıtkabir floodlit on its hill, Atakule and a crescent moon."
-            data-i18n-tr-attr-alt="Ankara’da bir çatıda gece: gitar, laptop ve açık bir pizza kutusuyla yumurta biçimli arkadaşlar, halıda uyuyan bir köpek ve duvarda beyaz bir Ankara kedisi; ötesinde şehrin ışıklı apartmanları, bayraklı kale, tepesinde ışıl ışıl Anıtkabir, Atakule ve bir hilal."
           />
         </picture>
 
         <div class="foot__top">
-          <p class="foot__sign" data-i18n-tr-html="Pazar görüşürüz.<br /><em>Aç gel.</em>">See you Sunday.<br /><em>Bring an appetite.</em></p>
+          <p class="foot__sign">See you Sunday.<br /><em>Bring an appetite.</em></p>
           <button class="foot__hint" id="poke" type="button" aria-controls="portal">
-            <span class="hand foot__psst" data-i18n-tr="hişt —">psst —</span>
-            <span class="hand foot__more" data-i18n-tr-html="gece daha bitmedi.<br />aşağı kaydır">the night isn’t over.<br />keep scrolling</span>
+            <span class="hand foot__psst">psst —</span>
+            <span class="hand foot__more">the night isn’t over.<br />keep scrolling</span>
             <svg class="foot__arrow" viewBox="0 0 40 90" aria-hidden="true"><path d="M20 4 C 12 30 28 50 20 80 M20 80 L 9 64 M20 80 L 31 66" /></svg>
           </button>
-          <nav class="foot__cols" aria-label="Footer" data-i18n-tr-attr-aria-label="Alt menü">
+          <nav class="foot__cols" aria-label="Footer">
             <ul>
-              <li class="mono" data-i18n-tr="Kulüp">The club</li>
-              <li><a href="#faq" data-i18n-tr="Güzel sorular">Good questions</a></li>
-              <li><a href="#share" data-i18n-tr="Bir arkadaşını getir">Bring a friend</a></li>
-              <li><a href="https://luma.com/r5khs24x" target="_blank" rel="noopener" data-i18n-tr="Başvur">Apply</a></li>
-              <li><a href="https://app.the-egg.club" target="_blank" rel="noopener" data-i18n-tr="Uygulama: projeler &amp; oylar">The app: projects &amp; votes</a></li>
+              <li class="mono">The club</li>
+              <li><a href="#faq">Good questions</a></li>
+              <li><a href="#share">Bring a friend</a></li>
+              <li><a href="https://luma.com/r5khs24x" target="_blank" rel="noopener">Apply</a></li>
+              <li><a href="https://app.the-egg.club" target="_blank" rel="noopener">The app: projects &amp; votes</a></li>
             </ul>
             <ul>
-              <li class="mono" data-i18n-tr="Bize yaz">Say hi</li>
+              <li class="mono">Say hi</li>
               <li><a href="mailto:theeggclubb@gmail.com">theeggclubb@gmail.com</a></li>
-              <li><a href="#top" data-i18n-tr="Başa dön ↑">Back to the top ↑</a></li>
+              <li><a href="#top">Back to the top ↑</a></li>
             </ul>
           </nav>
         </div>
       </div>
 
       <div class="foot__base">
-        <span class="mono" data-i18n-tr="© 2026 The Egg Club">© 2026 The Egg Club</span>
-        <span class="mono hide-sm" data-i18n-tr="Ankara’da, gereğinden fazla pizzayla yapıldı">Made in Ankara on too much pizza</span>
+        <span class="mono">© 2026 The Egg Club</span>
+        <span class="mono hide-sm">Made in Ankara on too much pizza</span>
         <!-- phones: the live badge settles here instead of floating over the page -->
         <a class="foot__live mono" href="https://github.com/HUmutI/the-egg" target="_blank" rel="noopener">
           <span class="live-badge__dot" aria-hidden="true"></span>
-          <span data-i18n-tr="bu site şu an kendini güncelliyor">this site is updating itself, live</span>
+          <span>this site is updating itself, live</span>
         </a>
       </div>
     </footer>
@@ -837,11 +810,11 @@
 
         <div class="cabinet__deck">
           <p class="cabinet__name px" id="gameName">The Egg Club · <b>Night Shift</b></p>
-          <p class="cabinet__help px" data-i18n-tr="yürü: ok tuşları / WASD / dokun · konuş: E ya da boşluk · çıkmak için yukarı kaydır">move: arrows / WASD / tap · talk: E or space · scroll up to leave</p>
-          <p class="cabinet__help cabinet__help--touch px" data-i18n-tr="yürümek için dokun · sohbet için birine dokun · çıkmak için yukarı kaydır">tap to walk · tap someone to talk · scroll up to leave</p>
+          <p class="cabinet__help px">move: arrows / WASD / tap · talk: E or space · scroll up to leave</p>
+          <p class="cabinet__help cabinet__help--touch px">tap to walk · tap someone to talk · scroll up to leave</p>
           <div class="cabinet__btns">
-            <button class="arcbtn arcbtn--talk px" id="gTalk" type="button"><span>E</span><span class="arcbtn__label" data-i18n-tr="konuş">talk</span></button>
-            <button class="arcbtn arcbtn--close px" id="gClose" type="button"><span>↺</span><span class="arcbtn__label" data-i18n-tr="baştan">restart</span></button>
+            <button class="arcbtn arcbtn--talk px" id="gTalk" type="button"><span>E</span><span class="arcbtn__label">talk</span></button>
+            <button class="arcbtn arcbtn--close px" id="gClose" type="button"><span>↺</span><span class="arcbtn__label">restart</span></button>
           </div>
         </div>
       </div>
@@ -850,27 +823,26 @@
 
     <!-- ───────────── PHONES: Apply under the thumb, once the hero's button has gone by (src/dock.ts) ───────────── -->
     <div class="dock is-away" id="dock">
-      <button class="dock__share" type="button" data-share aria-label="Send it to a friend" data-i18n-tr-attr-aria-label="Arkadaşına gönder">
+      <button class="dock__share" type="button" data-share aria-label="Send it to a friend">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.5 2.5 10.6 13.4" /><path d="M21.5 2.5 14.6 21.5l-4-8.1-8.1-4z" /></svg>
       </button>
-      <a class="btn btn--cream dock__app" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span data-i18n-tr="Projeler">Projects</span></a>
-      <a class="btn btn--ink dock__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span data-i18n-tr="Başvur →">Apply for a seat →</span></a>
+      <a class="btn btn--cream dock__app" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>Projects</span></a>
+      <a class="btn btn--ink dock__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
     </div>
 
     <!-- ───────────── LIVE BADGE: the site rebuilds itself (in an aside so it sits in a landmark; the badge is fixed, the aside has no box of its own) ───────────── -->
-    <aside aria-label="Site status" data-i18n-tr-attr-aria-label="Site durumu">
+    <aside aria-label="Site status">
     <a
       class="live-badge"
       href="https://github.com/HUmutI/the-egg"
       target="_blank"
       rel="noopener"
-      data-i18n-tr-attr-aria-label="Bu site şu an canlı güncelleniyor — commit geçmişine bak"
       aria-label="This site is updating itself, live — see the commits"
     >
       <svg class="live-badge__egg mark" viewBox="0 0 64 64" aria-hidden="true"><clipPath id="badgeMark"><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z"/></clipPath><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z" fill="#d39100"/><g clip-path="url(#badgeMark)"><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z" fill="#f4b52a" transform="translate(-5 -4)"/><ellipse cx="20.5" cy="20" rx="3.6" ry="6.6" transform="rotate(30 20.5 20)" fill="#fdf3d7"/></g><path d="M32 4.5C44.5 4.5 55 23 55 38c0 13.5-10 21.5-23 21.5S9 51.5 9 38C9 23 19.5 4.5 32 4.5Z" fill="none" stroke="#1f1722" stroke-width="4.2" stroke-linejoin="round"/><g class="mark__eyes"><ellipse cx="24" cy="36" rx="4" ry="5" fill="#1f1722"/><ellipse cx="40" cy="36" rx="4" ry="5" fill="#1f1722"/></g></svg>
       <span class="live-badge__text mono">
         <span class="live-badge__dot" aria-hidden="true"></span>
-        <span data-i18n-tr="bu site şu an kendini güncelliyor">this site is updating itself, live</span>
+        <span>this site is updating itself, live</span>
       </span>
     </a>
     </aside>

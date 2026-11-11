@@ -6,17 +6,6 @@
 
 @import './fonts.css';
 
-/* Reenie Beanie has no ğ Ğ ş Ş İ (Google serves it latin-only), so Turkish
-   notes fell back to another hand. This supplement builds those five letters
-   from the font's own g G s S I and its own breve, cedilla and dot accent,
-   placed the way its ă, ç and ė are; the browser takes only these letters
-   from it (OFL, see /fonts/ReenieBeanie-OFL.txt). */
-@font-face {
-  font-family: 'Reenie Beanie TR';
-  src: url('/fonts/ReenieBeanieTR-supplement.woff2') format('woff2');
-  unicode-range: U+011E-011F, U+0130, U+015E-015F;
-  font-display: swap;
-}
 
 :root {
   --butter: #fdf3d7;
@@ -47,7 +36,7 @@
   --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --f-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
   --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --f-hand: 'Reenie Beanie', 'Reenie Beanie TR', 'Bradley Hand', cursive;
+  --f-hand: 'Reenie Beanie', 'Bradley Hand', cursive;
 
   /* notch and home bar (only non-zero with viewport-fit=cover) */
   --safe-t: env(safe-area-inset-top, 0px);
@@ -533,28 +522,8 @@ body.is-night .nav::before {
   height: 36px;
   border: 0;
 }
-.lang-toggle {
-  appearance: none;
-  height: 36px;
-  padding: 0 12px;
-  margin: 0 2px;
-  border: 1px solid var(--ink-3);
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  transition: background 0.25s, border-color 0.25s;
-}
-.lang-toggle:hover {
-  background: var(--butter);
-  border-color: var(--ink-2);
-}
 
-/* phones: one compact bar — egg, clock, language, seat — every target 44px */
+/* phones: one compact bar — egg, clock, seat — every target 44px */
 @media (max-width: 860px) {
   :root {
     --nav-h: 60px;
@@ -592,14 +561,6 @@ body.is-night .nav::before {
     justify-content: center;
     width: 44px;
     padding: 0;
-  }
-  .lang-toggle {
-    width: 44px;
-    height: 44px;
-    margin: 0;
-    padding: 0;
-    border-color: var(--ink);
-    background: var(--cream);
   }
   .nav__links .btn {
     height: 44px;
@@ -2977,11 +2938,6 @@ h2 {
   /* room for the hand-written correction above "do not" */
   padding-top: 0.3em;
 }
-/* in Turkish the struck word wraps onto the second line, so the
-   correction needs room between the lines, not just above them */
-:lang(tr) .rule--first p {
-  line-height: 1.42;
-}
 /* the second rule is said louder */
 .rule--second strong {
   font-weight: 760;
@@ -3322,12 +3278,6 @@ html:not(.js) .rule__fix,
 }
 
 /* ── late additions ──────────────────────────────────────────── */
-
-/* Turkish visitors: hold the English source text until i18n swaps it in */
-.i18n-pending [data-i18n-tr],
-.i18n-pending [data-i18n-tr-html] {
-  visibility: hidden;
-}
 
 /* Tomato type on pink and lavender sits just under 3:1; a hair deeper red
    clears the large-text bar there and looks the same. */

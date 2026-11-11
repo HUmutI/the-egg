@@ -1,4 +1,3 @@
-import { applyI18n, initLangToggle } from './i18n'
 import { initHero } from './hero'
 import { initLiveBadge } from './badge'
 import { initDock } from './dock'
@@ -18,9 +17,6 @@ const backToPlace = keepPlace()
 
 // The house ink (wobble, halftone, the shading mask) before anything draws with it.
 installInkDefs()
-// Translate the DOM before anything measures or animates it.
-applyI18n()
-initLangToggle()
 initNextSunday()
 initShare()
 // The hero is a picture, not measured text: show it as soon as it decodes

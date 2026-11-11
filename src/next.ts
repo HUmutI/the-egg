@@ -1,4 +1,3 @@
-import { lang } from './i18n'
 import { nextTask } from './util'
 
 const API = 'https://app.the-egg.club/api/next-event'
@@ -20,8 +19,7 @@ type State = 'live' | 'open' | 'soon' | 'next'
 const LIVE_FOR = 8.5 * 60 * 60 * 1000
 
 /**
- * Fill a template kept on the element itself (`data-<state>`, translated by
- * i18n like any other attribute), so every word stays in index.html.
+ * Fill a template kept on the element itself (`data-<state>`), so every word stays in index.html.
  */
 function fill(el: HTMLElement | null, key: string, vars: Record<string, string>) {
   const tpl = el?.dataset[key]
@@ -35,8 +33,7 @@ function fill(el: HTMLElement | null, key: string, vars: Record<string, string>)
 let made: { short: Intl.DateTimeFormat; long: Intl.DateTimeFormat } | null = null
 function formats() {
   if (made) return made
-  const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
-  const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale, { ...o, timeZone: 'Europe/Istanbul' })
+  const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-GB', { ...o, timeZone: 'Europe/Istanbul' })
   made = { short: fmt({ weekday: 'short', day: 'numeric', month: 'short' }), long: fmt({ weekday: 'long', day: 'numeric', month: 'long' }) }
   return made
 }
@@ -79,7 +76,7 @@ export async function initNextSunday() {
     n: String(event.number).padStart(3, '0'),
     short: short.format(start),
     long: long.format(start),
-    place: event.location?.trim() || (lang === 'tr' ? 'ODTÜ, Ankara' : 'METU, Ankara'),
+    place: event.location?.trim() || 'METU, Ankara',
   }
 
   // masthead
