@@ -6,7 +6,6 @@
 
 @import './fonts.css';
 
-
 :root {
   --butter: #fdf3d7;
   --cream: #fdf8ef;
@@ -236,18 +235,6 @@ body::after {
   font-size: inherit;
 }
 
-.ink-fill {
-  fill: var(--ink);
-}
-.ink-stroke {
-  stroke: var(--ink);
-  stroke-width: 6;
-  stroke-linejoin: round;
-}
-.ink-stroke.thin {
-  stroke-width: 4;
-}
-
 /* ── buttons ─────────────────────────────────────────────────── */
 
 .btn {
@@ -310,20 +297,6 @@ body::after {
   border-color: var(--cream);
 }
 .btn--cream:hover {
-  box-shadow: none;
-}
-.btn--ghost {
-  --b-bg: transparent;
-  --b-fg: var(--cream);
-  border-color: rgba(255, 251, 241, 0.4);
-}
-.btn--ghost::before {
-  background: rgba(255, 251, 241, 0.12);
-}
-.btn--ghost:hover span {
-  color: var(--cream);
-}
-.btn--ghost:hover {
   box-shadow: none;
 }
 
@@ -621,7 +594,7 @@ body.is-night .nav::before {
   }
 }
 
-/* a magazine masthead: a fine double rule, serif italics, tiny mono */
+/* a magazine masthead: a fine double rule and one serif italic strapline */
 .hero__meta {
   position: relative;
   z-index: 3;
@@ -645,30 +618,10 @@ body.is-night .nav::before {
   top: 3px;
   border-top: 1px solid var(--ink);
 }
-.hero__meta p {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.hero__meta .mono {
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--ink-2);
-}
-.mh__issue em {
-  font-size: 1.15em;
-}
-.mh__season {
-  margin-left: 6px;
-}
 .mh__title {
   grid-column: 2;
   justify-self: center;
   color: var(--ink-2);
-}
-.mh__place {
-  justify-self: end;
-  gap: 12px !important;
 }
 
 .hero__art {
@@ -905,11 +858,6 @@ html:not(.js) .hero__art img {
   gap: 12px 20px;
   margin-top: clamp(4px, 1vh, 12px);
 }
-.hero__next {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--ink);
-}
 .hero__built {
   position: relative;
   z-index: 3;
@@ -994,9 +942,6 @@ html:not(.js) .hero__art img {
 
 
 @media (max-width: 860px) {
-  .hide-sm {
-    display: none;
-  }
   .hero {
     padding-top: calc(var(--nav-top) + 10px);
   }
@@ -1007,21 +952,15 @@ html:not(.js) .hero__art img {
   .hero__frame {
     width: 100%;
   }
-  /* the masthead keeps its strapline on phones, as a second line */
+  /* the strapline sits at the left of the rule on phones */
   .hero__meta {
-    grid-template-columns: 1fr auto;
-    row-gap: 6px;
+    grid-template-columns: 1fr;
   }
-  .hero__meta .mh__title.hide-sm {
-    display: block;
-    grid-column: 1 / -1;
-    grid-row: 1;
+  .mh__title {
+    grid-column: 1;
     justify-self: start;
     font-size: 15px;
     line-height: 1.3;
-  }
-  .mh__place .mono {
-    display: none;
   }
   /* one clear action, then the date underneath it */
   .hero__cta {
@@ -1032,11 +971,6 @@ html:not(.js) .hero__art img {
     min-width: min(100%, 300px);
     min-height: 54px;
     font-size: 17px;
-  }
-  .hero__next {
-    font-size: 12px;
-    text-align: center;
-    text-wrap: balance;
   }
   /* the logos run edge to edge instead of being cut at the gutter */
   .hero__built {
@@ -1085,7 +1019,7 @@ html:not(.js) .hero__art img {
 /* landscape phones: the poster has to fit under the bar, not the width;
    the masthead goes back to one line to give it the room */
 @media (max-width: 960px) and (max-height: 500px) and (orientation: landscape) {
-  .hero__meta .mh__title.hide-sm {
+  .mh__title {
     display: none;
   }
   .hero__art {
@@ -1097,12 +1031,6 @@ html:not(.js) .hero__art img {
 }
 
 /* ── shared egg drawing (the day walker): one clean ink line, like the flock ── */
-.shell-line {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 7.5;
-  stroke-linejoin: round;
-}
 .crack {
   fill: none;
   stroke: var(--ink);
@@ -1328,34 +1256,6 @@ h2 {
   transform: rotate(14deg) translateY(-0.06em);
 }
 
-/* ── who comes: a guest list set in type ── */
-/* scene two: who comes, on its own screen */
-.who {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: calc(var(--nav-top) + 24px) 0 clamp(48px, 8vh, 96px);
-}
-.who__head {
-  padding-top: clamp(20px, 2vw, 28px);
-  border-top: 1px solid var(--ink);
-}
-.js .who .who__list li,
-.js .who .who__head > * {
-  opacity: 0;
-  transform: translateY(18px);
-}
-.js .who.is-in .who__list li,
-.js .who.is-in .who__head > * {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 28ms + 120ms);
-}
-.js .who.is-in .who__head > :first-child {
-  transition-delay: 0ms;
-}
 @media (prefers-reduced-motion: reduce) {
   .statement .tok,
   .statement .tok__ink {
@@ -1364,155 +1264,9 @@ h2 {
   .js .statement .hl {
     --p: 100%;
   }
-  .js .who .who__list li,
-  .js .who .who__head > * {
-    opacity: 1;
-    transform: none;
-  }
 }
-.who__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  flex-wrap: wrap;
-  margin-bottom: clamp(24px, 3vw, 44px);
-}
-.who__label {
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100;
-  font-size: clamp(36px, 4vw, 68px);
-  font-weight: 480;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  text-transform: none;
-  color: var(--ink);
-}
-.who__label em {
-  color: var(--tomato);
-}
-.who__deck {
-  max-width: 30ch;
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-style: italic;
-  font-size: clamp(20px, 1.9vw, 30px);
-  line-height: 1.2;
-  text-align: right;
-  color: var(--ink);
-}
-.who__deck b {
-  font-weight: 400;
-  background: linear-gradient(transparent 56%, var(--yolk) 56%, var(--yolk) 90%, transparent 90%);
-  padding: 0 0.06em;
-}
-.who__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100;
-  font-weight: 400;
-  font-size: clamp(28px, 3.9vw, 64px);
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-}
-.who__list li {
-  display: inline-flex;
-  align-items: baseline;
-}
-/* a small hand-drawn egg between names */
-.who__list li:not(.who__last)::after {
-  content: '';
-  display: inline-block;
-  width: 0.24em;
-  height: 0.32em;
-  margin: 0 0.3em 0 0.24em;
-  border: 1px solid var(--ink);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--egg, var(--yolk));
-  transform: translateY(-0.06em) rotate(var(--tilt, -8deg));
-  opacity: 0.85;
-}
-.who__list li:nth-child(5n) {
-  --egg: var(--sky);
-  --tilt: -4deg;
-}
-.who__list li:nth-child(5n + 1) {
-  --egg: var(--lav);
-  --tilt: 10deg;
-}
-.who__list li:nth-child(5n + 2) {
-  --egg: var(--mint);
-}
-.who__list li:nth-child(5n + 3) {
-  --egg: var(--peach);
-  --tilt: -14deg;
-}
-.who__list li:nth-child(5n + 4) {
-  --egg: var(--pink);
-  --tilt: 6deg;
-}
-.who__last {
-  gap: 0.24em;
-}
-.who__n {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  letter-spacing: inherit;
-  color: var(--ink);
-  cursor: default;
-  background-image: linear-gradient(var(--tomato), var(--tomato));
-  background-size: 0 0.06em;
-  background-position: 0 92%;
-  background-repeat: no-repeat;
-  transition: color 0.25s, background-size 0.45s var(--ease-out);
-}
-.who__n--i {
-  font-style: italic;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  color: var(--c, var(--ink-2));
-}
-/* a few names marked with a highlighter, like someone went through the list */
-.who__n--mark {
-  background-image: linear-gradient(var(--tomato), var(--tomato)),
-    linear-gradient(transparent 52%, var(--m) 52%, var(--m) 90%, transparent 90%);
-  background-size: 0 0.06em, 100% 100%;
-  background-position: 0 92%, 0 0;
-  padding: 0 0.06em;
-}
-.who__n--mark:hover,
-.who__n--mark.is-on {
-  background-size: 100% 0.06em, 100% 100%;
-}
-.who__n--key {
-  color: var(--tomato);
-}
-.who__n:hover,
-.who__n:focus-visible,
-.who__n.is-on {
-  color: var(--tomato);
-  background-size: 100% 0.06em;
-  outline: none;
-}
-.who__caption {
-  display: flex;
-  gap: 14px;
-  align-items: baseline;
-  min-height: 1.6em;
-  margin-top: clamp(24px, 3vw, 40px);
-  padding-top: 14px;
-  border-top: 1px solid var(--ink-3);
-  color: var(--ink-2);
-}
-.who__k {
-  color: var(--ink);
-}
+
+/* the handwritten aside under "who comes" */
 .who__v {
   font-family: var(--f-hand);
   font-size: 24px;
@@ -1525,13 +1279,6 @@ h2 {
 @media (max-width: 860px) {
   .statement {
     grid-column: 1 / -1;
-  }
-  .who__caption {
-    flex-direction: column;
-    gap: 6px;
-  }
-  .who__deck {
-    text-align: left;
   }
 }
 
@@ -1580,98 +1327,11 @@ h2 {
   color: var(--tomato);
   font-style: italic;
 }
-.why__grid {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: clamp(32px, 6vw, 120px);
-  align-items: start;
-}
-.why__big {
-  font-size: clamp(40px, 5vw, 86px);
-  font-weight: 440;
-  position: sticky;
-  top: 120px;
-}
-.why__big em {
-  color: var(--lav-deep);
-}
-.why__side > p:first-child {
-  max-width: 44ch;
-  font-size: clamp(17px, 1.35vw, 21px);
-}
-.strikes {
-  list-style: none;
-  margin: 32px 0 28px;
-  padding: 0;
-}
-.strikes li {
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100;
-  font-size: clamp(30px, 3.4vw, 54px);
-  letter-spacing: -0.03em;
-  line-height: 1.18;
-  color: var(--ink-2);
-}
-.strikes span {
-  position: relative;
-  display: inline-block;
-}
-.strikes span::after {
-  content: '';
-  position: absolute;
-  left: -4%;
-  right: -4%;
-  top: 38%;
-  height: 0.36em;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 24' preserveAspectRatio='none'%3E%3Cpath d='M3 15C40 8 70 17 110 11s80 3 120-3 50 6 67 2' fill='none' stroke='%23FF5434' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E")
-    center / 100% 100% no-repeat;
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path 0.55s var(--ease-out);
-}
-.strikes.is-struck span::after {
-  clip-path: inset(0 0 0 0);
-}
-.strikes li:nth-child(2) span::after {
-  transition-delay: 0.18s;
-  transform: rotate(1.5deg);
-}
-.strikes li:nth-child(3) span::after {
-  transition-delay: 0.36s;
-}
-.strikes li:nth-child(4) span::after {
-  transition-delay: 0.54s;
-  transform: rotate(-1.5deg);
-}
-.strikes li:nth-child(5) span::after {
-  transition-delay: 0.72s;
-}
-.why__so {
-  font-size: clamp(24px, 2.2vw, 34px);
-  transform: rotate(-3deg);
-  transform-origin: left;
-}
-.why__answer {
-  margin-top: 14px;
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-style: italic;
-  font-size: clamp(28px, 3vw, 46px);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-}
 
 /* phones: the pull quote is set a size up, so it holds its band on its own */
 @media (max-width: 600px) {
   .why__mini {
     font-size: clamp(28px, 8.4vw, 40px);
-  }
-}
-@media (max-width: 860px) {
-  .why__grid {
-    grid-template-columns: 1fr;
-  }
-  .why__big {
-    position: static;
   }
 }
 
@@ -2868,10 +2528,6 @@ h2 {
 .rules__title em {
   color: var(--tomato);
 }
-.rules__deck {
-  padding-bottom: 0.5em;
-  color: var(--ink-2);
-}
 .rules__list {
   list-style: none;
   margin: 0;
@@ -3295,44 +2951,6 @@ html:not(.js) .rule__fix,
   opacity: 1;
   transform: none;
 }
-.q__row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 28px;
-}
-.q__row .q__next,
-.q__row .q__hint {
-  margin-top: 0;
-}
-.quiz__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 26px;
-}
-.quiz__top .quiz__step {
-  margin-bottom: 0;
-}
-.quiz__batch {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--yolk);
-  text-transform: none;
-}
-.egg-btn .rim {
-  opacity: clamp(0, (var(--heat, 0) - 0.5) * 10, 1);
-  stroke-dasharray: 260;
-  stroke-dashoffset: calc(260 - max(0, var(--heat, 0) - 0.5) * 520);
-}
-.egg-btn.is-hatched .rim {
-  opacity: 1;
-  stroke-dashoffset: 0;
-}
-
-
 
 /* ── NIGHT SHIFT: the hidden arcade ──────────────────────────── */
 

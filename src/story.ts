@@ -2,20 +2,19 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { $, $$, nextTask, reducedMotion, sleepOffscreen } from './util'
 
-/** Fade-ups, the hand-drawn strikethroughs and the first-rule correction. */
+/** Fade-ups, played once as each comes into view. */
 export function initReveals() {
   const io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
         if (!e.isIntersecting) continue
-        const el = e.target as HTMLElement
-        el.classList.add(el.classList.contains('strikes') ? 'is-struck' : 'is-in')
-        io.unobserve(el)
+        e.target.classList.add('is-in')
+        io.unobserve(e.target)
       }
     },
     { threshold: 0.2, rootMargin: '0px 0px -8% 0px' },
   )
-  $$('.reveal, .strikes').forEach((el) => io.observe(el))
+  $$('.reveal').forEach((el) => io.observe(el))
   // every section's loops (and the arcade's flicker) rest while it's off screen
   sleepOffscreen($$('[data-bg], #portal'))
 }

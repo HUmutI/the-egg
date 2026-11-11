@@ -18,9 +18,7 @@ type State = 'live' | 'open' | 'soon' | 'next'
 // saying it's on (half an hour of slack for the last pitch).
 const LIVE_FOR = 8.5 * 60 * 60 * 1000
 
-/**
- * Fill a template kept on the element itself (`data-<state>`), so every word stays in index.html.
- */
+/** Fill a template kept on the element itself (`data-<state>`), so every word stays in index.html. */
 function fill(el: HTMLElement | null, key: string, vars: Record<string, string>) {
   const tpl = el?.dataset[key]
   if (!el || tpl == null) return false
@@ -42,11 +40,10 @@ const escape = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
 /**
- * The next Sunday, from the app: the masthead's issue number and date, a
- * "next" line under the hero, the ticket in the join section, and every
- * apply link pointed straight at that Sunday's page. The page ships with a
- * complete, date-free version of all of these, so if the app is slow or
- * down nothing breaks — it just stays general.
+ * The next Sunday, from the app: a "next" line under the hero and the ticket
+ * in the join section. The page ships with a complete, date-free version of
+ * both, so if the app is slow or down nothing breaks — it just stays general.
+ * (Applying happens on Luma, so no link is rewritten here.)
  */
 export async function initNextSunday() {
   let event: NextEvent | null
@@ -79,15 +76,12 @@ export async function initNextSunday() {
     place: event.location?.trim() || 'METU, Ankara',
   }
 
-  // masthead
-  const issue = document.querySelector('.mh__issue em')
-  const season = document.querySelector('.mh__season')
-  if (issue) issue.textContent = vars.n
-  if (season) season.textContent = vars.short
-
   // hero: one line under the facts
   const heroNext = document.getElementById('heroNext')
-  if (fill(heroNext, state, vars)) heroNext!.hidden = false
+  if (fill(heroNext, state, vars)) {
+    heroNext!.hidden = false
+    heroNext!.dataset.state = state
+  }
 
   // join: the ticket
   const ticket = document.getElementById('ticket')
@@ -97,12 +91,6 @@ export async function initNextSunday() {
     const no = document.getElementById('ticketNo')
     if (no) no.hidden = false
     fill(document.getElementById('ticketStatus'), state, vars)
-  }
-  fill(document.getElementById('joinCtaLabel'), state, vars)
-
-  // every apply button goes straight to that Sunday on the app
-  if (/^https:\/\/app\.the-egg\.club\//.test(event.url)) {
-    document.querySelectorAll<HTMLAnchorElement>('a[data-apply]').forEach((a) => (a.href = event!.url))
   }
 
   // the hero's next line can add a row: let the scroll triggers re-measure
