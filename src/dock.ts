@@ -27,7 +27,7 @@ export function initDock() {
     // the bottom margin lets it leave a little before the footer's crack arrives
     { rootMargin: '0px 0px 10% 0px' },
   )
-  for (const sel of ['.hero__cta', '.day__end', '#join', '#foot', '#portal']) {
+  for (const sel of ['.hero__cta', '.day__end', '#built', '#join', '#foot', '#portal']) {
     const el = document.querySelector(sel)
     if (el) io.observe(el)
   }

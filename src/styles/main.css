@@ -4196,3 +4196,94 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
 .is-asleep .ticker__node::before {
   transition: transform 0.5s var(--ease-spring);
 }
+
+/* ── WHAT GOT BUILT: the hand-off to the app, where every Sunday's projects live ── */
+.built-on {
+  padding: var(--sec-y) var(--gut);
+  text-align: center;
+}
+.built-on__title {
+  max-width: 22ch;
+  margin: 0 auto;
+  font-family: var(--f-display);
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-weight: 440;
+  font-size: clamp(28px, 4.4vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.built-on__title em {
+  color: var(--tomato);
+  font-style: italic;
+}
+.built-on__deck {
+  max-width: 46ch;
+  margin: 18px auto 0;
+  color: var(--ink-2);
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.45;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.built-on__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.built-on__ctas .btn {
+  max-width: 100%;
+}
+
+/* the nav's projects pill: a short word on narrow bars, gone where the dock carries it */
+.nav__app-short {
+  display: none;
+}
+@media (max-width: 860px) {
+  .nav__app-long {
+    display: none;
+  }
+  .nav__app-short {
+    display: inline;
+  }
+  .nav__links .nav__app {
+    padding: 0 12px;
+  }
+}
+@media (max-width: 700px) {
+  .nav__links .nav__app {
+    display: none;
+  }
+  /* the clock keeps its time; the word beside it only when there's room */
+  .clock__label {
+    display: none;
+  }
+  .nav {
+    min-width: 0;
+  }
+  .nav__clock {
+    min-width: 0;
+  }
+  .hero__cta .hero__projects {
+    min-height: 48px;
+    font-size: 15px;
+  }
+  .dock__app {
+    flex: none;
+    height: 52px;
+    padding: 0 16px;
+    border: 1px solid var(--ink);
+    box-shadow: 0 10px 24px -14px rgba(31, 23, 34, 0.55);
+    font-size: 15px;
+  }
+  .dock__apply {
+    padding: 0 14px;
+  }
+}
+@media (max-width: 360px) {
+  .nav__clock {
+    display: none;
+  }
+}

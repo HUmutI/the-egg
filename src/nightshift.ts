@@ -665,9 +665,9 @@ export function createNightShift(opts: {
   const you: Actor = { x: START.x, y: START.y, body: PALETTE.yolk, acc: 'crack', facing: 1, moving: false, anim: 0, path: [] }
   let carrying = false
   let fed = 0
-  // the game's hour: pizza at six, pitches at seven, like the real Sunday
-  const CLOCK_START = 18 * 60
-  const PITCHES = 19 * 60
+  // the game's hour: pizza at half four, pitches at half five, like the real Sunday
+  const CLOCK_START = 16 * 60 + 30
+  const PITCHES = 17 * 60 + 30
   let minutes = CLOCK_START
   let golden = false
   let clockOn = false
@@ -697,7 +697,7 @@ export function createNightShift(opts: {
     }
     const mid =
       clockOn
-        ? `<b>${fmt(minutes)}</b><i> · ${lang === 'tr' ? 'sunumlar 19:00' : 'pitches 19:00'}</i>`
+        ? `<b>${fmt(minutes)}</b><i> · ${lang === 'tr' ? 'sunumlar 17:30' : 'pitches 17:30'}</i>`
         : `<b>${touch ? (lang === 'tr' ? 'dokun, yürü' : 'tap to walk') : lang === 'tr' ? 'hareket et, başla' : 'move to start'}</b>`
     const fedLabel = lang === 'tr' ? 'beslenen' : 'fed'
     const handsFree = lang === 'tr' ? 'eller boş' : 'hands free'
@@ -754,7 +754,7 @@ export function createNightShift(opts: {
              <ul>${shipped}</ul>
              <p>The Egg Club’da bir pazar böyle hissettirir. Gel, gerçeğini yap.</p>
              <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Başvur</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Tekrar oyna</button></div>`
-          : `<h3>Saat 19:00</h3>
+          : `<h3>Saat 17:30</h3>
              <p>Sunumlara ${8 - fed} kişi aç karnına çıktı. Seni affederler. Muhtemelen.</p>
              ${shipped ? `<ul>${shipped}</ul>` : ''}
              <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Tekrar dene</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Başvur</button></div>`
@@ -764,7 +764,7 @@ export function createNightShift(opts: {
              <ul>${shipped}</ul>
              <p>This is what a Sunday at The Egg Club feels like. Come build the real thing.</p>
              <div class="pxbtns"><button class="pxbtn" data-act="join" type="button">Apply for a seat</button><button class="pxbtn pxbtn--ghost" data-act="play" type="button">Play again</button></div>`
-          : `<h3>19:00</h3>
+          : `<h3>17:30</h3>
              <p>Pitches started with ${8 - fed} hungry builder${8 - fed === 1 ? '' : 's'}. They’ll forgive you. Probably.</p>
              ${shipped ? `<ul>${shipped}</ul>` : ''}
              <div class="pxbtns"><button class="pxbtn" data-act="play" type="button">Try again</button><button class="pxbtn pxbtn--ghost" data-act="join" type="button">Apply for a seat</button></div>`
@@ -792,8 +792,8 @@ export function createNightShift(opts: {
     state = 'play'
     hint.innerHTML =
       (lang === 'tr'
-        ? 'Saat 18:00. Sunumlar 19:00’da. Pizza tezgahta — <b>8 kişinin hepsini doyur</b>.'
-        : 'It’s 18:00. Pitches at 19:00. Pizza’s on the counter — <b>feed all 8 builders</b>.') +
+        ? 'Saat 16:30. Sunumlar 17:30’da. Pizza tezgahta — <b>8 kişinin hepsini doyur</b>.'
+        : 'It’s 16:30. Pitches at 17:30. Pizza’s on the counter — <b>feed all 8 builders</b>.') +
       // no keyboard on a phone: say how to move before anyone has to guess
       (touch
         ? lang === 'tr'

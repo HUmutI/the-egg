@@ -78,7 +78,7 @@ const build = (d: number): [number, number] => {
 const AIR = 22
 
 /**
- * "A day at the club": a programme from 10:30 to 20:00, set on a hairline,
+ * "A day at the club": a programme from 10:30 to 18:30, set on a hairline,
  * with one riso plate per step on a shared ruler. On wide screens the section
  * pins and the scroll walks one egg through the day: the door opens on it, it
  * pitches against the stopwatch and gets its first crack, the two who

@@ -339,7 +339,7 @@ function pizza(ph: boolean) {
     ${mono(end, y + 28, tr ? '(tartışmalı)' : '(disputed)', T, 'text-anchor="end"')}`
 }
 
-/** 19:00 Hatch: a stage, a lamp, and a status report (on a phone, up beside the lamp). */
+/** 17:30 Hatch: a stage, a lamp, and a status report (on a phone, up beside the lamp). */
 function hatch(ph: boolean) {
   return `
     ${rule(340, ph ? 44 : 8, 340, 96, 2.6)}
@@ -358,7 +358,7 @@ function hatch(ph: boolean) {
     </g>`
 }
 
-/** 20:00 Afterglow: the metro home, and a group chat that carries on without them. */
+/** 18:30 Afterglow: the metro home, and a group chat that carries on without them. */
 function afterglow(ph: boolean) {
   const at = ph ? PH.stairs : STAIRS
   const m = at + 90

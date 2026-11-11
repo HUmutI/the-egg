@@ -26,11 +26,11 @@ const LABELS: [number, string][] =
         [11 * 60, 'kapılar açık'],
         [11 * 60 + 30, 'fikir sunumu'],
         [12 * 60, 'takım kurma'],
-        [18 * 60, 'işbaşında'],
-        [19 * 60, 'pizza'],
-        [20 * 60, 'sunumlar'],
-        [21 * 60, 'tatlı yorgunluk'],
-        [22 * 60, 'eve dönüş'],
+        [16 * 60 + 30, 'işbaşında'],
+        [17 * 60 + 30, 'pizza'],
+        [18 * 60 + 30, 'sunumlar'],
+        [19 * 60 + 30, 'tatlı yorgunluk'],
+        [20 * 60 + 30, 'eve dönüş'],
         [99 * 60, 'gece kuşları'],
       ]
     : [
@@ -38,11 +38,11 @@ const LABELS: [number, string][] =
         [11 * 60, 'doors open'],
         [11 * 60 + 30, 'idea pitches'],
         [12 * 60, 'teaming up'],
-        [18 * 60, 'building'],
-        [19 * 60, 'pizza'],
-        [20 * 60, 'pitches'],
-        [21 * 60, 'afterglow'],
-        [22 * 60, 'heading home'],
+        [16 * 60 + 30, 'building'],
+        [17 * 60 + 30, 'pizza'],
+        [18 * 60 + 30, 'pitches'],
+        [19 * 60 + 30, 'afterglow'],
+        [20 * 60 + 30, 'heading home'],
         [99 * 60, 'night owls'],
       ]
 
@@ -144,10 +144,10 @@ export function initSky() {
     const keys: [number, number][] = [
       [0, 10 * 60 + 10],
       [Math.max(1, clockState.dayStart), 10 * 60 + 30],
-      [clockState.dayEnd, 20 * 60 + 10],
+      [clockState.dayEnd, 18 * 60 + 40],
       // rules, questions and the carton share the afterglow; the footer is the way home
-      [footTop, 20 * 60 + 58],
-      [max, 22 * 60 + 30],
+      [footTop, 19 * 60 + 28],
+      [max, 21 * 60],
     ]
     for (let i = 0; i < keys.length - 1; i++) {
       const [y0, m0] = keys[i]

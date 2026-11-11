@@ -14,10 +14,10 @@ type NextEvent = {
 /** Where the next Sunday stands: on today, taking applications, or not yet. */
 type State = 'live' | 'open' | 'soon' | 'next'
 
-// The club runs 10:30 to 20:00. The app keeps a Sunday "current" for a day
+// The club runs 10:30 to 18:30. The app keeps a Sunday "current" for a day
 // (for late submissions), but once the evening's done the page should stop
 // saying it's on (half an hour of slack for the last pitch).
-const LIVE_FOR = 10 * 60 * 60 * 1000
+const LIVE_FOR = 8.5 * 60 * 60 * 1000
 
 /**
  * Fill a template kept on the element itself (`data-<state>`, translated by
