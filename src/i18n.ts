@@ -8,18 +8,7 @@ const KEY = 'eggclub:lang'
  * phone set to Turkish lands in Turkish and everyone else gets English.
  */
 export function getLang(): Lang {
-  try {
-    const v = localStorage.getItem(KEY)
-    if (v === 'tr' || v === 'en') return v
-  } catch {
-    /* storage unavailable */
-  }
-  const prefs = navigator.languages?.length ? navigator.languages : [navigator.language]
-  for (const p of prefs) {
-    const code = (p ?? '').toLowerCase()
-    if (code.startsWith('tr')) return 'tr'
-    if (code.startsWith('en')) return 'en'
-  }
+  // English only for now: the toggle is gone, so neither a saved choice nor the browser switches it.
   return 'en'
 }
 

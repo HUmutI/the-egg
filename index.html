@@ -26,24 +26,7 @@
           var n = performance.getEntriesByType('navigation')[0]
           if (location.hash || (n && n.type !== 'navigate')) d.classList.add('dim-ahead')
         } catch (e) {}
-        try {
-          l = localStorage.getItem('eggclub:lang')
-        } catch (e) {}
-        if (l !== 'tr' && l !== 'en') {
-          var p = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]
-          for (var i = 0; i < p.length && !l; i++) {
-            var c = String(p[i] || '').toLowerCase()
-            if (c.indexOf('tr') === 0) l = 'tr'
-            else if (c.indexOf('en') === 0) l = 'en'
-          }
-        }
-        if (l === 'tr') {
-          d.lang = 'tr'
-          d.classList.add('i18n-pending')
-          setTimeout(function () {
-            d.classList.remove('i18n-pending')
-          }, 3000)
-        }
+        // (English only: no Turkish swap to wait for)
       })()
     </script>
 
@@ -215,7 +198,6 @@
         <a href="#day" data-i18n-tr="Gün">The day</a>
         <a href="#who" data-i18n-tr="Kimler geliyor">Who comes</a>
         <a href="#faq" data-i18n-tr="SSS">FAQ</a>
-        <button type="button" id="langToggle" class="lang-toggle">TR</button>
         <a href="https://app.the-egg.club/projects" class="btn btn--cream btn--sm nav__app" target="_blank" rel="noopener"><span class="nav__app-long" data-i18n-tr="Projeler ↗">Projects ↗</span><span class="nav__app-short" data-i18n-tr="Projeler">Projects</span></a>
         <a href="https://luma.com/r5khs24x" class="btn btn--ink btn--sm" target="_blank" rel="noopener"><span data-i18n-tr="Başvur">Apply</span></a>
       </nav>
@@ -358,12 +340,12 @@
               id="heroNext"
               hidden
               data-live="Nº{n} <span class='hero__pill'>on right now</span>"
-              data-open="Next: {short} <span class='hero__pill'>applications open</span>"
-              data-soon="Next: {short} <span class='hero__pill'>applications open soon</span>"
+              data-open="Next: {short}"
+              data-soon="Next: {short}"
               data-next="Next: {short}"
               data-i18n-tr-attr-data-live="Nº{n} <span class='hero__pill'>şu an sürüyor</span>"
-              data-i18n-tr-attr-data-open="Sıradaki: {short} <span class='hero__pill'>başvurular açık</span>"
-              data-i18n-tr-attr-data-soon="Sıradaki: {short} <span class='hero__pill'>başvurular yakında</span>"
+              data-i18n-tr-attr-data-open="Sıradaki: {short}"
+              data-i18n-tr-attr-data-soon="Sıradaki: {short}"
               data-i18n-tr-attr-data-next="Sıradaki: {short}"
             ></p>
           </div>
