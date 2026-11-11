@@ -70,8 +70,7 @@
   box-shadow: 0 0 0 1.5px var(--ink);
 }
 
-/* phones: the four facts set as a small two-by-two table (free · when,
-   time · where) instead of a ragged wrap */
+/* phones: the two facts (time · where) side by side on one line */
 @media (max-width: 600px) {
   .hero__facts {
     display: grid;
