@@ -1,11 +1,10 @@
 import { initHero } from './hero'
 import { initLiveBadge } from './badge'
 import { initDock } from './dock'
-import { renderDay } from './dayplates'
 import { initNextSunday } from './next'
 import { initShare } from './share'
 import { installInkDefs } from './riso'
-import { keepPlace, nextTask } from './util'
+import { keepPlace } from './util'
 // hero facts, FAQ, join ticket and share: new UI, kept out of main.css
 import './styles/story.css'
 
@@ -15,7 +14,7 @@ const scroll = import('./scroll')
 // A reload or a step back lands where the reader was, once the scroll layer has measured the page.
 const backToPlace = keepPlace()
 
-// The house ink (wobble, halftone) before anything draws with it.
+// The house ink's shared defs (the halftone the regulars stand on) before anything draws with it.
 installInkDefs()
 initNextSunday()
 initShare()
@@ -25,14 +24,9 @@ initHero()
 initLiveBadge()
 initDock()
 
-// The day's scenes are drawn next, in a task of their own, so the page has
-// its final height before anything measures it.
-const drawn = nextTask().then(renderDay)
-
-// Wait for fonts so measured layouts (pinning, perch position) are right,
-// but never block for long.
+// Wait for fonts so what the scroll layer measures is right, but never block for long.
 const fonts = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))])
-Promise.all([scroll, drawn, fonts])
+Promise.all([scroll, fonts])
   .then(([{ start }]) => start())
   .then(backToPlace)
 

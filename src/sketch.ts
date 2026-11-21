@@ -5,8 +5,9 @@ import { PALETTE } from './util'
  *
  * `sketch` bends a pen line a little along its way, once, so it comes out as an ordinary crisp
  * stroke; `halftone` shades a shape with real dots; `inkEgg` puts a riso egg together from
- * both. Kept apart from riso.ts, which the first screen's script loads: only the figures
- * (src/figures.ts, in the scroll layer) draw with these.
+ * both. Kept apart from riso.ts, which the first screen's script loads: only the regulars
+ * (src/figures.ts) and the day's scenes (src/dayplates.ts), both in the scroll layer, draw
+ * with these.
  */
 
 const I = PALETTE.ink
@@ -141,9 +142,10 @@ const inside = (poly: Pt[], x: number, y: number) => {
 /**
  * Halftone shading for a shape: dots on a 28° screen that grow towards the lower right, as a
  * real screen's do. Each dot is a round-capped stroke of no length, in one of four weights, so
- * the whole shade is four paths (no pattern to tile, no mask to composite).
+ * the whole shade is four paths (no pattern to tile, no mask to composite). (`pitch`, `max`:
+ * the screen's step and its largest dot, in the drawing's units; `opacity`: how dark it prints.)
  */
-export function halftone(poly: Pt[], pitch = 6.2, max = 1.9) {
+export function halftone(poly: Pt[], pitch = 6.2, max = 1.9, opacity = 0.3) {
   if (poly.length < 3) return ''
   const xs = poly.map((p) => p[0])
   const ys = poly.map((p) => p[1])
@@ -165,7 +167,7 @@ export function halftone(poly: Pt[], pitch = 6.2, max = 1.9) {
       sizes[Math.min(3, Math.floor(s * 4))].push(`M${f1(x)} ${f1(y)}h.01`)
     }
   }
-  return `<g fill="none" stroke="${I}" stroke-linecap="round" opacity=".3">${sizes
+  return `<g fill="none" stroke="${I}" stroke-linecap="round" opacity="${opacity}">${sizes
     .map((dots, k) => (dots.length ? `<path d="${dots.join('')}" stroke-width="${f1(max * 2 * (0.3 + 0.7 * ((k + 0.5) / 4)))}"/>` : ''))
     .join('')}</g>`
 }

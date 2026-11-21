@@ -393,103 +393,73 @@
       </section>
 
 
-      <!-- ───────────── 10:30 → 18:30 · THE DAY ───────────── -->
+      <!-- ───────────── 10:30 → 18:30 · THE DAY: a storyboard (src/dayplates.ts draws the scenes and the
+           programme line; src/day.ts runs a phone's strip). Nothing pins, nothing follows the scroll. ───────────── -->
       <section class="day" id="day" data-bg="day" aria-labelledby="dayTitle">
-        <div class="day__pin">
-          <header class="day__head">
-            <p class="label label--rule mono"><span>03</span> <span class="label__txt">A day at the club</span></p>
-            <div class="day__headrow">
-              <h2 id="dayTitle">Morning to evening,<br /> <em>roughly.</em></h2>
-              <p class="day__deck mono">One egg, 10:30 → 18:30. Not to scale.</p>
-            </div>
-          </header>
-
-          <div class="day__viewport">
-            <div class="day__track" id="dayTrack">
-              <span class="day__progress" aria-hidden="true"></span>
-              <ol class="day__steps">
-                <li class="step" data-step="0">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">10:30</time>
-                    <h3>Doors</h3>
-                    <p>Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-                <li class="step" data-step="1">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">11:00</time>
-                    <h3>Crack</h3>
-                    <p>Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-                <li class="step" data-step="2">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">11:30</time>
-                    <h3>Nest</h3>
-                    <p>Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-                <li class="step" data-step="3">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">12:00</time>
-                    <h3>Incubate</h3>
-                    <p>Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-                <li class="step" data-step="4">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">16:30</time>
-                    <h3>Pizza</h3>
-                    <p>Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-                <li class="step step--hatch" data-step="5">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">17:30</time>
-                    <h3>Hatch</h3>
-                    <p>Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-                <li class="step" data-step="6">
-                  <span class="step__node" aria-hidden="true"></span>
-                  <div class="step__text">
-                    <time class="step__time">18:30</time>
-                    <h3>Afterglow</h3>
-                    <p>Lights out at 18:30. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
-                  </div>
-                  <div class="step__fig" aria-hidden="true"></div>
-                </li>
-              </ol>
-
-              <!-- the way out: the programme hands over to Apply -->
-              <div class="day__end">
-                <p class="day__bye hand">see you in<br />two Sundays</p>
-                <div class="day__go">
-                  <svg class="day__arrow" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
-                    <path d="M10 6 C 14 46 48 66 108 62" />
-                    <path d="M90 48 L 110 62 L 90 76" />
-                  </svg>
-                  <a class="btn btn--ink day__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
-                </div>
-              </div>
-
-              <!-- our egg and the two it meets at Crack, walked across the plates (drawn by src/dayplates.ts) -->
-              <svg class="day__cast" id="dayCast" viewBox="0 0 5600 600" aria-hidden="true" focusable="false"></svg>
-            </div>
+        <header class="day__head">
+          <p class="label label--rule mono"><span>03</span> <span class="label__txt">A day at the club</span></p>
+          <div class="day__headrow">
+            <h2 id="dayTitle">Morning to evening,<br /> <em>roughly.</em></h2>
+            <p class="day__deck mono">One egg, 10:30 → 18:30. Not to scale.</p>
           </div>
-        </div>
+        </header>
+
+        <!-- seven frames and the way out, on one sheet: a grid on wide screens, a strip to swipe on a phone -->
+        <ol class="day__sheet" id="daySheet" role="list">
+          <li class="frame">
+            <time class="frame__time">10:30</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Doors</h3>
+            <p class="frame__line">Coffee, introductions, a wall of sticky notes. Name tags optional. Opinions mandatory.</p>
+          </li>
+          <li class="frame">
+            <time class="frame__time">11:00</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Crack</h3>
+            <p class="frame__line">Anyone can pitch an idea in sixty seconds. Half-baked is the house style.</p>
+          </li>
+          <li class="frame">
+            <time class="frame__time">11:30</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Nest</h3>
+            <p class="frame__line">Teams form around whatever sounds most fun. Strangers become co-founders of a very silly thing.</p>
+          </li>
+          <li class="frame">
+            <time class="frame__time">12:00</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Incubate</h3>
+            <p class="frame__line">Heads down. Build it, break it, build it again. Mentors wander around with snacks and opinions.</p>
+          </li>
+          <li class="frame">
+            <time class="frame__time">16:30</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Pizza</h3>
+            <p class="frame__line">Non-negotiable. Laptops closed, twelve boxes open, one ongoing debate about pineapple. The second, better idea usually shows up here.</p>
+          </li>
+          <li class="frame frame--hatch">
+            <time class="frame__time">17:30</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Hatch</h3>
+            <p class="frame__line">Hacking stops. Five-minute pitches, everybody claps. Working is encouraged. Ambitious and broken also counts.</p>
+          </li>
+          <li class="frame">
+            <time class="frame__time">18:30</time>
+            <div class="frame__scene" aria-hidden="true"></div>
+            <h3 class="frame__name">Afterglow</h3>
+            <p class="frame__line">Lights out at 18:30. Cold pizza, the metro home, and a group chat that keeps going all week.</p>
+          </li>
+          <!-- the way out: the programme hands over to Apply (src/dock.ts watches .day__end) -->
+          <li class="frame frame--end day__end">
+            <p class="day__bye hand">see you in<br />two Sundays</p>
+            <div class="day__go">
+              <svg class="day__arrow" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+                <path d="M10 6 C 14 46 48 66 108 62" />
+                <path d="M90 48 L 110 62 L 90 76" />
+              </svg>
+              <a class="btn btn--ink day__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
+            </div>
+          </li>
+        </ol>
       </section>
       <!-- ───────────── WHAT GOT BUILT → the app ───────────── -->
       <section class="built-on interlude" id="built" data-bg="butter" aria-labelledby="builtTitle">

@@ -3,14 +3,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { initSky } from './sky'
 import { initReveals, initRules, initStatement } from './story'
 import { initDay } from './day'
+import { renderDay } from './dayplates'
 import { initFlock } from './flock'
 import { initPhone } from './phone'
 import { nextTask } from './util'
 
 /**
- * The scroll layer: gsap, ScrollTrigger and every scene that moves with the scroll. None of it is
- * on the first screen, so it is a chunk of its own (main.ts fetches it at once, alongside the
- * entry, and starts it once the fonts are in).
+ * The scroll layer: gsap, ScrollTrigger, every scene that moves with the scroll and the drawings
+ * below the first screen (the regulars, the day's storyboard). None of it is on the first screen,
+ * so it is a chunk of its own (main.ts fetches it at once, alongside the entry, and starts it once
+ * the fonts are in).
  */
 gsap.registerPlugin(ScrollTrigger)
 // ScrollTrigger re-measures on DOMContentLoaded and on load by itself. Here the first comes before
@@ -22,9 +24,10 @@ export async function start() {
   initReveals()
   initStatement()
   await nextTask()
-  await initDay()
+  // the day's scenes are drawn a scene a task (their boxes are already their size: main.css)
+  await renderDay()
   await nextTask()
-  measureNew()
+  initDay()
   await nextTask()
   await initFlock()
   await nextTask()
@@ -38,16 +41,6 @@ export async function start() {
   ScrollTrigger.refresh()
   watchLayout()
   loadPortal()
-}
-
-/**
- * A trigger that drives a timeline first measures itself on the tick after it is made (ScrollTrigger
- * waits for the timeline to be filled in), in the frame that also measures the page again for its
- * pin; measured here, in a task of its own, it finds that one already done. (update() is still the
- * stand-in that does exactly that measuring, once.)
- */
-function measureNew() {
-  ScrollTrigger.getAll().forEach((t) => t.start || t.end || t.update())
 }
 
 /**

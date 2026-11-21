@@ -9,15 +9,15 @@ import { PALETTE } from './util'
  * made from these: thin wobbly ink, pastel riso fills, halftone, and dry
  * technical annotations, never thick cartoon outlines.
  *
- * The specimen plate draws its wobble and its halftone as plain geometry
+ * Both draw their wobble and their halftone as plain geometry
  * (src/sketch.ts): the line is bent once, when it is drawn, and the dots
- * are dots, so nothing on the plate is filtered or masked when it paints.
- * The day's plates still use the #wobble filter.
+ * are dots, so no drawing is filtered or masked when it paints. Only the
+ * hero's hand-drawn notes still go through the #wobble filter (main.css).
  */
 
 const I = PALETTE.ink
 
-/** One-time SVG defs: the wobble filter (the day's plates) and the flat halftone the figures stand on. */
+/** One-time SVG defs: the wobble filter (the hero's notes) and the flat halftone the figures stand on. */
 export function installInkDefs() {
   const defs = document.querySelector('.defs defs')
   if (!defs || defs.querySelector('#halftone')) return

@@ -47,17 +47,13 @@ const LABELS: [number, string][] =
       ]
 
 /**
- * Where the sky colour is painted. --page is read only by the body's background and a handful of
- * small things drawn in it (the nav's band, the dock's fade, the programme's egg markers, a
- * plate's patch of sky), so it is written on those alone: set on :root it would restyle the whole
- * document on every frame of a colour change. (The plates and the phone's row of eggs are drawn
- * anew on a layout change; day.ts calls resetSky() then.)
+ * Where the sky colour is painted. --page is read only by the body's background and two small
+ * things drawn over it (the nav's band, the dock's fade), so it is written on those alone: set on
+ * :root it would restyle the whole document on every frame of a colour change.
  */
 let targets: HTMLElement[] | null = null
 const paintSky = (c: string) => {
-  // (a phone's day shows its programme as the row of eggs, and the steps' own markers are hidden:
-  // painting those costs a restyle on every frame and shows nothing)
-  targets ??= $$<HTMLElement>('#nav, #dock, .day:not(.day--story) .step__node, .day__ticker, .plate__sky')
+  targets ??= $$<HTMLElement>('#nav, #dock')
   document.body.style.backgroundColor = c
   for (const el of targets) el.style.setProperty('--page', c)
 }
@@ -77,12 +73,6 @@ export const sky = {
   },
 }
 
-/** The day has drawn new things that wear the sky: find them again and paint them. */
-export const resetSky = () => {
-  targets = null
-  if (sky.c) paintSky(sky.c)
-}
-
 export function initSky() {
   const root = document.documentElement
   const body = document.body
@@ -100,8 +90,8 @@ export function initSky() {
   document.head.append(nightRing)
   nightRing.disabled = true
   $$('[data-bg]').forEach((el) => {
-    // The day section paints its own sky as it goes (day.ts keeps data-sky
-    // current); every other section is one colour.
+    // The day section says its own sky (day.ts keeps data-sky current: on a phone, the colour
+    // of the frame in front); every other section is one colour.
     const colorOf = () => (el.dataset.bg === 'day' ? (el.dataset.sky ?? PALETTE.lav) : BG[el.dataset.bg ?? 'butter'])
     // Night only falls once the footer has really arrived.
     const at = el.dataset.bg === 'night' ? '25%' : '55%'
@@ -128,23 +118,33 @@ export function initSky() {
   const foot = $('#foot')
 
   // The page's length and where the footer starts, measured on each refresh rather than
-  // read on every scroll frame (a read there forces a layout after the day's tweens wrote).
+  // read on every scroll frame (a read there forces a layout mid-frame).
   let max = 0
   let footTop = 0
+  let tail = 1
   const measure = () => {
     max = document.documentElement.scrollHeight - innerHeight
     footTop = foot.offsetTop - innerHeight * 0.6
+    tail = Math.max(1, innerHeight * 0.3)
   }
   measure()
 
+  /** The hours the day's stretch of the page starts and ends on: doors, and a little after lights out. */
+  const DOORS = 10 * 60 + 30
+  const DUSK = 18 * 60 + 40
   const minutesAt = (y: number) => {
-    if (clockState.dayMinutes !== null && y >= clockState.dayStart && y <= clockState.dayEnd) {
-      return clockState.dayMinutes
+    // A phone's day is at the hour of the frame in front for as long as it is on screen. Over the
+    // first and last stretch of it the clock runs there from doors, and on from there to the
+    // evening, so the hour never jumps as the day comes and goes.
+    const m = clockState.dayMinutes
+    if (m !== null && y >= clockState.dayStart && y <= clockState.dayEnd) {
+      const out = clamp((clockState.dayEnd - y) / tail, 0, 1)
+      return out < 1 ? lerp(DUSK, m, out) : lerp(DOORS, m, clamp((y - clockState.dayStart) / tail, 0, 1))
     }
     const keys: [number, number][] = [
       [0, 10 * 60 + 10],
-      [Math.max(1, clockState.dayStart), 10 * 60 + 30],
-      [clockState.dayEnd, 18 * 60 + 40],
+      [Math.max(1, clockState.dayStart), DOORS],
+      [clockState.dayEnd, DUSK],
       // rules, questions and the carton share the afterglow; the footer is the way home
       [footTop, 19 * 60 + 28],
       [max, 21 * 60],
@@ -160,8 +160,8 @@ export function initSky() {
   }
 
   // Where the page is, as ScrollTrigger last read it. Reading scrollY here would make the browser
-  // lay the page out again on the spot, after the scroll's tweens have written to it (inside the
-  // day's frame, twice a frame); ScrollTrigger reads it once per scroll, before any of them.
+  // lay the page out again on the spot, after the scroll's tweens have written to it; ScrollTrigger
+  // reads it once per scroll, before any of them.
   let y = scrollY
   let last = ''
   let scrolled: boolean | null = null

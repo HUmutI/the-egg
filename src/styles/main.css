@@ -1137,15 +1137,6 @@ html:not(.js) .hero__art img {
   }
 }
 
-/* ── shared egg drawing (the day walker): one clean ink line, like the flock ── */
-.crack {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 6;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
 /* ── shared section rhythm ───────────────────────────────────── */
 
 section {
@@ -1182,6 +1173,7 @@ h2 {
      --sec-y         above and below an interlude */
 .what,
 .flock,
+.day,
 .rules,
 .faq,
 .join {
@@ -1425,85 +1417,21 @@ h2 {
   color: var(--tomato);
 }
 
-/* ── THE DAY (pinned horizontal story) ───────────────────────── */
+/* ── THE DAY: a storyboard ───────────────────────────────────── */
 
-/* A programme from 10:30 to 20:00 on one hairline, set like the rest of the
-   site: a node, a mono time, an italic title, a line of copy. Under each step
-   stands a riso plate (src/dayplates.ts), and the plates share one ruler.
-   Wide screens pin the section and walk one egg through the plates
-   (src/day.ts). Phones, and reduced motion, read it top to bottom. */
+/* The programme from 10:30 to 18:30 as seven frames on one sheet, set as the plate of regulars
+   is (FLOCK, below): cream paper with an ink edge, a frame to a cell, hairlines between. A frame
+   reads top to bottom: its hour in the mono, with its small egg; the scene (src/dayplates.ts
+   draws it: the same picture box for every frame, each on its own short ruler); the step's name;
+   its line. The eighth cell is the way out. Nothing pins and nothing follows the scroll.
+   Wide screens show the sheet whole: four frames to a row, three on a small laptop (where the
+   way out takes the room of two), two on a tablet. A phone reads it as a strip, a frame at a
+   time, with the programme line over it as its index (src/day.ts); on its side too, where a
+   frame is set along the screen. */
 .day {
-  padding: 0;
-  /* The wide story is one screen, pinned: everything on its stage has to fit the window's
-     height, down to a short laptop's. So its gaps give way first as the window gets shorter
-     (each is a clamp on the height), and the plate takes what is left:
-       --d-rest   what stands on the stage besides the plate: the nav, the gaps, the numbered
-                  name under its hairline (45px), the title, a step's copy (its time, its name
-                  and four lines), the ruler (12px) and a little air
-       --col      a step's column; its 4:3 plate is as tall as the height less --d-rest */
-  --d-top: clamp(14px, 6vh - 30px, 36px);
-  --d-label: clamp(10px, 2vh, 22px);
-  --d-title: clamp(36px, min(4.4vw, 8vh), 76px);
-  --d-lines: 1;
-  --d-gap: clamp(20px, 11vh - 58px, 64px);
-  --d-step: clamp(32px, 3vw, 52px);
-  --d-p: clamp(14px, 1.05vw, 17px);
-  --d-copy: calc(66px + var(--d-step) + 6 * var(--d-p));
-  --d-fig: clamp(8px, 2vh, 24px);
-  --d-foot: clamp(14px, 8vh - 44px, 44px);
-  --d-rest: calc(var(--nav-top) + var(--d-top) + 45px + var(--d-label) + var(--d-title) * var(--d-lines) + var(--d-gap) + var(--d-copy) + var(--d-fig) + 12px + var(--d-foot) + 10px);
-  --col: clamp(270px, min(31vw, calc((100vh - var(--d-rest)) * 1.333)), 560px);
+  overflow-x: clip;
 }
-/* (narrower than 1200px the title takes two lines) */
-@media (max-width: 1199px) {
-  .day {
-    --d-lines: 2;
-  }
-}
-/* a short window (a 1366×768 laptop shows about 650px of page): every gap at its least, and
-   the step's name and copy a size down */
-@media (max-height: 720px) {
-  .day {
-    --d-top: 10px;
-    --d-label: 8px;
-    --d-title: clamp(32px, min(4.4vw, 7vh), 76px);
-    --d-gap: 16px;
-    --d-step: 32px;
-    --d-p: 14px;
-    --d-fig: 8px;
-    --d-foot: 10px;
-  }
-}
-/* What pins in the day is held in a spacer of its own (holdPin in src/util.ts, put around it
-   when the plates are drawn), not one ScrollTrigger makes: its own is taken out of the page on
-   every refresh with the scene in it, and put back, and a scene put back (some six hundred
-   elements here, most of them the plates' ink) is styled and laid out anew. A holder stays, and
-   is only restyled. Pinned, ScrollTrigger gives a holder the display of what it holds, so a
-   holder already has it where its scene pins, and the scene is never rebuilt; there it is laid
-   out as ScrollTrigger's own spacer was (a row, its scene as wide as it). Where its scene doesn't
-   pin it is no box. */
-.pin-hold--day {
-  display: block;
-}
-.pin-hold--stage,
-.pin-hold--view {
-  display: contents;
-}
-.day__pin {
-  position: relative;
-  min-height: 100svh;
-  padding: calc(var(--nav-top) + var(--d-top)) 0 var(--d-foot);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-.day__head {
-  padding: 0 var(--gut);
-}
-.day__head .label {
-  margin-bottom: var(--d-label);
-}
+/* the title, and beside it (under it on a phone) the deck */
 .day__headrow {
   display: flex;
   justify-content: space-between;
@@ -1511,13 +1439,14 @@ h2 {
   gap: 10px 40px;
   flex-wrap: wrap;
 }
-.day__head h2 {
-  font-size: var(--d-title);
-}
 .day__head h2 em {
   color: var(--lav-deep);
 }
+/* one line where the deck fits beside it; two anywhere narrower ("Morning to evening," is about 9em) */
 @media (min-width: 1200px) {
+  .day__head h2 {
+    font-size: clamp(44px, 4.6vw, 84px);
+  }
   .day__head h2 br {
     display: none;
   }
@@ -1527,213 +1456,103 @@ h2 {
   color: var(--ink-2);
 }
 
-.day__viewport {
-  min-width: 0;
-  overflow: hidden;
-  padding-top: var(--d-gap);
-}
-.day__track {
-  position: relative;
-  display: flex;
-  width: max-content;
-  /* room under the plates for the ruler */
-  padding: 0 0 12px var(--gut);
-  will-change: transform;
-}
-/* the ruler the plates stand on: one ink line, a tick every twentieth of a
-   step and a long one where each step starts */
-.day__track::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2px;
-  height: 10px;
-  border-top: 1px solid var(--ink);
-  background-image:
-    repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px var(--col)),
-    repeating-linear-gradient(90deg, var(--ink-3) 0 1px, transparent 1px calc(var(--col) / 20));
-  background-size: 100% 9px, 100% 4px;
-  background-position: var(--gut) 0;
-  background-repeat: repeat-x;
-}
-.day__steps {
-  display: flex;
-  margin: 0;
+.day__sheet {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(28px, 3.6vw, 56px) 0 0;
   padding: 0;
   list-style: none;
+  border: 1px solid var(--ink);
+  background:
+    linear-gradient(var(--ink-3), var(--ink-3)),
+    var(--cream);
 }
-
-/* a quiet programme: a hairline, a small time, an italic title */
-.step {
-  position: relative;
-  flex: none;
-  width: var(--col);
+.frame {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  min-width: 0;
+  padding: 14px 16px 20px;
+  background: var(--cream);
+}
+/* where the plate prints "fig. 01": the hour, with its egg (yolk; tomato at the hatch) */
+.frame__time {
   display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--ink-3);
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
 }
-/* the programme line inks itself up to wherever our egg is standing */
-.day__progress {
-  position: absolute;
-  z-index: 1;
-  left: var(--gut);
-  top: 0;
-  width: calc(var(--col) * 7);
-  height: 1px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-}
-.step__node {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  top: -7px;
+.frame__time::before {
+  content: '';
+  flex: none;
   width: 10px;
   height: 13px;
   border: 1px solid var(--ink);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: var(--page);
-  transition:
-    background 0.4s,
-    transform 0.5s var(--ease-spring);
-}
-.step.is-past .step__node {
-  background: var(--ink);
-}
-.step.is-now .step__node {
   background: var(--yolk);
-  transform: scale(1.3);
 }
-.step--hatch.is-now .step__node {
+.frame--hatch .frame__time::before {
   background: var(--tomato);
 }
-.step__text {
-  padding: 26px clamp(24px, 2.8vw, 52px) 0 0;
+/* the picture box: the shape dayplates.ts draws every scene in (BOX there: 720 by 526), held
+   before the scenes are drawn so the page is its full height from the start (where there is a
+   script to draw them) */
+.frame__scene {
+  margin: 6px 0 12px;
 }
-.step__time {
-  display: block;
-  margin-bottom: 12px;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
+.js .frame__scene {
+  aspect-ratio: 720 / 526;
 }
-.step h3 {
+.frame__scene svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.frame__name {
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
   font-style: italic;
   font-weight: 400;
-  font-size: var(--d-step);
-  letter-spacing: -0.03em;
+  font-size: clamp(26px, 2.2vw, 34px);
   line-height: 1;
-  margin-bottom: 12px;
+  letter-spacing: -0.03em;
 }
-.step p {
-  max-width: 30ch;
-  font-size: var(--d-p);
-  line-height: 1.5;
-  color: var(--ink-2);
-}
-.step__text :is(.step__time, h3) {
-  color: var(--ink-2);
-  transition: color 0.4s;
-}
-.step.is-now .step__text :is(.step__time, h3, p) {
-  color: var(--ink);
+.frame__line {
+  margin-top: 8px;
+  font-size: clamp(14.5px, 1.05vw, 16px);
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 
-.step__fig {
-  margin-top: auto;
-  padding-top: var(--d-fig);
-  line-height: 0;
-  opacity: 0.42;
-  transition: opacity 0.5s var(--ease-out);
-}
-.step.is-now .step__fig {
-  opacity: 1;
-}
-.step__fig svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  overflow: visible;
-}
-/* the notes that belong to the moment show while our egg is standing there */
-.step .here {
-  opacity: 0;
-  transition: opacity 0.4s var(--ease-out);
-}
-.step.is-here .here:not(.here--late),
-.step.is-late .here--late {
-  opacity: 1;
-}
-/* the plates carry the cast for the vertical programme; the pinned story walks its own */
-.fig__cast {
-  display: none;
-}
-
-/* our egg and its two teammates, one strip across all seven plates */
-.day__cast {
-  position: absolute;
-  z-index: 3;
-  left: var(--gut);
-  bottom: 12px;
-  width: calc(var(--col) * 7);
-  height: calc(var(--col) * 0.75);
-  overflow: visible;
-  pointer-events: none;
-  /* a layer of its own, so the cast's every step repaints only the cast, not the plates under it */
-  will-change: transform;
-}
-/* the shell collects a crack or two through the day */
-.day .crack {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  transition: stroke-dashoffset 0.6s var(--ease-out);
-}
-.day [data-stage]:not([data-stage='0']) .crack--a,
-.day :is([data-stage='2'], [data-stage='3'], [data-stage='4']) .crack--b,
-.day :is([data-stage='3'], [data-stage='4']) .crack--z {
-  stroke-dashoffset: 0;
-}
-
-/* the way out: once the three have gone down to the metro, Apply */
-/* the third column of the last frame: the way out, level with the steps' captions */
-.day__end {
-  flex: none;
-  position: relative;
-  width: calc(100vw - var(--gut) - var(--col));
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-  padding: clamp(34px, 5vh, 52px) var(--gut) 0 clamp(20px, 2.6vw, 44px);
-  border-top: 1px solid var(--ink-3);
+/* The way out, in the eighth cell: the hand-written line, its arrow, Apply. The three are sized
+   by the cell (it is a size container), so they fill a phone's card and a laptop's cell alike. */
+.frame--end {
+  container-type: inline-size;
+  grid-template-rows: none;
+  align-content: center;
+  justify-items: start;
+  gap: 18px;
 }
 .day__bye {
-  margin: 0 0 6px;
-  font-size: clamp(36px, 3.2vw, 54px);
+  font-size: clamp(40px, 17cqi, 64px);
   line-height: 0.95;
   transform: rotate(-5deg);
   transform-origin: left bottom;
 }
 .day__go {
-  display: inline-flex;
+  display: flex;
   align-items: flex-end;
   gap: 4px;
-  margin-left: clamp(8px, 1.4vw, 24px);
+  max-width: 100%;
+  margin-left: clamp(0px, 10cqi - 22px, 20px);
 }
 .day__arrow {
   flex: none;
-  width: clamp(52px, 4.6vw, 80px);
+  width: clamp(40px, 19cqi, 76px);
   height: auto;
   margin-bottom: 4px;
   overflow: visible;
@@ -1744,428 +1563,240 @@ h2 {
   stroke-linejoin: round;
 }
 .day__apply {
-  padding: clamp(16px, 1.6vw, 20px) clamp(24px, 2.4vw, 34px);
-  font-size: clamp(16px, 1.25vw, 18px);
-}
-.day :is(.day__bye, .day__arrow) {
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
-}
-.day .day__apply {
-  opacity: 0;
-  visibility: hidden;
-  translate: 0 12px;
-  transition:
-    opacity 0.4s var(--ease-out),
-    translate 0.5s var(--ease-spring),
-    visibility 0s 0.4s;
-}
-.day[data-end='true'] :is(.day__bye, .day__arrow) {
-  opacity: 1;
-}
-.day[data-end='true'] .day__apply {
-  opacity: 1;
-  visibility: visible;
-  translate: 0 0;
-  transition-delay: 0.2s, 0.2s, 0s;
+  padding: clamp(15px, 6cqi, 19px) clamp(18px, 8cqi, 30px);
+  font-size: clamp(15px, 6cqi, 18px);
+  white-space: nowrap;
 }
 
-/* A window shorter than the stage can be squeezed to (under about 640px): the stage is held to
-   the window and stands on its foot, so what doesn't fit goes off the top (the numbered name
-   slips under the nav), never the ruler and the cast's feet. */
-@media (min-width: 900px) and (max-height: 640px) and (prefers-reduced-motion: no-preference) {
-  .day__pin {
-    height: 100svh;
-    justify-content: flex-end;
+/* small laptops and tablets on their side: three to a row, so the last row is Afterglow and
+   the way out, which takes the room of two and is set along it */
+@media (max-width: 1279px) {
+  .day__sheet {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  /* (neither gives way: a squeezed stage would cut the ruler off inside itself) */
-  .day__head,
-  .day__viewport {
-    flex: none;
+  .frame--end {
+    grid-column: span 2;
+    grid-auto-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px clamp(20px, 3vw, 44px);
+  }
+  .day__go {
+    margin-left: 0;
+  }
+}
+/* tablets: two to a row, eight cells */
+@media (max-width: 979px) {
+  .day__sheet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .frame--end {
+    grid-column: auto;
+    grid-auto-flow: row;
+    justify-content: normal;
+    align-items: normal;
+    gap: 18px;
+  }
+  .frame__name {
+    font-size: 30px;
+  }
+  .frame__line {
+    font-size: 16px;
   }
 }
 
-/* phones, tablets and reduced motion: the same programme, read top to bottom,
-   each plate standing on its own short ruler with the cast drawn in */
-@media (max-width: 899px), (prefers-reduced-motion: reduce) {
-  .day__pin {
-    min-height: 0;
-    display: block;
-    padding: var(--sec-y-tight) 0 0;
-  }
-  .day__head .label {
-    margin-bottom: var(--spread-head);
-  }
+@media (max-width: 760px) {
+  /* two lines, whatever the width */
   .day__head h2 {
-    font-size: clamp(42px, 9vw, 76px);
+    font-size: clamp(30px, 9.4vw, 64px);
   }
-  .day__viewport {
-    overflow: visible;
-    padding-top: var(--sec-head);
-  }
-  .day__track {
-    display: block;
-    width: auto;
-    padding: 0 var(--gut);
-    will-change: auto;
-  }
-  /* (outside the phone story, which moves the track itself) */
-  .day:not(.day--story) .day__track {
-    transform: none !important;
-  }
-  .day__track::before,
-  .day__progress,
-  .day__cast {
-    display: none;
-  }
-  .day__steps {
-    display: block;
-  }
-  .step {
-    width: auto;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    padding-bottom: clamp(28px, 6vw, 48px);
-  }
-  .step__text {
-    padding: 24px 0 16px;
-  }
-  .day .step__text h3 {
-    color: var(--ink);
-  }
-  .step__fig {
-    position: relative;
-    max-width: 460px;
-    margin: 0;
-    padding: 0 0 10px;
-    opacity: 1;
-  }
-  .step__fig::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 10px;
-    border-top: 1px solid var(--ink);
-    background-image: repeating-linear-gradient(90deg, var(--ink-3) 0 1px, transparent 1px 5%);
-    background-size: 100% 4px;
-    background-repeat: no-repeat;
-  }
-  .step .here {
-    opacity: 1;
-  }
-  .fig__cast {
-    display: inline;
-  }
-  .day__end {
-    width: auto;
-    padding: clamp(8px, 2vw, 24px) var(--gut) 0;
-    border-top: 0;
-  }
-  .day :is(.day__bye, .day__arrow),
-  .day .day__apply {
-    opacity: 1;
-    visibility: visible;
-    translate: none;
-  }
-}
-/* narrower than the wide layout, the plates are framed close and cut to
-   their own ink (src/day.ts): their shape comes from that frame, not 4:3 */
-.day--crop .step__fig svg {
-  aspect-ratio: auto;
-}
-/* wider than a phone: the copy beside its plate, one step per row */
-@media (min-width: 700px) and (max-width: 899px), (min-width: 700px) and (prefers-reduced-motion: reduce) {
-  .step {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    column-gap: clamp(24px, 4vw, 72px);
-    align-items: end;
-  }
-  .step__text {
-    align-self: start;
-  }
-  .step__fig {
-    max-width: 560px;
-    margin-top: 24px;
+  .day__deck {
+    padding-bottom: 0;
   }
 }
 
-/* phones held upright: the day plays as a story here too (src/day.ts adds
-   .day--story). The stage under the nav pins: the programme as a row of
-   seven eggs, then the step: its copy standing just over its plate, and the
-   plate on the ruler, one to a screen, framed close and edge to edge so the
-   cast is drawn as large as the screen allows. A screen tall enough for it
-   (.day--tall) keeps the heading on the stage too, as the wide layout does;
-   a shorter one lets the heading scroll by first. As you scroll, the egg
-   walks into the next plate and the copy changes with it; at the end Apply
-   is written on the floor the three have left. Everything not set here is
-   the wide story's. */
+/* The programme line: seven eggs on a hairline, their hours under them. Only a phone shows it,
+   where it is the strip's index: each egg is a button a thumb can hit, the egg of the frame in
+   front is filled (src/day.ts marks it aria-current, and the ones before it .is-past), and the
+   line is inked up to it. The line is drawn egg to egg, so a hollow egg needs no paint of its own.
+   (A phone: narrow, or on its side. src/day.ts asks the same question, STRIP there.) */
 .day__ticker {
   display: none;
 }
-@media (max-width: 899px) {
-  .day.day--story {
-    /* day.ts sets the plate's scale (--s, px to a plate unit) and so its
-       width (--col), and moves a camera over it: no margin frames it */
-    --s: 0.45;
-    --col: calc(800px * var(--s));
-    --lead: 0px;
-  }
-  /* the stage ends the section: the rules follow one breath on */
-  .day--story .day__pin {
-    padding-bottom: 0;
-  }
-  /* tall screens: the heading and the stage pin together, the heading
-     under the nav and the stage in the height that's left */
-  .day.day--tall {
-    padding-top: calc(var(--sec-y-tight) - 18px);
-  }
-  .day--tall .day__pin {
-    display: flex;
-    flex-direction: column;
-    height: calc(100svh - var(--nav-top));
-    padding: 18px 0 0;
-  }
-  .day--tall .day__head .label {
-    margin-bottom: 14px;
-  }
-  /* two lines, whatever the width: "Morning to evening," is about 9em */
-  .day--tall .day__head h2 {
-    font-size: clamp(30px, 9.4vw, 64px);
-  }
-  .day--story.day--tall .day__viewport {
-    flex: 1;
-    height: auto;
-    min-height: 0;
-  }
-  /* (the holders: the stage pins with the heading on a tall screen, the stage alone on a short one) */
-  .day--tall .pin-hold--stage,
-  .day--story:not(.day--tall) .pin-hold--view {
-    display: flex;
-    align-items: flex-start;
-  }
-  /* the programme, then the step in the height that's left */
-  .day--story .day__viewport {
-    display: flex;
-    flex-direction: column;
-    height: calc(100svh - var(--nav-top));
-    padding: 14px 0 calc(10px + var(--safe-b));
-    overflow: hidden;
-  }
-  .day--story .day__track {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    width: max-content;
-    padding: 0 0 12px;
-    will-change: transform;
-  }
-  .day--story .day__track::before {
-    display: block;
-    background-position: var(--lead) 0;
-  }
-  .day--story .day__cast {
-    display: block;
-    left: var(--lead);
-    will-change: transform;
-  }
-  .day--story .day__steps {
-    display: flex;
-  }
-  .day--story .step {
-    width: var(--col);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding-bottom: 0;
-    border-top: 0;
-  }
-  .day--story .step__node {
-    display: none;
-  }
-  /* the copy reads across the page whatever the plate's scale, holds still
-     while the plates slide (day.ts moves it against the camera), and stands
-     in the middle of the air over its plate's highest ink */
-  .day--story .step__text {
-    width: calc(100vw - 2 * var(--gut));
-    margin: auto 0 auto calc(var(--gut) - var(--lead));
-    padding: 0;
-    opacity: 0;
-    transition: opacity 0.35s var(--ease-out);
-    will-change: transform;
-  }
-  .day--story .step.is-told .step__text {
-    opacity: 1;
-  }
-  /* the step is the screen's headline while it plays */
-  .day--story .step__time {
-    margin-bottom: 12px;
-  }
-  .day--story .step h3 {
-    margin-bottom: 12px;
-    font-size: 44px;
-  }
-  .day--story .step p {
-    max-width: 34em;
-    font-size: 16px;
-  }
-  /* the plates are their own layers, so fading one in doesn't redraw its ink.
-     Each one's box starts at its highest ink (--top, in plate units, from
-     day.ts): the empty sky above that is the copy's */
-  .day--story .step__fig {
-    flex: none;
-    height: calc((600 - var(--top, 0)) * var(--s) * 1px);
-    max-width: none;
-    margin: 0;
-    padding: 0;
-    opacity: 0.42;
-    will-change: opacity;
-  }
-  .day--story .step__fig svg {
-    margin-top: calc(var(--top, 0) * var(--s) * -1px);
-  }
-  .day--story .step.is-now .step__fig {
-    opacity: 1;
-  }
-  .day--story .step__fig::after {
-    display: none;
-  }
-  /* a step's notes come with its copy and stay until the egg has left its
-     plate, so a screen is whole while the plates slide; the late ones still
-     wait for their moment */
-  .day--story .step .here {
-    opacity: 0;
-  }
-  .day--story .step:is(.is-told, .is-now) .here:not(.here--late),
-  .day--story .step.is-late .here--late {
-    opacity: 1;
-  }
-  .day--story .fig__cast {
-    display: none;
-  }
-
-  /* the programme: seven eggs on a hairline that inks up as the day goes */
-  .day--story .day__ticker {
-    position: relative;
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  .day__ticker {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    margin: 0 var(--gut);
+    margin-top: 16px;
   }
-  .day__ticker::before,
-  .ticker__ink {
-    content: '';
-    position: absolute;
-    left: calc(100% / 14);
-    right: calc(100% / 14);
-    top: 6px;
-    height: 1px;
-  }
-  .day__ticker::before {
-    background: var(--ink-3);
-  }
-  .ticker__ink {
-    background: var(--ink);
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-  }
-  .ticker__node {
+  .tick {
     position: relative;
     display: grid;
+    align-content: start;
     justify-items: center;
     gap: 6px;
+    min-height: 44px;
+    padding: 6px 0 0;
+    border: 0;
+    background: none;
     font-family: var(--f-mono);
-    font-size: 11px;
+    font-size: clamp(10px, 2.9vw, 11px);
+    line-height: 1.3;
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
     color: var(--ink-2);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
     transition: color 0.4s;
   }
-  .ticker__node::before {
+  .tick::before {
     content: '';
     width: 10px;
     height: 13px;
     border: 1px solid var(--ink);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    background: var(--page);
     transition:
-      background 0.4s,
+      background-color 0.4s,
       transform 0.5s var(--ease-spring);
   }
-  .ticker__node.is-past::before {
+  /* (from this egg's edge to the next one's: 8px clear of each middle, so a filled egg has room to grow) */
+  .tick::after {
+    content: '';
+    position: absolute;
+    left: calc(50% + 8px);
+    top: 12px;
+    width: calc(100% - 16px);
+    height: 1px;
+    background: var(--ink-3);
+    transition: background-color 0.4s;
+  }
+  .tick:last-child::after {
+    display: none;
+  }
+  .tick.is-past::before,
+  .tick.is-past::after {
     background: var(--ink);
   }
-  .ticker__node.is-now {
+  .tick[aria-current] {
     color: var(--ink);
   }
-  .ticker__node.is-now::before {
+  .tick[aria-current]::before {
     background: var(--yolk);
     transform: scale(1.3);
   }
-  .ticker__node.is-hatch.is-now::before {
+  .tick--hatch[aria-current]::before {
     background: var(--tomato);
   }
+  .tick:active::before {
+    transform: scale(0.88);
+  }
+  .tick:focus-visible {
+    outline-offset: -3px;
+  }
+  /* (the narrowest phones: the row runs to the screen's edges, so a seventh of it is still 44px) */
+  @media (max-width: 339px) {
+    .day__ticker {
+      margin-inline: calc(2px - var(--gut));
+    }
+  }
 
-  /* the way out, written on the floor the three have left for the metro
-     (day.ts holds it still against the camera, as it does the copy) */
-  .day--story .day__end {
-    position: absolute;
-    top: auto;
-    bottom: calc(12px + 22px);
-    left: calc(var(--col) * 6 + var(--gut));
-    width: auto;
-    padding: 0;
-    border-top: 0;
+  /* The sheet as a strip you swipe through: a frame at a time, as large as the screen holds,
+     with the next one showing at the screen's edge. It runs edge to edge, and its first frame
+     stands on the column's edge like everything else in the spread. */
+  .day__sheet {
+    display: flex;
+    gap: 0;
+    margin: 8px calc(var(--gut) * -1) 0;
+    padding: 0 var(--gut);
+    border: 0;
+    background: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gut);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
   }
-  .day.day--story :is(.day__bye, .day__arrow) {
+  .day__sheet::-webkit-scrollbar {
+    display: none;
+  }
+  /* (until the programme line is drawn in over the strip, the strip keeps its room: 16 + 44 + 8) */
+  .js .day__head + .day__sheet {
+    margin-top: 68px;
+  }
+  .frame {
+    flex: 0 0 min(calc(100% - 28px), 400px);
+    scroll-snap-align: start;
+    /* one frame per swipe, like turning a page */
+    scroll-snap-stop: always;
+    padding: 12px 14px 18px;
+    border: 1px solid var(--ink);
+    border-left-width: 0;
+  }
+  .frame:first-child {
+    border-left-width: 1px;
+  }
+  .frame__name {
+    font-size: 28px;
+  }
+  .frame__line {
+    font-size: 15px;
+  }
+}
+/* A phone on its side is wide and short: a frame is set along the screen, the scene and beside
+   it its hour, its name and its line, so the programme line and a whole frame fit under the nav. */
+@media (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  .frame {
+    flex-basis: calc(100% - 44px);
+    grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr;
+    column-gap: clamp(16px, 3vw, 28px);
+  }
+  .frame__scene {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: center;
+    margin: 0;
+  }
+  .frame__time {
+    grid-column: 2;
+    align-self: end;
+    margin-bottom: 10px;
+  }
+  .frame__name,
+  .frame__line {
+    grid-column: 2;
+  }
+  .frame__name {
+    font-size: 30px;
+  }
+  .frame__line {
+    align-self: start;
+    max-width: 34em;
+    font-size: 15px;
+  }
+  .frame--end {
+    grid-template-columns: none;
+    grid-template-rows: none;
+    grid-auto-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px clamp(20px, 3vw, 44px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 760px),
+  (prefers-reduced-motion: no-preference) and (max-height: 500px) and (orientation: landscape) and (hover: none) {
+  /* the strip walks in from the right as it arrives (src/day.ts adds .is-in) */
+  .js .day__sheet .frame {
+    transition:
+      opacity 0.6s var(--ease-out),
+      transform 0.8s var(--ease-out);
+  }
+  .js .day__sheet .frame:nth-child(2) {
+    transition-delay: 90ms;
+  }
+  .js .day__sheet:not(.is-in) .frame {
     opacity: 0;
-  }
-  .day.day--story .day__apply {
-    opacity: 0;
-    visibility: hidden;
-    translate: 0 12px;
-  }
-  .day.day--story[data-end='true'] :is(.day__bye, .day__arrow) {
-    opacity: 1;
-  }
-  .day.day--story[data-end='true'] .day__apply {
-    opacity: 1;
-    visibility: visible;
-    translate: 0 0;
-  }
-}
-/* taller screens (in-app browsers, bigger phones): the copy gets the room */
-@media (max-width: 899px) and (min-height: 740px) {
-  .day--story .step h3 {
-    font-size: 56px;
-  }
-  .day--story .step p {
-    font-size: 17px;
-  }
-}
-/* and taller still (the bigger phones in a full-screen browser) */
-@media (max-width: 899px) and (min-height: 880px) {
-  .day--story .step h3 {
-    font-size: 60px;
-  }
-  .day--story .step p {
-    font-size: 18px;
-  }
-  .day--story .ticker__node {
-    font-size: 12px;
-  }
-}
-/* tablets held upright: a bigger plate, so bigger copy and programme */
-@media (min-width: 700px) and (max-width: 899px) {
-  .day--story .step h3 {
-    font-size: 68px;
-  }
-  .day--story .step p {
-    max-width: 30em;
-    font-size: 19px;
-  }
-  .day--story .ticker__node {
-    font-size: 12px;
+    transform: translateX(48px);
   }
 }
 
@@ -3863,15 +3494,6 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
 .is-asleep .hero__next::before,
 .is-asleep .screen::after {
   animation-play-state: paused !important;
-}
-/* The programme's eggs fade to their colour as the day reaches them, and the
-   hollow ones wear the page's colour, which drifts on every frame of a colour
-   change: each change starts their fade over, so they keep a transition
-   running for as long as the sky moves, all the way down the page. Out of
-   sight they take the colour at once. */
-.is-asleep .step__node,
-.is-asleep .ticker__node::before {
-  transition: transform 0.5s var(--ease-spring);
 }
 
 /* ── WHAT GOT BUILT: the hand-off to the app, where every Sunday's projects live ──

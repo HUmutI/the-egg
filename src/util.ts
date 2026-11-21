@@ -31,7 +31,11 @@ export const PALETTE = {
   night: '#221624',
 } as const
 
-/** Shared clock state: the day section publishes its own time while pinned. */
+/**
+ * Shared clock state. The day (day.ts) publishes its stretch of the page, `dayStart` to `dayEnd`,
+ * which the club clock (sky.ts) runs from doors to lights out; and, on a phone, the hour of the
+ * frame in front (`dayMinutes`, else null), which the clock shows instead while the day is on screen.
+ */
 export const clockState = {
   dayStart: 0,
   dayEnd: 0,
@@ -86,44 +90,6 @@ export const nextTask = (): Promise<void> => {
 }
 
 /**
- * Hold an element that will pin in a spacer of our own, a `.pin-hold` (main.css), put around it
- * before ScrollTrigger needs one (holdFor finds it). ScrollTrigger takes its own spacer out of the
- * page on every refresh, with the scene in it, and puts the scene back, and a scene put back is
- * styled and laid out anew, every element in it. One that stays in its holder is only restyled.
- */
-export const holdPin = (el: Element | null, kind: string) => {
-  if (!el?.parentElement) return
-  const hold = document.createElement('div')
-  hold.className = `pin-hold pin-hold--${kind}`
-  el.before(hold)
-  hold.append(el)
-}
-
-/**
- * The spacer a pin is held in (holdPin), else none, and ScrollTrigger makes its own. (A holder may
- * be a flex box, and ScrollTrigger leaves out the spacing under a pin whose parent is one unless
- * told, so a pin held in one asks for it: `pinSpacing: true`.)
- */
-export const holdFor = (el: Element) => {
-  const p = el.parentElement
-  return p?.classList.contains('pin-hold') ? p : undefined
-}
-
-/**
- * Give a holder back as it was once its pin is gone (a matchMedia cleanup, run after the trigger is
- * reverted): ScrollTrigger puts back the inline styles it saved, but leaves its class and the
- * flex-basis and overflow it set (defaults, so nothing on the page changes; only a count of
- * `.pin-spacer` would).
- */
-export const unhold = (hold: Element | undefined) => {
-  if (!(hold instanceof HTMLElement)) return
-  hold.classList.remove('pin-spacer')
-  hold.style.removeProperty('flex-basis')
-  hold.style.removeProperty('overflow')
-  if (!hold.style.length) hold.removeAttribute('style')
-}
-
-/**
  * Write an attribute only when it changes. A browser restyles (and an SVG lays out and repaints)
  * an element on every setAttribute, even one that writes what is already there; most of what the
  * scroll moves stands still on most frames.
@@ -134,12 +100,11 @@ export const put = (el: Element, name: string, value: string) => {
 
 /**
  * Where a reload, or a step back to the page, should land: where the reader was. Left to itself the
- * browser puts them back while the page is still short (nothing pinned yet), and again later from
- * an anchor it noted inside a scene that may be pinned, and the pins' room, measured in between,
- * carries them somewhere else each time. So while the page starts the browser is told to leave the
- * scroll alone (`scrollRestoration`), the place is kept here (on pagehide), and the function this
- * returns, once everything is measured, goes back to it (unless the reader has moved the page
- * meanwhile) and hands scrolling back to the browser (a #link and back again, say).
+ * browser puts them back while the page is still short (the plate of regulars isn't drawn yet), so
+ * what is drawn in afterwards carries them somewhere else. So while the page starts the browser is
+ * told to leave the scroll alone (`scrollRestoration`), the place is kept here (on pagehide), and
+ * the function this returns, once everything is measured, goes back to it (unless the reader has
+ * moved the page meanwhile) and hands scrolling back to the browser (a #link and back again, say).
  */
 export const keepPlace = (): (() => void) => {
   const KEY = 'eggclub:y'
