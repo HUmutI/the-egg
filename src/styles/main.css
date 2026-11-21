@@ -502,7 +502,7 @@ body.is-night .nav::before {
     --nav-h: 60px;
   }
   .nav {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto 1fr;
     gap: 8px;
   }
   .nav__logo,
@@ -510,10 +510,14 @@ body.is-night .nav::before {
   .nav__links {
     height: 44px;
   }
+  /* each in its own column, so the buttons keep to the right where the clock is hidden */
   .nav__clock {
-    justify-self: center;
+    grid-column: 2;
     gap: 8px;
     padding: 0 14px 0 10px;
+  }
+  .nav__links {
+    grid-column: 3;
   }
   .clock__arc {
     width: 28px;
