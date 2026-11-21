@@ -7,7 +7,7 @@
    so the order this loads in relative to main.css doesn't matter.
    ────────────────────────────────────────────────────────────── */
 
-/* ── HERO · the practical line under the button ──────────────── */
+/* ── HERO · when and where, before the buttons ───────────────── */
 
 .hero__info {
   display: grid;
@@ -15,7 +15,60 @@
   gap: 8px;
   text-align: center;
 }
-.hero__facts {
+/* The next Sunday is what the hero is read for, so it is set like the ticket's date: the
+   display face, the date itself in italic, a small yolk egg before it. */
+.hero__info .hero__next {
+  font-family: var(--f-display);
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 100, 'WONK' 0;
+  font-weight: 480;
+  font-size: clamp(21px, 6.2vw, 26px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  text-wrap: balance;
+  transition: opacity 0.35s var(--ease-out);
+}
+/* Until src/next.ts has heard from the app (or given up on it), the line keeps its place and
+   stays out of sight: the general words never flash before the date, and nothing under it
+   moves when the date arrives. Should the script never run, it shows itself after a while. */
+.js .hero__info .hero__next:not([data-state]) {
+  opacity: 0;
+  animation: hero-next-late 0.35s 6s forwards;
+}
+@keyframes hero-next-late {
+  to {
+    opacity: 1;
+  }
+}
+.hero__info .hero__next::before {
+  content: '';
+  display: inline-block;
+  width: 0.42em;
+  height: 0.54em;
+  margin-right: 0.42em;
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  background: var(--yolk);
+  box-shadow: 0 0 0 1.5px var(--ink);
+}
+/* on the day itself the little egg goes tomato and beats, like the ticket's */
+.hero__info .hero__next[data-state='live']::before {
+  background: var(--tomato);
+  animation: ticket-live 1.6s ease-in-out infinite;
+}
+/* the status rides in a pill, so on a narrow phone it drops to its own line cleanly */
+.hero__pill {
+  display: inline-block;
+  padding: 4px 10px 3px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  vertical-align: 0.2em;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* the hours and the place under it */
+.hero__info .hero__facts {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -23,6 +76,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  font-size: clamp(13px, 3.6vw, 14px);
   color: var(--ink);
   letter-spacing: 0.08em;
 }
@@ -42,59 +96,18 @@
   border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
   background: var(--cream);
 }
-.hero__info .hero__next {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 6px 10px;
-  color: var(--ink);
-  letter-spacing: 0.08em;
-  text-wrap: balance;
-}
-/* the status rides in a pill, so on a narrow phone it drops to its own line cleanly */
-.hero__pill {
-  padding: 3px 9px 2px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  white-space: nowrap;
-}
-.hero__info .hero__next[hidden] {
-  display: none;
-}
-.hero__info .hero__next::before {
-  content: '';
-  flex: none;
-  width: 8px;
-  height: 10px;
-  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
-  background: var(--yolk);
-  box-shadow: 0 0 0 1.5px var(--ink);
-}
-/* on the day itself the little egg goes tomato and beats, like the ticket's */
-.hero__info .hero__next[data-state='live']::before {
-  background: var(--tomato);
-  animation: ticket-live 1.6s ease-in-out infinite;
-}
-
-/* phones: the two facts (time · where) side by side on one line */
-@media (max-width: 600px) {
-  .hero__facts {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: center;
-    gap: 9px 26px;
-  }
-}
 
 @media (min-width: 861px) {
   .hero__info {
     justify-items: start;
     text-align: left;
   }
-  .hero__facts,
   .hero__info .hero__next {
+    font-size: clamp(26px, 2.1vw, 32px);
+  }
+  .hero__info .hero__facts {
     justify-content: flex-start;
+    font-size: 14px;
   }
 }
 

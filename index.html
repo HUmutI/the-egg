@@ -36,7 +36,7 @@
       type="image/avif"
       media="(min-width: 601px)"
       imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w"
-      imagesizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))"
+      imagesizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))"
       fetchpriority="high"
     />
     <link
@@ -215,16 +215,16 @@
             <source media="(max-width: 600px)" type="image/avif" srcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1000" />
             <source media="(max-width: 600px)" type="image/webp" srcset="/hero/the-egg-club-phone-600.webp 600w, /hero/the-egg-club-phone-900.webp 900w, /hero/the-egg-club-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1000" />
             <!-- wider screens: sizes is the frame's width (main.css .hero__frame: the screen's height less
-                 the nav and 264px, times 1.75, or the column), so a laptop takes the 1200 and a tall or
+                 the nav and 270px, times 1.75, or the column), so a laptop takes the 1200 and a tall or
                  2x screen the 1660; short landscape screens (a phone on its side) size the frame by
                  another rule, so they say 100vw. -->
-            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))" />
-            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1200.webp 1200w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))" />
+            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))" />
+            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1200.webp 1200w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))" />
             <img
               id="heroArt"
               src="/hero/the-egg-club.png"
               srcset="/hero/the-egg-club-830.png 830w, /hero/the-egg-club.png 1660w"
-              sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 336px) * 1.76))"
+              sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))"
               width="1660"
               height="948"
               fetchpriority="high"
@@ -322,23 +322,24 @@
         </figure>
 
         <div class="hero__cta">
-          <a class="btn btn--ink" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
-          <a class="btn btn--cream hero__projects" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>See what got built ↗</span></a>
+          <!-- when and where, before the buttons. The first line is general until the app answers
+               with the next Sunday (src/next.ts); it holds its place meanwhile, so nothing moves -->
           <div class="hero__info">
+            <p
+              class="hero__next"
+              id="heroNext"
+              data-live="Nº{n} <span class='hero__pill mono'>on right now</span>"
+              data-open="Next: <em>{long}</em>"
+              data-soon="Next: <em>{long}</em>"
+              data-next="Next: <em>{long}</em>"
+            ><em>Every other Sunday</em></p>
             <ul class="hero__facts mono" aria-label="At a glance">
               <li>10:30–18:30</li>
               <li>METU, Ankara</li>
             </ul>
-            <p
-              class="hero__next mono"
-              id="heroNext"
-              hidden
-              data-live="Nº{n} <span class='hero__pill'>on right now</span>"
-              data-open="Next: {short}"
-              data-soon="Next: {short}"
-              data-next="Next: {short}"
-            ></p>
           </div>
+          <a class="btn btn--ink" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
+          <a class="btn btn--cream hero__projects" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>See what got built ↗</span></a>
         </div>
 
         <div class="hero__built">

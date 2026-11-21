@@ -588,14 +588,13 @@ body.is-night .nav::before {
    (--butter), so the image has no edges — it just sits on the paper. */
 .hero {
   position: relative;
+  /* the hero is the first screen, whatever the screen: the bar on top, the logos on its last
+     line, the poster in the room between (svh: what a phone shows with its own bars up) */
+  min-height: 100vh;
+  min-height: 100svh;
   padding: calc(var(--nav-top) + 18px) var(--gut) clamp(18px, 3vw, 32px);
   display: grid;
   grid-template-rows: auto 1fr auto;
-}
-@media (min-width: 861px) and (min-aspect-ratio: 5/4) {
-  .hero {
-    min-height: 100svh;
-  }
 }
 
 /* a magazine masthead: a fine double rule and one serif italic strapline */
@@ -640,7 +639,7 @@ body.is-night .nav::before {
 .hero__frame {
   position: relative;
   /* as large as the screen allows, never upscaled past the original */
-  width: min(100%, 1660px, calc((100svh - var(--nav-top) - 264px) * 1.7511));
+  width: min(100%, 1660px, calc((100svh - var(--nav-top) - 270px) * 1.7511));
 }
 .hero__art img {
   display: block;
@@ -862,6 +861,12 @@ html:not(.js) .hero__art img {
   gap: 12px 20px;
   margin-top: clamp(4px, 1vh, 12px);
 }
+/* wide screens: when and where lead the row, the buttons a step away */
+@media (min-width: 861px) {
+  .hero__info {
+    margin-right: clamp(12px, 2.4vw, 36px);
+  }
+}
 .hero__built {
   position: relative;
   z-index: 3;
@@ -1031,6 +1036,94 @@ html:not(.js) .hero__art img {
   }
   .hero__frame {
     width: min(100%, calc((100svh - var(--nav-top) - 80px) * 1.7511));
+  }
+}
+
+/* Phones: the two buttons side by side (they stack again where they can't fit), so the poster
+   keeps its size and the whole hero stands in the first screen. */
+@media (max-width: 600px) {
+  .hero__cta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 8px;
+  }
+  .hero .hero__cta .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 52px;
+    padding: 0 12px;
+    font-size: clamp(13px, 3.9vw, 15px);
+    white-space: nowrap;
+  }
+  /* when and where on a line of their own, over the buttons */
+  .hero__info {
+    flex: 1 0 100%;
+    margin-bottom: 2px;
+  }
+  .hero__built {
+    gap: 10px;
+    padding-top: 10px;
+  }
+}
+@media (max-width: 340px) {
+  .hero .hero__cta .btn {
+    padding: 0 8px;
+  }
+}
+/* Phones and tablets held upright: everything in the hero keeps its own height and the poster
+   takes the room that is left, as wide as the screen where it can be and never under seven
+   tenths of it (on a very short screen the hero then runs a little past the first view).
+   Room to spare is shared above the poster, under it and over the logos. The poster is sized
+   by its box (container units), so no count of what stands around it has to be kept in step. */
+@supports (width: 1cqh) {
+  @media (max-width: 860px) and (orientation: portrait) {
+    .hero {
+      display: flex;
+      flex-direction: column;
+      padding-top: calc(var(--nav-top) + 4px);
+      padding-bottom: 14px;
+    }
+    .hero__meta {
+      margin-bottom: 8px;
+    }
+    .hero__art {
+      flex: 1 1 0;
+      min-height: 43vw;
+      max-height: 57.11vw;
+      margin-block: auto;
+      container-type: size;
+    }
+    .hero__frame {
+      width: min(100%, calc(100cqh * 1.7511));
+    }
+    .hero__cta {
+      margin: 6px 0 14px;
+    }
+    .hero__built {
+      margin-top: auto;
+    }
+    /* narrower than the screen, the poster's cut shells would show its edges: they fade out */
+    @container (min-aspect-ratio: 182/100) {
+      .hero__art img {
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+      }
+    }
+  }
+  @media (max-width: 600px) and (orientation: portrait) {
+    .hero__art {
+      min-height: 58vw;
+      max-height: 83.34vw;
+    }
+    .hero__frame {
+      width: min(100%, calc(100cqh * 1.2));
+    }
+    @container (min-aspect-ratio: 125/100) {
+      .hero__art img {
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+      }
+    }
   }
 }
 

@@ -40,12 +40,23 @@ const escape = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
 /**
- * The next Sunday, from the app: a "next" line under the hero and the ticket
- * in the join section. The page ships with a complete, date-free version of
- * both, so if the app is slow or down nothing breaks — it just stays general.
+ * The next Sunday, from the app: the hero's date line and the ticket in the
+ * join section. The page ships with a complete, date-free version of both, so
+ * if the app is slow or down nothing breaks — it just stays general.
  * (Applying happens on Luma, so no link is rewritten here.)
  */
 export async function initNextSunday() {
+  const heroNext = document.getElementById('heroNext')
+  try {
+    await fillNextSunday(heroNext)
+  } finally {
+    // The hero's line waits out of sight until it is known what it says (story.css): with no
+    // date to show, it comes in with its general words.
+    if (heroNext && !heroNext.dataset.state) heroNext.dataset.state = 'none'
+  }
+}
+
+async function fillNextSunday(heroNext: HTMLElement | null) {
   let event: NextEvent | null
   // The first date format in a time zone is slow (it loads the zone data): do it while the app answers.
   void nextTask().then(formats)
@@ -76,12 +87,8 @@ export async function initNextSunday() {
     place: event.location?.trim() || 'METU, Ankara',
   }
 
-  // hero: one line under the facts
-  const heroNext = document.getElementById('heroNext')
-  if (fill(heroNext, state, vars)) {
-    heroNext!.hidden = false
-    heroNext!.dataset.state = state
-  }
+  // hero: the date line over the facts
+  if (fill(heroNext, state, vars)) heroNext!.dataset.state = state
 
   // join: the ticket
   const ticket = document.getElementById('ticket')
@@ -93,6 +100,6 @@ export async function initNextSunday() {
     fill(document.getElementById('ticketStatus'), state, vars)
   }
 
-  // the hero's next line can add a row: let the scroll triggers re-measure
+  // the ticket's lines can change its height: let the scroll triggers re-measure
   document.dispatchEvent(new Event('egg:relayout'))
 }
