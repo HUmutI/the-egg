@@ -143,7 +143,7 @@
 }
 
 .faq__list {
-  margin-top: 36px;
+  margin-top: 28px;
   border-top: 1px solid var(--ink);
 }
 .faq__item {
@@ -246,6 +246,10 @@
     column-gap: clamp(48px, 6vw, 120px);
     align-items: start;
   }
+  /* the numbered name runs the whole column, over the heading and the list */
+  .faq > .label {
+    grid-column: 1 / -1;
+  }
   .faq__head {
     position: sticky;
     top: calc(var(--nav-h) + 40px);
@@ -264,15 +268,12 @@
 /* ── JOIN · the confident close ───────────────────────────────
    A ticket for the next Sunday (filled in by src/next.ts), the
    button, what happens after you apply, and bring-a-friend.
-   One column on phones; two from 861px. main.css centres .join,
-   so the grid takes the full width and sets its own alignment. */
+   One column on phones; two from 861px, on the column's edge like
+   every other section. */
 
 .join__grid {
   display: grid;
-  gap: 56px;
-  width: 100%;
-  max-width: 1240px;
-  text-align: left;
+  gap: 48px;
 }
 .join__main {
   display: grid;

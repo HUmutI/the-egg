@@ -352,8 +352,10 @@
         </div>
       </section>
 
-      <!-- 01 and 02 are one spread, set the same way: an ink hairline with the numbered name under it
-           (.label--rule), and everything ranged left on the column's edge (main.css, "THE SPREAD") -->
+      <!-- The numbered sections (01 to 06) are set the same way: an ink hairline with the numbered name
+           under it (.label--rule), and everything ranged left on the column's edge. Between them stand
+           two interludes (the 2am line, the hand-off to the app): a couplet, centred like the hero.
+           (main.css, "THE SPREAD") -->
       <!-- ───────────── 09:40 · WHAT: one sentence, in the page's flow (src/story.ts inks it in once) ───────────── -->
       <section class="what" id="what" data-bg="butter">
         <p class="label label--rule mono"><span>01</span> <span class="label__txt">What is this</span></p>
@@ -382,10 +384,11 @@
         <div class="flock__field" id="flockField"></div>
       </section>
 
-      <!-- ───────────── 10:20 · WHY ───────────── -->
-      <section class="why why--mini" id="why" data-bg="butter">
-        <p class="why__mini reveal">
-          Ankara has almost six million people. Somehow you’re still building alone at <em>2am.</em>
+      <!-- ───────────── 10:20 · WHY: an interlude, a sentence a line ───────────── -->
+      <section class="why interlude" id="why" data-bg="butter">
+        <p class="interlude__line reveal">
+          <span>Ankara has almost six million people.</span>
+          <span>Somehow you’re still building alone at <em>2am.</em></span>
         </p>
       </section>
 
@@ -394,7 +397,7 @@
       <section class="day" id="day" data-bg="day" aria-labelledby="dayTitle">
         <div class="day__pin">
           <header class="day__head">
-            <p class="label mono"><span>03</span> <span class="label__txt">A day at the club</span></p>
+            <p class="label label--rule mono"><span>03</span> <span class="label__txt">A day at the club</span></p>
             <div class="day__headrow">
               <h2 id="dayTitle">Morning to evening,<br /> <em>roughly.</em></h2>
               <p class="day__deck mono">One egg, 10:30 → 18:30. Not to scale.</p>
@@ -489,8 +492,8 @@
         </div>
       </section>
       <!-- ───────────── WHAT GOT BUILT → the app ───────────── -->
-      <section class="built-on" id="built" data-bg="butter" aria-labelledby="builtTitle">
-        <h2 id="builtTitle" class="built-on__title reveal">Every Sunday ends in demos. <em>They all live in the app.</em></h2>
+      <section class="built-on interlude" id="built" data-bg="butter" aria-labelledby="builtTitle">
+        <h2 id="builtTitle" class="interlude__line reveal"><span>Every Sunday ends in demos.</span> <span><em>They all live in the app.</em></span></h2>
         <p class="built-on__deck reveal">Past projects, the teams behind them, their GitHub links and the hearts they got: app.the-egg.club</p>
         <div class="built-on__ctas reveal">
           <a class="btn btn--ink" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>Browse the projects ↗</span></a>
@@ -501,7 +504,7 @@
 
       <!-- ───────────── 18:30 · RULES ───────────── -->
       <section class="rules" id="rules" data-bg="pink" aria-labelledby="rulesTitle">
-        <p class="label mono"><span>04</span> <span class="label__txt">House rules</span></p>
+        <p class="label label--rule mono"><span>04</span> <span class="label__txt">House rules</span></p>
         <header class="rules__head">
           <h2 id="rulesTitle" class="rules__title">The rules of <em>Egg Club.</em></h2>
         </header>
@@ -539,8 +542,8 @@
 
       <!-- ───────────── 19:00 · GOOD QUESTIONS (FAQ) ───────────── -->
       <section class="faq" id="faq" data-bg="peach" aria-labelledby="faqTitle">
+        <p class="label label--rule mono"><span>05</span> <span class="label__txt">Good questions</span></p>
         <div class="faq__head">
-          <p class="label mono"><span>05</span> <span class="label__txt">Good questions</span></p>
           <h2 id="faqTitle" class="faq__title">Before you <em>ask.</em></h2>
           <p class="faq__more">Something else? Email <a href="mailto:theeggclubb@gmail.com">theeggclubb@gmail.com</a>.</p>
         </div>
@@ -627,9 +630,9 @@
 
       <!-- ───────────── 19:30 · JOIN ───────────── -->
       <section class="join" id="join" data-bg="yolk" aria-labelledby="joinTitle">
+        <p class="label label--rule mono"><span>06</span> <span class="label__txt">Get in the carton</span></p>
         <div class="join__grid">
           <div class="join__main">
-            <p class="label mono"><span>06</span> <span class="label__txt">Get in the carton</span></p>
             <h2 id="joinTitle" class="join__title">Bring a laptop.<br /><em>Leave with a thing.</em></h2>
 
             <!-- the next Sunday: general until the app answers (see src/next.ts) -->
@@ -824,7 +827,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.5 2.5 10.6 13.4" /><path d="M21.5 2.5 14.6 21.5l-4-8.1-8.1-4z" /></svg>
       </button>
       <a class="btn btn--cream dock__app" href="https://app.the-egg.club/projects" target="_blank" rel="noopener"><span>Projects</span></a>
-      <a class="btn btn--ink dock__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener"><span>Apply for a seat →</span></a>
+      <a class="btn btn--ink dock__apply" href="https://luma.com/r5khs24x" target="_blank" rel="noopener" aria-label="Apply for a seat"><span class="dock__long">Apply for a seat →</span><span class="dock__short">Apply →</span></a>
     </div>
 
     <!-- ───────────── LIVE BADGE: the site rebuilds itself (in an aside so it sits in a landmark; the badge is fixed, the aside has no box of its own) ───────────── -->

@@ -53,6 +53,8 @@
   --sec-y: clamp(80px, 9vw, 150px);
   --sec-y-tight: clamp(56px, 6vw, 104px);
   --sec-head: clamp(28px, 4vw, 56px);
+  /* from a section's numbered name to its first line */
+  --spread-head: clamp(20px, 2.6vw, 40px);
 
   --focus: var(--ink);
   --line: 1.5px;
@@ -1161,24 +1163,65 @@ h2 {
   transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
 }
 
-/* ── THE SPREAD: 01 What is this · 02 Who comes ──────────────── */
+/* ── THE SPREAD: everything after the hero ───────────────────── */
 
-/* The hero is the cover, and it is centred. What follows is set like the pages inside: each
-   section of the spread opens on the ink hairline the hero closes on (the one over its logos),
-   its numbered name hangs under that line, and everything is ranged left on the column's edge,
-   on a phone and on a wide screen alike. Three steps space both sections:
-     --sec-y-tight   from the last line of what came before to the hairline
+/* The hero is the cover, and it is centred. What follows is set like the pages inside.
+
+   The numbered sections (01 What is this … 06 Get in the carton) each open on the ink hairline
+   the hero closes on (the one over its logos), the numbered name hangs under that line, and
+   everything is ranged left on the column's edge, on a phone and on a wide screen alike.
+
+   Between them stand two interludes (the 2am line after the regulars, the hand-off to the app
+   after the day): a couplet in the display face, a sentence a line, centred like the cover.
+
+   One set of steps spaces all of it:
+     --sec-y-tight   from the last line of a section to the next hairline (a section's own
+                     padding-top; it has none underneath)
      14px            from the hairline to the name
-     --spread-head   from the name to the section's first line */
+     --spread-head   from the name to the section's first line
+     --sec-y         above and below an interlude */
 .what,
-.flock {
-  --spread-head: clamp(20px, 2.6vw, 40px);
+.flock,
+.rules,
+.faq,
+.join {
   padding-top: var(--sec-y-tight);
+  padding-bottom: 0;
 }
 .label--rule {
   margin-bottom: var(--spread-head);
   padding-top: 14px;
   border-top: 1px solid var(--ink);
+}
+
+/* an interlude: two sentences, each on a line of its own where the screen is wide enough
+   (4.2vw keeps the longer one inside the column) and balanced over two where it isn't */
+.interlude {
+  padding-top: var(--sec-y);
+  padding-bottom: calc(var(--sec-y) - var(--sec-y-tight));
+  text-align: center;
+}
+.interlude__line {
+  font-family: var(--f-display);
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-weight: 440;
+  font-size: clamp(30px, 4.2vw, 72px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+.interlude__line > span {
+  display: block;
+  text-wrap: balance;
+}
+.interlude__line em {
+  color: var(--tomato);
+  font-style: italic;
+}
+@media (max-width: 600px) {
+  .interlude__line {
+    font-size: clamp(29px, 8.4vw, 40px);
+  }
 }
 
 /* ── WHAT ────────────────────────────────────────────────────── */
@@ -1191,7 +1234,6 @@ h2 {
    section's hairline is the same as the step down to the next one's) */
 .what {
   padding-top: calc(var(--sec-y-tight) - clamp(14px, 2.2vw, 32px));
-  padding-bottom: 0;
 }
 .statement {
   max-width: 17em;
@@ -1383,41 +1425,6 @@ h2 {
   color: var(--tomato);
 }
 
-/* ── WHY ─────────────────────────────────────────────────────── */
-
-.why {
-  padding-top: clamp(40px, 6vw, 96px);
-}
-/* a pull quote between two scenes: set large and balanced so it holds
-   the space on desktop instead of drifting in it */
-.why--mini {
-  padding-top: var(--sec-y);
-  padding-bottom: var(--sec-y);
-}
-.why__mini {
-  max-width: 21ch;
-  margin: 0 auto;
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-weight: 440;
-  font-size: clamp(28px, 4.4vw, 76px);
-  line-height: 1.08;
-  text-align: center;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-.why__mini em {
-  color: var(--tomato);
-  font-style: italic;
-}
-
-/* phones: the pull quote is set a size up, so it holds its band on its own */
-@media (max-width: 600px) {
-  .why__mini {
-    font-size: clamp(28px, 8.4vw, 40px);
-  }
-}
-
 /* ── THE DAY (pinned horizontal story) ───────────────────────── */
 
 /* A programme from 10:30 to 20:00 on one hairline, set like the rest of the
@@ -1427,8 +1434,45 @@ h2 {
    (src/day.ts). Phones, and reduced motion, read it top to bottom. */
 .day {
   padding: 0;
-  /* one column per step; its 4:3 plate has to fit under the heading and the copy */
-  --col: clamp(300px, min(31vw, calc((100svh - 450px) * 1.333)), 560px);
+  /* The wide story is one screen, pinned: everything on its stage has to fit the window's
+     height, down to a short laptop's. So its gaps give way first as the window gets shorter
+     (each is a clamp on the height), and the plate takes what is left:
+       --d-rest   what stands on the stage besides the plate: the nav, the gaps, the numbered
+                  name under its hairline (45px), the title, a step's copy (its time, its name
+                  and four lines), the ruler (12px) and a little air
+       --col      a step's column; its 4:3 plate is as tall as the height less --d-rest */
+  --d-top: clamp(14px, 6vh - 30px, 36px);
+  --d-label: clamp(10px, 2vh, 22px);
+  --d-title: clamp(36px, min(4.4vw, 8vh), 76px);
+  --d-lines: 1;
+  --d-gap: clamp(20px, 11vh - 58px, 64px);
+  --d-step: clamp(32px, 3vw, 52px);
+  --d-p: clamp(14px, 1.05vw, 17px);
+  --d-copy: calc(66px + var(--d-step) + 6 * var(--d-p));
+  --d-fig: clamp(8px, 2vh, 24px);
+  --d-foot: clamp(14px, 8vh - 44px, 44px);
+  --d-rest: calc(var(--nav-top) + var(--d-top) + 45px + var(--d-label) + var(--d-title) * var(--d-lines) + var(--d-gap) + var(--d-copy) + var(--d-fig) + 12px + var(--d-foot) + 10px);
+  --col: clamp(270px, min(31vw, calc((100vh - var(--d-rest)) * 1.333)), 560px);
+}
+/* (narrower than 1200px the title takes two lines) */
+@media (max-width: 1199px) {
+  .day {
+    --d-lines: 2;
+  }
+}
+/* a short window (a 1366×768 laptop shows about 650px of page): every gap at its least, and
+   the step's name and copy a size down */
+@media (max-height: 720px) {
+  .day {
+    --d-top: 10px;
+    --d-label: 8px;
+    --d-title: clamp(32px, min(4.4vw, 7vh), 76px);
+    --d-gap: 16px;
+    --d-step: 32px;
+    --d-p: 14px;
+    --d-fig: 8px;
+    --d-foot: 10px;
+  }
 }
 /* What pins in the day is held in a spacer of its own (holdPin in src/util.ts, put around it
    when the plates are drawn), not one ScrollTrigger makes: its own is taken out of the page on
@@ -1448,7 +1492,7 @@ h2 {
 .day__pin {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--nav-top) + clamp(16px, 3vh, 36px)) 0 clamp(18px, 4vh, 44px);
+  padding: calc(var(--nav-top) + var(--d-top)) 0 var(--d-foot);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1458,7 +1502,7 @@ h2 {
   padding: 0 var(--gut);
 }
 .day__head .label {
-  margin-bottom: clamp(12px, 2vh, 22px);
+  margin-bottom: var(--d-label);
 }
 .day__headrow {
   display: flex;
@@ -1468,7 +1512,7 @@ h2 {
   flex-wrap: wrap;
 }
 .day__head h2 {
-  font-size: clamp(38px, 4.4vw, 76px);
+  font-size: var(--d-title);
 }
 .day__head h2 em {
   color: var(--lav-deep);
@@ -1486,7 +1530,7 @@ h2 {
 .day__viewport {
   min-width: 0;
   overflow: hidden;
-  padding-top: clamp(28px, 5.5vh, 64px);
+  padding-top: var(--d-gap);
 }
 .day__track {
   position: relative;
@@ -1581,14 +1625,14 @@ h2 {
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(32px, 3vw, 52px);
+  font-size: var(--d-step);
   letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 12px;
 }
 .step p {
   max-width: 30ch;
-  font-size: clamp(14px, 1.05vw, 17px);
+  font-size: var(--d-p);
   line-height: 1.5;
   color: var(--ink-2);
 }
@@ -1602,7 +1646,7 @@ h2 {
 
 .step__fig {
   margin-top: auto;
-  padding-top: clamp(10px, 2vh, 24px);
+  padding-top: var(--d-fig);
   line-height: 0;
   opacity: 0.42;
   transition: opacity 0.5s var(--ease-out);
@@ -1726,16 +1770,31 @@ h2 {
   transition-delay: 0.2s, 0.2s, 0s;
 }
 
+/* A window shorter than the stage can be squeezed to (under about 640px): the stage is held to
+   the window and stands on its foot, so what doesn't fit goes off the top (the numbered name
+   slips under the nav), never the ruler and the cast's feet. */
+@media (min-width: 900px) and (max-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .day__pin {
+    height: 100svh;
+    justify-content: flex-end;
+  }
+  /* (neither gives way: a squeezed stage would cut the ruler off inside itself) */
+  .day__head,
+  .day__viewport {
+    flex: none;
+  }
+}
+
 /* phones, tablets and reduced motion: the same programme, read top to bottom,
    each plate standing on its own short ruler with the cast drawn in */
 @media (max-width: 899px), (prefers-reduced-motion: reduce) {
   .day__pin {
     min-height: 0;
     display: block;
-    padding: var(--sec-y) 0 var(--sec-y-tight);
+    padding: var(--sec-y-tight) 0 0;
   }
   .day__head .label {
-    margin-bottom: var(--sec-head);
+    margin-bottom: var(--spread-head);
   }
   .day__head h2 {
     font-size: clamp(42px, 9vw, 76px);
@@ -1860,7 +1919,7 @@ h2 {
   /* tall screens: the heading and the stage pin together, the heading
      under the nav and the stage in the height that's left */
   .day.day--tall {
-    padding-top: calc(var(--sec-y) - 18px);
+    padding-top: calc(var(--sec-y-tight) - 18px);
   }
   .day--tall .day__pin {
     display: flex;
@@ -2113,7 +2172,6 @@ h2 {
 /* ── FLOCK: who comes, a plate of the regulars ───────────────── */
 
 .flock {
-  padding-bottom: clamp(48px, 6vw, 96px);
   overflow-x: clip;
 }
 /* the title, and beside it (under it on a phone) what it means and the aside */
@@ -2572,34 +2630,20 @@ h2 {
 
 /* ── RULES ───────────────────────────────────────────────────── */
 
-/* all four rules on one screen */
-.rules {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-top: calc(var(--nav-top) + 24px);
-  padding-bottom: clamp(40px, 6vh, 72px);
-}
-.rules .label {
-  margin-bottom: clamp(16px, 2.4vh, 28px);
-}
+/* the title, then all four rules on one screen */
 .rules__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 12px 40px;
-  flex-wrap: wrap;
-  margin-bottom: clamp(24px, 4vh, 44px);
+  margin-bottom: clamp(22px, 3vw, 44px);
 }
 .rules__title {
-  font-size: clamp(52px, min(7.4vw, 11vh), 132px);
+  font-size: clamp(44px, min(7.4vw, 11vh), 132px);
   font-weight: 480;
-  line-height: 0.88;
+  line-height: 0.92;
   letter-spacing: -0.05em;
 }
+/* ("Egg Club." keeps together: where the title needs two lines, it is the second) */
 .rules__title em {
   color: var(--tomato);
+  white-space: nowrap;
 }
 .rules__list {
   list-style: none;
@@ -2686,9 +2730,6 @@ h2 {
   opacity: 1;
 }
 @media (max-width: 860px) {
-  .rules {
-    min-height: 0;
-  }
   .rule {
     grid-template-columns: clamp(36px, 9vw, 48px) 1fr;
     row-gap: 6px;
@@ -2742,11 +2783,6 @@ html:not(.js) .rule__fix,
 
 /* The close: ticket, steps and bring-a-friend live in story.css. */
 .join {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-top: clamp(56px, 7vw, 110px);
   padding-bottom: clamp(56px, 7vw, 110px);
 }
 /* the faded --ink-2 is only 4.1:1 on yolk; full ink passes */
@@ -2785,9 +2821,12 @@ html:not(.js) .rule__fix,
 
 .foot__scene {
   position: relative;
-  /* a little more of the same sky above the picture, for the type —
-     deeper on narrower screens so the moon always clears the links */
-  padding-top: max(clamp(40px, 5vw, 96px), calc(204px - 8vw));
+  /* More of the same sky above the picture, for the type: enough that the links' last line
+     stands clear of the tower's tip and of the moon under them. Deeper on narrower screens
+     (the painting is shorter there, so its skyline is nearer its top), and a step more where
+     the links are set larger. */
+  --foot-sky: calc(max(clamp(40px, 5vw, 96px), calc(204px - 8vw)) + clamp(24px, 3.2vw, 56px));
+  padding-top: var(--foot-sky);
 }
 .foot__scene picture {
   display: block;
@@ -2933,7 +2972,7 @@ html:not(.js) .rule__fix,
 @media (max-width: 1100px) {
   /* the hint takes its own row here, so the sky above the picture grows */
   .foot__scene {
-    padding-top: calc(max(clamp(40px, 5vw, 96px), calc(204px - 8vw)) + 104px);
+    padding-top: calc(var(--foot-sky) + 104px);
   }
   .foot__top {
     grid-template-columns: 1fr auto;
@@ -3798,21 +3837,15 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
 /* ── PHONES: one vertical rhythm ──────────────────────────────────
    --sec-y is sized for a wide screen, and on a phone it left bands of
    empty paper between the sections. Phones (upright, or on their side)
-   take a smaller step, so every section break is the same breath: two
-   --sec-y, about 94px on a 390px phone, from the last line of one
-   section to the label of the next. Tablets and wider (a short desktop
-   window included) keep theirs. */
+   take smaller steps; the spread's rule (see THE SPREAD) spaces every
+   section with them. Tablets and wider (a short desktop window
+   included) keep theirs. */
 @media (max-width: 600px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
   :root {
     --sec-y: clamp(44px, 12vw, 56px);
     --sec-y-tight: clamp(32px, 9vw, 44px);
   }
-  .flock {
-    padding-bottom: var(--sec-y);
-  }
-  .rules,
   .join {
-    padding-top: var(--sec-y);
     padding-bottom: var(--sec-y);
   }
 }
@@ -3841,29 +3874,11 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   transition: transform 0.5s var(--ease-spring);
 }
 
-/* ── WHAT GOT BUILT: the hand-off to the app, where every Sunday's projects live ── */
-.built-on {
-  padding: var(--sec-y) var(--gut);
-  text-align: center;
-}
-.built-on__title {
-  max-width: 22ch;
-  margin: 0 auto;
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-weight: 440;
-  font-size: clamp(28px, 4.4vw, 64px);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-.built-on__title em {
-  color: var(--tomato);
-  font-style: italic;
-}
+/* ── WHAT GOT BUILT: the hand-off to the app, where every Sunday's projects live ──
+   (an interlude: its couplet is set in THE SPREAD) */
 .built-on__deck {
   max-width: 46ch;
-  margin: 18px auto 0;
+  margin: clamp(14px, 1.6vw, 22px) auto 0;
   color: var(--ink-2);
   font-size: clamp(15px, 1.4vw, 18px);
   line-height: 1.45;
@@ -3875,7 +3890,7 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: clamp(20px, 2.2vw, 28px);
 }
 .built-on__ctas .btn {
   max-width: 100%;
@@ -3924,6 +3939,29 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   }
   .dock__apply {
     padding: 0 14px;
+    white-space: nowrap;
+  }
+}
+/* narrow phones: the dock's labels stay on one line. Up to 374px they are set a size down;
+   up to 350px Apply says only that (the long and the short label are both in index.html) */
+.dock__short {
+  display: none;
+}
+@media (max-width: 374px) {
+  .dock__app {
+    padding: 0 12px;
+  }
+  .dock__apply {
+    padding: 0 10px;
+    font-size: 15px;
+  }
+}
+@media (max-width: 350px) {
+  .dock__long {
+    display: none;
+  }
+  .dock__short {
+    display: inline;
   }
 }
 @media (max-width: 360px) {

@@ -150,7 +150,8 @@ export function initRules() {
 
   gsap.matchMedia()
     .add('(min-width: 861px)', () => {
-      ScrollTrigger.create({ trigger: section, start: 'top 65%', once: true, onEnter: () => tl.play() })
+      // (the list, not the section: its title stands over it, and the rules play as they come up)
+      ScrollTrigger.create({ trigger: $('.rules__list', section), start: 'top 82%', once: true, onEnter: () => tl.play() })
     })
     .add('(max-width: 860px)', () => {
       rules.forEach((rule, i) => {
