@@ -352,32 +352,33 @@
         </div>
       </section>
 
-      <!-- ───────────── 09:40 · WHAT ───────────── -->
+      <!-- 01 and 02 are one spread, set the same way: an ink hairline with the numbered name under it
+           (.label--rule), and everything ranged left on the column's edge (main.css, "THE SPREAD") -->
+      <!-- ───────────── 09:40 · WHAT: one sentence, in the page's flow (src/story.ts inks it in once) ───────────── -->
       <section class="what" id="what" data-bg="butter">
-        <div class="what__stage" id="whatStage">
-          <p class="label mono"><span>01</span> <span class="label__txt">What is this</span></p>
+        <p class="label label--rule mono"><span>01</span> <span class="label__txt">What is this</span></p>
 
-          <p class="statement" id="statement">
-          The Egg Club is a
-          <span class="chip chip--sun" aria-hidden="true"><i></i></span>
-          <mark class="hl hl--yolk">Sunday ritual</mark> for
-          <span class="chip chip--eggs" aria-hidden="true"><i></i><i></i><i></i></span>
-          people who’d rather <mark class="hl hl--lav"><em class="st__make">make</em> something</mark>
-          <span class="st__quiet">than talk about making something.</span>
-          </p>
-          <p class="what__cue mono" aria-hidden="true">keep scrolling</p>
-        </div>
-
+        <!-- .st__br: a phone sets the sentence one sense unit a line (main.css); wider screens flow it -->
+        <p class="statement" id="statement">
+        The Egg Club is a<br class="st__br" />
+        <span class="st__keep"><span class="chip chip--sun" aria-hidden="true"><i></i></span> <mark class="hl hl--yolk">Sunday ritual</mark></span><br class="st__br" />
+        for <span class="st__keep"><span class="chip chip--eggs" aria-hidden="true"><i></i><i></i><i></i></span> people</span><br class="st__br" />
+        who’d rather<br class="st__br" />
+        <mark class="hl hl--lav"><em class="st__make">make</em> something</mark><br class="st__br" />
+        <span class="st__quiet">than talk about<br class="st__br" /> making something.</span>
+        </p>
       </section>
 
-      <!-- ───────────── 09:50 · WHO COMES ───────────── -->
+      <!-- ───────────── 09:50 · WHO COMES: the regulars, a plate of figures (src/flock.ts draws them) ───────────── -->
       <section class="flock" id="who" data-bg="pink" aria-labelledby="flockTitle">
+        <p class="label label--rule mono"><span>02</span> <span class="label__txt">Who comes</span></p>
         <div class="flock__head">
-          <p class="label mono"><span>02</span> <span class="label__txt">Who comes</span></p>
           <h2 id="flockTitle" class="reveal">A different mix <em>every time.</em></h2>
-          <p class="reveal">You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
+          <div class="flock__deck reveal">
+            <p>You don’t need to be a founder, an engineer, or even sure what you want to make. You just need to be curious and a little impatient.</p>
+            <p class="who__v">— everyone has a reason to be here</p>
+          </div>
         </div>
-        <p class="who__v flock__everyone reveal">— everyone has a reason to be here</p>
         <div class="flock__field" id="flockField"></div>
       </section>
 

@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { $, clamp, nextTask, reducedMotion } from './util'
-import { FIG_VIEWBOX, emptyEgg, figure, type Kind } from './figures'
+import { FIG_VIEWBOX, emptyEgg, figure, miniEgg, miniYou, type Kind } from './figures'
 import { lang } from './i18n'
 
 interface Bird {
@@ -38,43 +38,48 @@ const FIG = lang === 'tr' ? 'şek.' : 'fig.'
 
 const svg = (inner: string) => `<svg viewBox="${FIG_VIEWBOX}" aria-hidden="true" focusable="false">${inner}</svg>`
 
+const nn = (i: number) => String(i + 1).padStart(2, '0')
+const YOU =
+  lang === 'tr'
+    ? { name: 'devamı var', say: 'üzerinde adın yazan bir sandalye var.', join: 'katıl' }
+    : { name: 'to be continued', say: 'there’s a seat with your name on it.', join: 'join' }
+
+/**
+ * The plate of regulars: nine figures on one sheet, each with its number, its name and the line
+ * it says, printed under it (nothing waits on a hover or a tap). Wide screens lay the sheet out
+ * as a grid, and a figure can be pulled about (it springs back). Phones read it as a strip, one
+ * figure at a time, with the whole cast standing in a carton under it (initCarton).
+ */
 export async function initFlock() {
   const field = $('#flockField')
   if (!field) return
 
+  const caption = (name: string, say: string) =>
+    `<figcaption class="bird__cap"><span class="bird__name">${name}</span><span class="bird__say">“${say}”</span></figcaption>`
+
   const cells: HTMLElement[] = []
   FLOCK.forEach((b, i) => {
-    const el = document.createElement('button')
-    el.type = 'button'
+    const el = document.createElement('figure')
     el.className = `bird bird--${b.kind}`
     el.style.setProperty('--tilt', `${b.tilt}deg`)
     el.style.setProperty('--i', String(i))
-    // The name reads the card in the order it's printed, so it contains the
-    // visible text (voice control: "click fig. 01").
-    el.setAttribute('aria-label', `${FIG} ${String(i + 1).padStart(2, '0')}, “${b.say}”, ${b.name}`)
     el.innerHTML = `
-      <span class="bird__fig" aria-hidden="true">${FIG} ${String(i + 1).padStart(2, '0')}</span>
-      <span class="bird__say" aria-hidden="true">“${b.say}”</span>
+      <span class="bird__fig">${FIG} ${nn(i)}</span>
       <span class="bird__body">${svg(figure(b.kind, lang))}</span>
-      <span class="bird__name" aria-hidden="true">${b.name}</span>`
+      ${caption(b.name, b.say)}`
     cells.push(el)
   })
 
+  // the empty seat is the way in: the whole cell is the link
   const you = document.createElement('a')
   you.href = '#join'
   you.className = 'bird bird--you'
   you.style.setProperty('--tilt', '-3deg')
-  you.setAttribute(
-    'aria-label',
-    lang === 'tr'
-      ? `${FIG} 09, “üzerinde adın yazan bir sandalye var.”, devamı var — katıl`
-      : `${FIG} 09, “there’s a seat with your name on it.”, to be continued — join`,
-  )
+  you.setAttribute('aria-label', `${FIG} ${nn(FLOCK.length)}, ${YOU.name}: “${YOU.say}” — ${YOU.join}`)
   you.innerHTML = `
-    <span class="bird__fig" aria-hidden="true">${FIG} 09</span>
-    <span class="bird__say" aria-hidden="true">“${lang === 'tr' ? 'üzerinde adın yazan bir sandalye var.' : 'there’s a seat with your name on it.'}”</span>
+    <span class="bird__fig" aria-hidden="true">${FIG} ${nn(FLOCK.length)}</span>
     <span class="bird__body">${svg(emptyEgg(lang))}</span>
-    <span class="bird__name" aria-hidden="true">${lang === 'tr' ? 'devamı var' : 'to be continued'}</span>`
+    <span class="bird__cap" aria-hidden="true"><span class="bird__name">${YOU.name}</span><span class="bird__say">“${YOU.say}”</span></span>`
   cells.push(you)
 
   const note = document.createElement('div')
@@ -94,22 +99,14 @@ export async function initFlock() {
     void field.offsetHeight
   }
 
-  // Tap to read the quote on touch.
-  cells.forEach((el) => {
-    el.addEventListener('click', (e) => {
-      if (el.dataset.dragged === '1') {
-        e.preventDefault()
-        el.dataset.dragged = ''
-        return
-      }
-      if (el instanceof HTMLButtonElement) {
-        cells.forEach((o) => o !== el && o.classList.remove('is-talking'))
-        el.classList.toggle('is-talking')
-      }
-    })
+  // a pull that ends on the empty seat's link is not a click on it
+  you.addEventListener('click', (e) => {
+    if (you.dataset.dragged !== '1') return
+    e.preventDefault()
+    you.dataset.dragged = ''
   })
 
-  initPlateRow(field, cells)
+  initCarton(field, cells)
 
   // ── pull and let go: the figure springs back into its cell ──
   if (reducedMotion()) return
@@ -139,7 +136,6 @@ export async function initFlock() {
       if (!moved) {
         moved = true
         el.classList.add('is-dragging')
-        el.classList.remove('is-talking')
         // its own layer while it's pulled about: the inked lines are filtered, and
         // moving them as a picture beats repainting the wobble on every pointer move
         art.style.willChange = 'transform'
@@ -173,29 +169,30 @@ export async function initFlock() {
 }
 
 /**
- * Phones read the plate as one row you swipe through. Under it, a counter
- * and two arrows say there's more (and work for anyone who doesn't swipe),
- * and whoever is in front says their line without being tapped. The row
- * walks in from the right as it arrives, which also says it moves.
+ * Phones read the plate as a strip you swipe through, a figure at a time. Under it stands the
+ * carton: the whole cast as nine small eggs in a row (the statement's carton, grown up), so the
+ * mix is in view at once. The egg of whoever is in front stands up out of it, and a tap on any
+ * egg brings its figure round. The strip walks in from the right as it arrives, which also says
+ * it moves; the figure in front is the one whose moving part is awake.
  */
-function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
+function initCarton(field: HTMLElement, cells: HTMLElement[]) {
   const phone = matchMedia('(max-width: 760px)')
-  const total = String(cells.length).padStart(2, '0')
-  const nav = document.createElement('div')
-  nav.className = 'flock__nav'
-  nav.innerHTML = `
-    <p class="flock__count mono" aria-hidden="true"><b>${FIG} 01</b> / ${total}</p>
-    <div class="flock__arrows">
-      <button type="button" class="flock__arrow" data-dir="-1" aria-controls="flockField" aria-label="${lang === 'tr' ? 'Önceki' : 'Previous'}">←</button>
-      <button type="button" class="flock__arrow" data-dir="1" aria-controls="flockField" aria-label="${lang === 'tr' ? 'Sonraki' : 'Next'}">→</button>
-    </div>`
-  field.after(nav)
-  const count = nav.querySelector('b')!
+  const carton = document.createElement('div')
+  carton.className = 'flock__carton'
+  carton.setAttribute('role', 'group')
+  carton.setAttribute('aria-label', lang === 'tr' ? 'Kim geliyor: bir figür seç' : 'Who comes: pick a figure')
+  carton.innerHTML =
+    FLOCK.map(
+      (b, i) =>
+        `<button type="button" class="carton__egg" data-i="${i}" aria-controls="flockField" aria-label="${FIG} ${nn(i)}, ${b.name}">${miniEgg(b.kind)}</button>`,
+    ).join('') +
+    `<button type="button" class="carton__egg carton__egg--you" data-i="${FLOCK.length}" aria-controls="flockField" aria-label="${FIG} ${nn(FLOCK.length)}, ${YOU.name}">${miniYou()}</button>`
+  field.after(carton)
+  const eggs = Array.from(carton.querySelectorAll<HTMLButtonElement>('.carton__egg'))
   cells.forEach((c, k) => c.style.setProperty('--n', String(k)))
-  const [prev, next] = Array.from(nav.querySelectorAll<HTMLButtonElement>('.flock__arrow'))
 
-  // The row's geometry, measured when it changes size rather than on every scroll frame: reading
-  // it after the counter's text was written would lay the page out again, mid-frame.
+  // The strip's geometry, measured when it changes size rather than on every scroll frame: reading
+  // it after a class was written would lay the page out again, mid-frame.
   let stepPx = 1
   let maxLeft = 0
   let left = 0
@@ -204,45 +201,33 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
     maxLeft = field.scrollWidth - field.clientWidth
     left = field.scrollLeft
   }
-  const at = () => clamp(Math.round(left / stepPx), 0, cells.length - 1)
-  let seen = false
-  const talk = () => {
-    if (!phone.matches || !seen) return
-    const i = at()
-    cells.forEach((c, k) => c.classList.toggle('is-talking', k === i))
-  }
-  // back on a wide screen, quotes are for hovering again
-  phone.addEventListener('change', () => {
-    if (phone.matches) talk()
-    else cells.forEach((c) => c.classList.remove('is-talking'))
-  })
+  // (the last figure can't reach the strip's start: at the end of the strip, it is the one in front)
+  const at = () => (maxLeft > 0 && left > maxLeft - 4 ? cells.length - 1 : clamp(Math.round(left / stepPx), 0, cells.length - 1))
   let shown = -1
   const update = () => {
-    const i = at()
-    if (i !== shown) count.textContent = `${FIG} ${String((shown = i) + 1).padStart(2, '0')}`
-    const first = left < 4
-    const end = left > maxLeft - 4
-    if (prev.disabled !== first) prev.disabled = first
-    if (next.disabled !== end) next.disabled = end
+    const i = phone.matches ? at() : -1
+    if (i === shown) return
+    shown = i
+    eggs.forEach((egg, k) => (k === i ? egg.setAttribute('aria-current', 'true') : egg.removeAttribute('aria-current')))
+    cells.forEach((c, k) => c.classList.toggle('is-talking', k === i))
   }
 
-  nav.addEventListener('click', (e) => {
-    const dir = Number((e.target as HTMLElement).closest<HTMLElement>('[data-dir]')?.dataset.dir)
-    if (dir) field.scrollBy({ left: dir * stepPx, behavior: reducedMotion() ? 'auto' : 'smooth' })
+  carton.addEventListener('click', (e) => {
+    const i = Number((e.target as HTMLElement).closest<HTMLElement>('[data-i]')?.dataset.i ?? -1)
+    if (i >= 0) field.scrollTo({ left: i * stepPx, behavior: reducedMotion() ? 'auto' : 'smooth' })
   })
   let frame = 0
-  let settle = 0
   field.addEventListener(
     'scroll',
     () => {
       left = field.scrollLeft
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(update)
-      clearTimeout(settle)
-      settle = window.setTimeout(talk, 160)
     },
     { passive: true },
   )
+  // back on a wide screen nobody is in front
+  phone.addEventListener('change', update)
   new IntersectionObserver(
     (entries, io) => {
       if (!entries.some((e) => e.isIntersecting)) return
@@ -251,17 +236,7 @@ function initPlateRow(field: HTMLElement, cells: HTMLElement[]) {
     },
     { threshold: 0.2 },
   ).observe(field)
-  // the first figure speaks up once the row is properly on screen
-  new IntersectionObserver(
-    (entries, io) => {
-      if (!entries.some((e) => e.isIntersecting)) return
-      seen = true
-      talk()
-      io.disconnect()
-    },
-    { threshold: 0.6 },
-  ).observe(field)
-  // (its first call comes once the row is laid out)
+  // (its first call comes once the strip is laid out)
   const ro = new ResizeObserver(() => {
     measure()
     update()

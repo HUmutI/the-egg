@@ -20,10 +20,7 @@ ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,resize' })
 /** Set up every scene, in page order, each in a task of its own; then measure once. */
 export async function start() {
   initReveals()
-  await nextTask()
-  await initStatement()
-  await nextTask()
-  measureNew()
+  initStatement()
   await nextTask()
   await initDay()
   await nextTask()

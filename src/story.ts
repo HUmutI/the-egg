@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { $, $$, nextTask, reducedMotion, sleepOffscreen } from './util'
+import { $, $$, clamp, reducedMotion, sleepOffscreen } from './util'
 
 /** Fade-ups, played once as each comes into view. */
 export function initReveals() {
@@ -21,15 +21,15 @@ export function initReveals() {
 
 /**
  * Split an element's text into word spans (`.tok`) so they can be read in
- * one by one. Elements matching `units` (chips, highlights, the struck-out
- * correction…) stay whole and count as a single token; other inline
- * elements (italics) keep their styling and have their words split inside.
+ * one by one. Elements matching `units` (chips, highlights) stay whole and
+ * count as a single token; other inline elements (italics) keep their
+ * styling and have their words split inside.
  * A word is `.tok.tok--w > .tok__ink`: the faint word waiting to be read is
  * the outer span's background clipped to the glyphs (main.css), and the ink
  * fades in over it from 0, so the faint state is decoration, not text that
  * fails contrast.
  */
-const UNITS = '.chip, .hl, .rule__fix, strong'
+const UNITS = '.chip, .hl'
 function tokenize(root: HTMLElement): HTMLElement[] {
   const tokens: HTMLElement[] = []
   const split = (node: Node) => {
@@ -66,156 +66,43 @@ function tokenize(root: HTMLElement): HTMLElement[] {
 }
 
 /**
- * Scene one: the statement sits faint on its own screen and darkens word by
- * word as you scroll; the highlighter strokes draw in as their words arrive.
- * The scene holds still (pinned) while it reads itself: on wide screens from
- * the top, on phones held upright just under the nav, the sentence set as
- * large as the screen holds so it fills the scene to its foot. A phone on
- * its side is too short to hold it, so there it reads as it scrolls by.
+ * The statement: one sentence in the page's own flow. Nothing pins and nothing follows the
+ * scroll: each word inks in once, as its line comes up the screen, left to right along the
+ * line, and the highlighter goes over its words a beat later (main.css plays it from `.is-in`
+ * and `--d`). The sentence waits faint only if it is still below the screen when this runs: a
+ * page that opens on it (a #link) shows it inked and only the strokes draw; a reload lands
+ * there after this has run (keepPlace in util.ts), so it plays once on arriving.
  */
-export async function initStatement() {
-  const stage = $('#whatStage')
+export function initStatement() {
   const st = $('#statement')
-  if (!stage || !st || reducedMotion()) return
+  if (!st || reducedMotion()) return
 
   const tokens = tokenize(st)
-  // (the indices of the words among the tokens, so a copy's words can be found again)
-  const words = tokens.flatMap((t, i) => (t.matches(UNITS) ? [] : [i]))
-  const sizer = statementSizer(stage, st, words)
-  // A phone held upright sets the sentence to fill its stage, a search that lays the sentence out
-  // nine times over: done ahead, a few tries a task, it is waiting when the scene is set up.
-  if (matchMedia(PORTRAIT).matches) await sizer.prepare()
-
-  const tl = gsap.timeline({ defaults: { ease: 'none' } })
-  tokens.forEach((t, i) => {
-    // (a word: its ink over the faint copy, 0 → 1 over 0.14 reads as 0.14 → 1; once inked
-    // the faint copy goes, so the read word is exactly the ink)
-    const ink = t.firstElementChild
-    if (t.classList.contains('tok--w') && ink) {
-      tl.to(ink, { opacity: 1, duration: 1 }, i * 0.55)
-      tl.set(t, { '--g': '0%' }, i * 0.55 + 1)
-    } else tl.to(t, { opacity: 1, duration: 1 }, i * 0.55)
-    if (t.classList.contains('hl')) tl.to(t, { '--p': '100%', duration: 1.4 }, i * 0.55 + 0.3)
-  })
-  tl.to('.what__cue', { opacity: 0, duration: 1 }, '>-1')
-  // Hold the finished sentence for the last quarter of the pin, so the
-  // final words have landed before the scene scrolls away.
-  tl.to({}, { duration: tl.duration() / 3 })
-
-  gsap.matchMedia()
-    .add('(min-width: 861px)', () => {
-      ScrollTrigger.create({ trigger: stage, pin: true, start: 'top top', end: '+=70%', scrub: 0.2, animation: tl })
-    })
-    .add(PORTRAIT, () => {
-      // the stage is a screen tall under the nav (main.css), so it holds there.
-      // (refreshPriority: see the day's pin in day.ts)
-      const nav = $('#nav')
-      // The sentence takes the stage's height under its running head, at the largest size that
-      // fits it without breaking a word, so the scene has no empty foot to leave behind when it
-      // lets go. Measured again on every refresh (a turned phone, the other language).
-      const fit = sizer.fit
-      fit()
-      ScrollTrigger.addEventListener('refreshInit', fit)
-      ScrollTrigger.create({
-        trigger: stage,
-        pin: true,
-        start: () => `top ${nav.offsetHeight}px`,
-        end: '+=75%',
-        scrub: 0.2,
-        anticipatePin: 1,
-        refreshPriority: 1,
-        invalidateOnRefresh: true,
-        animation: tl,
-      })
-      return () => {
-        ScrollTrigger.removeEventListener('refreshInit', fit)
-        sizer.forget()
-        st.style.removeProperty('font-size')
-      }
-    })
-    .add('(max-width: 860px) and (orientation: landscape)', () => {
-      ScrollTrigger.create({ trigger: st, start: 'top 85%', end: 'bottom 40%', scrub: 0.2, animation: tl })
-    })
-}
-
-/** Phones and tablets held upright: the statement pins under the nav, set to fill the stage. */
-const PORTRAIT = '(max-width: 860px) and (orientation: portrait)'
-
-/**
- * The size that sets the statement to fill its stage: the largest that fits the stage's height
- * under its running head without breaking a word. `fit` sets it, measuring again only when the
- * answer can change (and every refresh asks: a turned phone, the other language, the fonts
- * arriving); `prepare` runs the same search ahead of time, a few tries a task, for `fit` to find.
- */
-function statementSizer(stage: HTMLElement, st: HTMLElement, words: number[]) {
-  let last = ''
-  let size = ''
-  /** What the answer depends on: the stage's size, its padding, the sentence's width, the fonts. */
-  const room = () => {
-    // (the stage grows with the sentence, and holds its size while pinned: the room is a
-    // screen under the nav, its min-height, less the running head's row)
-    const cs = getComputedStyle(stage)
-    const pad = parseFloat(getComputedStyle(st).paddingTop) || 0
-    const head = parseFloat(cs.gridTemplateRows) || 0
-    const room = parseFloat(cs.minHeight) - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - head - pad
-    return { pad, room, key: [stage.clientWidth, room, document.fonts.status].join() }
+  const ink = (t: HTMLElement, delay = 0) => {
+    t.style.setProperty('--d', `${delay.toFixed(2)}s`)
+    t.classList.add('is-in')
   }
-  /** The search, one try a step. */
-  function* search(pad: number, room: number) {
-    // Search on a hidden copy laid over the stage, out of the page's flow: each try then lays out
-    // the copy alone, not the whole page below it. (It keeps the sentence's own classes, so its
-    // grid area, width and type are the sentence's.)
-    const copy = st.cloneNode(true) as HTMLElement
-    copy.removeAttribute('id')
-    copy.setAttribute('aria-hidden', 'true')
-    copy.style.cssText = 'position:absolute;left:0;right:0;top:0;visibility:hidden;contain:layout style;pointer-events:none'
-    stage.append(copy)
-    try {
-      const toks = copy.querySelectorAll('.tok')
-      const copyWords = words.map((i) => toks[i])
-      let [lo, hi] = [30, Math.min(96, stage.clientWidth * 0.19)]
-      for (let i = 0; i < 9; i++) {
-        const f = (lo + hi) / 2
-        copy.style.fontSize = `${f}px`
-        if (copy.offsetHeight - pad <= room && copyWords.every((w) => w.getClientRects().length < 2)) lo = f
-        else hi = f
-        yield
-      }
-      return `${lo.toFixed(1)}px`
-    } finally {
-      copy.remove()
-    }
+  if (!('IntersectionObserver' in window) || st.getBoundingClientRect().top < innerHeight * 0.9) {
+    tokens.forEach((t) => ink(t))
+    return
   }
-  return {
-    fit() {
-      const { pad, room: r, key } = room()
-      if (key !== last) {
-        const steps = search(pad, r)
-        let step = steps.next()
-        while (!step.done) step = steps.next()
-        last = key
-        size = step.value
-      }
-      st.style.fontSize = size
-    },
-    async prepare() {
-      const { pad, room: r, key } = room()
-      const steps = search(pad, r)
-      let step = steps.next()
-      for (let n = 1; !step.done; n++) {
-        if (n % 3 === 0) await nextTask()
-        step = steps.next()
-      }
-      // (kept only if nothing it depends on changed while it ran)
-      if (room().key === key) {
-        last = key
-        size = step.value
+
+  st.classList.add('is-armed')
+  const io = new IntersectionObserver(
+    (entries) => {
+      const box = st.getBoundingClientRect()
+      for (const e of entries) {
+        if (!e.isIntersecting) continue
+        const t = e.target as HTMLElement
+        // (a line's words arrive together: the further along the line, the later, a third of a second across)
+        ink(t, (clamp(e.boundingClientRect.left - box.left, 0, box.width) / (box.width || 1)) * 0.34)
+        io.unobserve(t)
       }
     },
-    forget() {
-      last = ''
-    },
-  }
+    // a word is read in once it stands clear of the foot of the screen (and of a phone's dock)
+    { rootMargin: '0px 0px -14% 0px' },
+  )
+  tokens.forEach((t) => io.observe(t))
 }
 
 /**

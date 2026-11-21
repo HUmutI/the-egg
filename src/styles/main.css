@@ -226,13 +226,21 @@ body::after {
   border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
   font-size: 12px;
 }
+/* the section's name: the display italic of the hero's strapline, where the number keeps the mono */
 .label span.label__txt {
   display: inline;
   width: auto;
   height: auto;
   border: 0;
   border-radius: 0;
-  font-size: inherit;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-size: clamp(19px, 1.5vw, 23px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--ink);
 }
 
 /* ── buttons ─────────────────────────────────────────────────── */
@@ -1153,129 +1161,116 @@ h2 {
   transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
 }
 
+/* ── THE SPREAD: 01 What is this · 02 Who comes ──────────────── */
+
+/* The hero is the cover, and it is centred. What follows is set like the pages inside: each
+   section of the spread opens on the ink hairline the hero closes on (the one over its logos),
+   its numbered name hangs under that line, and everything is ranged left on the column's edge,
+   on a phone and on a wide screen alike. Three steps space both sections:
+     --sec-y-tight   from the last line of what came before to the hairline
+     14px            from the hairline to the name
+     --spread-head   from the name to the section's first line */
+.what,
+.flock {
+  --spread-head: clamp(20px, 2.6vw, 40px);
+  padding-top: var(--sec-y-tight);
+}
+.label--rule {
+  margin-bottom: var(--spread-head);
+  padding-top: 14px;
+  border-top: 1px solid var(--ink);
+}
+
 /* ── WHAT ────────────────────────────────────────────────────── */
 
+/* One sentence, as large as the page holds, in the page's own flow: nothing pins and nothing
+   follows the scroll. A phone sets it one sense unit a line, at the size whose longest line
+   ("making something.", 8.3em) runs the width of the column; wider screens flow it in a measure
+   of 17em, which at their size is the column. */
+/* (the hero keeps a little room under its logos: taken off here, so the step down to this
+   section's hairline is the same as the step down to the next one's) */
 .what {
-  padding-top: 0;
+  padding-top: calc(var(--sec-y-tight) - clamp(14px, 2.2vw, 32px));
   padding-bottom: 0;
 }
-/* scene one: the statement alone on the screen, read in as you scroll */
-.what__stage {
-  position: relative;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: calc(var(--nav-top) + 24px) 0 clamp(48px, 8vh, 96px);
+.statement {
+  max-width: 17em;
+  font-size: clamp(33px, min(9.4vw, 13vh), 60px);
+  font-weight: 420;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
-.what__stage .label {
-  position: absolute;
-  top: calc(var(--nav-top) + 28px);
-  left: 0;
+.st__br {
+  display: none;
 }
-.what__cue {
-  position: absolute;
-  left: 0;
-  /* clear of the live badge in the corner */
-  bottom: max(72px, 8vh);
-  color: var(--ink-2);
+@media (max-width: 600px) {
+  .statement {
+    font-size: min(calc((100vw - 2 * var(--gut)) / 8.7), 56px);
+    text-wrap: wrap;
+  }
+  .st__br {
+    display: inline;
+  }
 }
-.what__cue::after {
-  content: ' ↓';
+@media (min-width: 861px) {
+  .statement {
+    font-size: clamp(48px, min(5.6vw, 11vh), 96px);
+    line-height: 1.04;
+  }
 }
-.statement .tok {
+/* a drawing stays on the line of the words it stands for, and a marked phrase on one line */
+.st__keep,
+.statement .hl {
+  white-space: nowrap;
+}
+
+/* The sentence inks itself in, once (src/story.ts splits it into .tok words and marks each
+   .is-in as its line comes up the screen, left to right along the line by --d). It waits faint
+   only when the script found it below the screen (.is-armed): a page that opens on it by a
+   #link shows it inked. A word waiting is its own background in the text's colour at 14%, clipped to the
+   glyphs, with the ink fading in over it from 0: the same look as the word at 14%, but a
+   contrast check sees no faint text, only ink to come. */
+.statement.is-armed .tok {
   opacity: 0.14;
+  transition: opacity 0.6s var(--ease-out) var(--d, 0s), transform 0.7s var(--ease-spring) var(--d, 0s);
 }
-/* A word waiting to be read (story.ts): the faint word is its own background in the text's
-   colour at 14%, clipped to the glyphs; the ink fades in over it from 0. Same look as the
-   word at opacity 0.14, but a reader's contrast check sees no faint text, only ink to come. */
-.statement .tok--w {
-  --g: 100%;
+.statement.is-armed .tok--w {
   opacity: 1;
-  background: linear-gradient(color-mix(in srgb, currentColor 14%, transparent), color-mix(in srgb, currentColor 14%, transparent)) no-repeat 0 0 / var(--g) 100%;
+  background: linear-gradient(color-mix(in srgb, currentColor 14%, transparent), color-mix(in srgb, currentColor 14%, transparent)) no-repeat 0 0 / 100% 100%;
   -webkit-background-clip: text;
   background-clip: text;
+  /* (the faint copy goes once the ink is in, so the read word is exactly the ink) */
+  transition: background-size 0s linear calc(var(--d, 0s) + 0.6s);
 }
-.statement .tok__ink {
+.statement.is-armed .tok__ink {
   opacity: 0;
+  transition: opacity 0.6s var(--ease-out) var(--d, 0s);
 }
+.statement.is-armed .chip {
+  transform: scale(0.72);
+}
+.statement.is-armed .tok.is-in {
+  opacity: 1;
+  transform: none;
+}
+.statement.is-armed .tok--w.is-in {
+  background-size: 0 100%;
+}
+.statement.is-armed .tok.is-in .tok__ink {
+  opacity: 1;
+}
+/* the highlighter goes over its words a beat after they land */
 .statement .hl {
-  background-size: var(--p, 100%) 100%;
   background-repeat: no-repeat;
 }
 .js .statement .hl {
-  --p: 0%;
+  background-size: 0% 100%;
 }
-/* sized by the screen's height as well as its width, so the sentence
-   fills its scene instead of floating in it */
-.statement {
-  max-width: 15em;
-  font-size: clamp(36px, min(6.8vw, 11.6vh), 132px);
-  font-weight: 420;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-/* phones: the scene is in the page's flow, not a whole empty screen */
-@media (max-width: 860px) {
-  .what__stage {
-    min-height: 0;
-    padding: var(--sec-y) 0 calc(var(--sec-y) * 0.8);
-  }
-  .what__stage .label,
-  .what__cue {
-    position: static;
-  }
-  .what__cue {
-    margin-top: 32px;
-  }
-  .statement {
-    font-size: clamp(34px, min(10.2vw, 13vh), 60px);
-    overflow-wrap: break-word;
-  }
-}
-/* phones and tablets held upright: the scene holds under the nav while it
-   reads itself in (src/story.ts), so it fills the screen with the sentence,
-   set as large as the height allows. The label and the cue share a running
-   head under the nav; the statement fills the rest, clear of the dock. */
-@media (max-width: 860px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
-  .js .what {
-    padding-top: var(--sec-y);
-  }
-  .js .what__stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: auto minmax(0, 1fr);
-    align-items: baseline;
-    column-gap: 16px;
-    min-height: calc(100svh - var(--nav-top));
-    padding: 28px 0 calc(88px + var(--safe-b));
-  }
-  .js .what__cue {
-    grid-area: 1 / 2;
-    margin-top: 0;
-  }
-  /* story.ts sets the size that fills the stage; the sentence stands on
-     the stage's foot, so it leaves no empty band behind it */
-  .js .what__stage .statement {
-    grid-area: 2 / 1 / 3 / 3;
-    align-self: end;
-    padding: 16px 0 0;
-    font-size: clamp(34px, min(13.4vw, 6.8svh), 64px);
-  }
-  /* the stage's foot already clears the dock: who comes follows one breath on */
-  .js .what + .flock {
-    padding-top: max(0px, calc(var(--sec-y) - 40px));
-  }
-}
-/* tablets: no dock to clear, and a taller screen for a larger sentence */
-@media (min-width: 701px) and (max-width: 860px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
-  .js .what__stage {
-    padding-bottom: calc(40px + var(--safe-b));
-  }
-  .js .what__stage .statement {
-    font-size: clamp(34px, min(13.4vw, 8.4svh), 96px);
-  }
+.js .statement .hl.is-in {
+  background-size: 100% 100%;
+  transition: opacity 0.6s var(--ease-out) var(--d, 0s), background-size 0.7s var(--ease-out) calc(var(--d, 0s) + 0.35s);
 }
 
 .chip {
@@ -1353,13 +1348,10 @@ h2 {
   transform: rotate(14deg) translateY(-0.06em);
 }
 
+/* reduced motion: the script leaves the sentence alone, and the strokes are simply there */
 @media (prefers-reduced-motion: reduce) {
-  .statement .tok,
-  .statement .tok__ink {
-    opacity: 1;
-  }
   .js .statement .hl {
-    --p: 100%;
+    background-size: 100% 100%;
   }
 }
 
@@ -1371,12 +1363,6 @@ h2 {
   text-transform: none;
   color: var(--tomato);
   line-height: 1;
-}
-
-@media (max-width: 860px) {
-  .statement {
-    grid-column: 1 / -1;
-  }
 }
 
 /* the statement, marked up */
@@ -2124,73 +2110,76 @@ h2 {
   }
 }
 
-/* ── FLOCK (draggable egg characters) ───────────────────────── */
+/* ── FLOCK: who comes, a plate of the regulars ───────────────── */
 
 .flock {
   padding-bottom: clamp(48px, 6vw, 96px);
   overflow-x: clip;
 }
+/* the title, and beside it (under it on a phone) what it means and the aside */
 .flock__head {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 24px 48px;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 18px clamp(32px, 5vw, 80px);
   align-items: end;
 }
-.flock__head .label {
-  grid-column: 1 / -1;
-  margin-bottom: 8px;
-}
+/* two lines, whatever the width: the italic is the second */
 .flock__head h2 em {
+  display: block;
   color: var(--pink-deep);
 }
-.flock__head > p:last-child {
-  max-width: 40ch;
+.flock__deck {
+  display: grid;
+  gap: clamp(10px, 1.2vw, 16px);
+  max-width: 44ch;
+  /* its last line sits on the title's baseline */
+  padding-bottom: 0.6em;
+}
+.flock__deck > p:first-child {
   font-size: clamp(17px, 1.35vw, 21px);
 }
-.flock__everyone {
-  margin-top: clamp(20px, 2.5vw, 32px);
-}
 
-/* a specimen plate: hairline cells, one figure each */
+/* The plate: one sheet of cream paper with an ink edge, a figure to a cell, hairlines between
+   (the gaps of the grid, through which the sheet's own hairline colour shows). Each cell reads
+   top to bottom: its number, the drawing, its name, the line it says. */
 .flock__field {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  margin-top: clamp(32px, 4vw, 64px);
-  border-top: 1px solid var(--ink);
-  border-left: 1px solid var(--ink-3);
+  gap: 1px;
+  margin-top: clamp(28px, 3.6vw, 56px);
+  border: 1px solid var(--ink);
+  background:
+    linear-gradient(var(--ink-3), var(--ink-3)),
+    var(--cream);
 }
 .bird,
 .flock__note {
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  min-height: clamp(280px, 25vw, 380px);
-  padding: 14px 16px 16px;
-  border: 0;
-  border-right: 1px solid var(--ink-3);
-  border-bottom: 1px solid var(--ink-3);
-  background: none;
+  margin: 0;
+  padding: 14px 16px 18px;
+  background: var(--cream);
   text-align: left;
   color: inherit;
   text-decoration: none;
-  cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.35s var(--ease-out);
+  transition: background-color 0.35s var(--ease-out);
 }
-.bird:hover,
-.bird:focus-visible,
-.bird.is-talking {
-  background: rgba(253, 248, 239, 0.45);
-  outline: none;
-}
-.bird:focus-visible {
-  box-shadow: inset 0 0 0 3px var(--tomato);
+.bird {
+  cursor: grab;
 }
 .bird.is-dragging {
   cursor: grabbing;
   z-index: 10;
+}
+.bird--you {
+  cursor: pointer;
+}
+.bird--you:focus-visible {
+  outline-offset: -4px;
 }
 .bird__fig {
   font-family: var(--f-mono);
@@ -2202,18 +2191,24 @@ h2 {
 .bird__body {
   display: grid;
   place-items: center;
-  padding: 6px 4px;
+  padding: 2px 0 10px;
 }
 .bird__body svg {
-  width: min(94%, 214px);
+  width: min(92%, 212px);
   overflow: visible;
   transition: transform 0.6s var(--ease-out);
 }
-.bird:hover .bird__body svg {
-  transform: translateY(-6px) rotate(var(--tilt, -4deg));
-}
 .bird.is-dragging .bird__body svg {
   transition: none;
+}
+/* a mouse wakes the figure it is over: a warm wash on its cell, and it leans in */
+@media (hover: hover) {
+  .bird:hover {
+    background-color: #fff6df;
+  }
+  .bird:hover .bird__body svg {
+    transform: translateY(-6px) rotate(var(--tilt, -4deg));
+  }
 }
 /* the few eyes on the plate blink now and then */
 .bird .egg__eyes {
@@ -2414,47 +2409,30 @@ h2 {
     opacity: 1;
   }
 }
+/* under the drawing: who it is, in the title's italic, and what they say */
+.bird__cap {
+  display: grid;
+  gap: 5px;
+}
 .bird__name {
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 50, 'WONK' 1;
   font-style: italic;
-  font-size: clamp(14px, 1.15vw, 17px);
-  line-height: 1.2;
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
-/* the quote prints into the top of the cell, like a caption slip */
+/* (two lines' room, so a short line and a long one leave the names of a row on one line) */
 .bird__say {
-  position: absolute;
-  top: 34px;
-  left: 14px;
-  right: 14px;
-  z-index: 2;
-  padding: 9px 12px 10px;
-  border: 1px solid var(--ink);
-  background: var(--cream);
-  font-family: var(--f-display);
-  font-variation-settings: 'SOFT' 50, 'WONK' 1;
-  font-style: italic;
-  font-size: clamp(14px, 1.1vw, 16px);
-  line-height: 1.25;
-  color: var(--ink);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.25s, transform 0.45s var(--ease-out);
-  pointer-events: none;
-}
-.bird:hover .bird__say,
-.bird:focus-visible .bird__say,
-.bird.is-talking .bird__say {
-  opacity: 1;
-  transform: none;
-}
-.bird.is-dragging .bird__say {
-  opacity: 0;
+  min-height: 2.7em;
+  font-size: clamp(13.5px, 1vw, 15px);
+  line-height: 1.35;
+  color: var(--ink-2);
+  text-wrap: pretty;
 }
 .flock__note {
   align-content: space-between;
-  cursor: default;
 }
 .flock__note .hand {
   font-size: clamp(26px, 2.2vw, 34px);
@@ -2466,6 +2444,7 @@ h2 {
   color: var(--ink-2);
 }
 
+/* tablets and small laptops: three to a row, nine cells, so the note has no cell to stand in */
 @media (max-width: 1000px) {
   .flock__field {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2474,21 +2453,27 @@ h2 {
     display: none;
   }
 }
-.flock__nav {
+.flock__carton {
   display: none;
 }
 @media (max-width: 760px) {
   .flock__head {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
-  /* one row you swipe through instead of a five-row grid: a figure at a
-     time, big, with the next one showing at the edge, run edge to edge */
+  .flock__deck {
+    padding-bottom: 0;
+  }
+  /* The plate as a strip you swipe through: a figure at a time, large, with the next one
+     showing at the screen's edge. It runs edge to edge, and its first figure stands on the
+     column's edge like everything else in the spread. */
   .flock__field {
     display: flex;
-    margin-left: calc(var(--gut) * -1);
-    margin-right: calc(var(--gut) * -1);
+    gap: 0;
+    margin: 24px calc(var(--gut) * -1) 0;
     padding: 0 var(--gut);
-    border-left: 0;
+    border: 0;
+    background: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-padding: 0 var(--gut);
@@ -2499,87 +2484,74 @@ h2 {
     display: none;
   }
   .bird {
-    flex: 0 0 min(76%, 340px);
-    grid-template-rows: auto auto 1fr auto;
+    flex: 0 0 min(78%, 330px);
     scroll-snap-align: start;
     /* one figure per swipe, like turning a page */
     scroll-snap-stop: always;
-    min-height: 0;
-    padding: 12px 14px 14px;
-    cursor: pointer;
-  }
-  .bird:first-child {
-    border-left: 1px solid var(--ink-3);
-  }
-  /* the quote prints into its own line above the figure, so whoever is in
-     front can say it without covering their face */
-  .bird__say {
-    position: static;
-    min-height: calc(2.5em + 21px);
-    margin-top: 10px;
-    font-size: 15px;
-  }
-  /* the figure takes its cell: one at a time, as large as the card */
-  .bird__body {
-    padding: 10px 0 6px;
-  }
-  .bird__body svg {
-    width: min(86%, 236px);
-  }
-  .bird__name {
-    font-size: 16px;
-  }
-  .flock__nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 14px;
-  }
-  .flock__count {
-    color: var(--ink-2);
-    font-variant-numeric: tabular-nums;
-  }
-  .flock__count b {
-    font-weight: 400;
-    color: var(--ink);
-  }
-  .flock__arrows {
-    display: flex;
-    gap: 8px;
-  }
-  .flock__arrow {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
+    padding: 12px 14px 16px;
     border: 1px solid var(--ink);
-    border-radius: 50%;
-    background: var(--cream);
-    color: var(--ink);
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    transition:
-      opacity 0.25s,
-      transform 0.2s var(--ease-out),
-      background 0.2s;
-  }
-  .flock__arrow:disabled {
-    opacity: 0.35;
+    border-left-width: 0;
     cursor: default;
   }
-  .flock__arrow:active:not(:disabled) {
-    transform: scale(0.92);
-    background: var(--yolk);
+  .bird:first-child {
+    border-left-width: 1px;
+  }
+  .bird__body {
+    padding: 6px 0 10px;
+  }
+  .bird__body svg {
+    width: min(86%, 232px);
+  }
+  .bird__name {
+    font-size: 19px;
+  }
+  .bird__say {
+    font-size: 14.5px;
+  }
+
+  /* The carton: the whole cast as a row of small eggs in the same pill the statement's three
+     sit in. The egg of whoever is in front stands up out of it (src/flock.ts marks it
+     aria-current); each egg is a button a thumb can hit, as wide as a ninth of the row. */
+  .flock__carton {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    height: 58px;
+    margin-top: 16px;
+    padding: 0 10px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--cream);
+  }
+  .carton__egg {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .carton__egg svg {
+    width: 23px;
+    height: auto;
+    overflow: visible;
+    transition: transform 0.45s var(--ease-spring);
+  }
+  .carton__egg[aria-current='true'] svg {
+    transform: translateY(-11px) rotate(-7deg) scale(1.22);
+  }
+  .carton__egg:active svg {
+    transform: scale(0.88);
+  }
+  .carton__egg:focus-visible {
+    outline-offset: -6px;
   }
 }
 @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
-  /* the row walks in from the right as it arrives (src/flock.ts adds .is-in) */
+  /* the strip walks in from the right as it arrives (src/flock.ts adds .is-in) */
   .js .flock__field .bird {
     transition:
-      background 0.35s var(--ease-out),
       opacity 0.6s var(--ease-out) calc(min(var(--n, 0), 3) * 90ms),
       transform 0.8s var(--ease-out) calc(min(var(--n, 0), 3) * 90ms);
   }
@@ -2587,10 +2559,14 @@ h2 {
     opacity: 0;
     transform: translateX(48px);
   }
-  /* whoever is in front stands up to say their line, as a hovered figure
-     does on a wide screen */
+  /* whoever is in front leans in, as a figure under a mouse does on a wide screen */
   .bird.is-talking .bird__body svg {
     transform: translateY(-6px) rotate(var(--tilt, -4deg));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carton__egg svg {
+    transition: none;
   }
 }
 
