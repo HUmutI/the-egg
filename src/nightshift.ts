@@ -4,8 +4,8 @@ import { lang } from './i18n'
 /**
  * NIGHT SHIFT — the hidden game behind the footer.
  *
- * A tiny top-down pixel loft in Kızılay, 18:00. Eight builders are racing to
- * pitch at 19:00 and nobody has eaten. Grab slices from the pizza counter,
+ * A tiny top-down pixel loft in Kızılay, 16:30. Eight builders are racing to
+ * pitch at 17:30 and nobody has eaten. Grab slices from the pizza counter,
  * walk them over, and every team you feed hatches its project. Talk to
  * everyone; there's a golden egg hidden somewhere.
  *

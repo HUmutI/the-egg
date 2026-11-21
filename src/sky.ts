@@ -176,8 +176,8 @@ export function initSky() {
       last = str
       time.textContent = str
       label.textContent = (LABELS.find(([t]) => m < t) ?? LABELS[LABELS.length - 1])[1]
-      // Sun travels the arc from 07:00 to 18:00 (an autumn Ankara day), then
-      // the moon takes over around pizza.
+      // Sun travels the arc from 07:00 to 18:00 (an autumn Ankara day), and
+      // the moon takes over at the pitches (17:30).
       const t = clamp((m - 7 * 60) / (11 * 60), 0, 1)
       const a = Math.PI * (1 - t)
       // (from 18:00 on, it stands still: put writes only a change)

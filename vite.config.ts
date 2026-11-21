@@ -4,8 +4,8 @@ import { defineConfig, type Plugin } from 'vite'
  * The built page without its notes: index.html's comments and the indentation at
  * the start of each line go (scripts and styles are left exactly as written).
  * Nothing on the page sets `white-space: pre`, so a line break and its indent
- * collapse to the same single space they did before. Brings the document under
- * the first round trip's ~14.6 KB (TCP's initial window) once compressed.
+ * collapse to the same single space they did before. (With the stylesheet inlined
+ * below, the built page is some 25 KB compressed: about 10 of document, 15 of CSS.)
  */
 function tidyHtml(): Plugin {
   return {
