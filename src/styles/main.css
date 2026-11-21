@@ -566,11 +566,6 @@ body.is-night .nav::before {
     min-width: 0;
   }
 }
-@media (max-width: 440px) {
-  .clock__label {
-    display: none;
-  }
-}
 @media (max-width: 374px) {
   .nav {
     gap: 6px;
@@ -1537,7 +1532,10 @@ h2 {
   justify-items: start;
   gap: 18px;
 }
+/* (each size in container units follows a plain one, for a browser without them: Safari before 16
+   dropped the arrow's width, which then took the cell and crushed Apply to a circle) */
 .day__bye {
+  font-size: 50px;
   font-size: clamp(40px, 17cqi, 64px);
   line-height: 0.95;
   transform: rotate(-5deg);
@@ -1552,6 +1550,7 @@ h2 {
 }
 .day__arrow {
   flex: none;
+  width: 56px;
   width: clamp(40px, 19cqi, 76px);
   height: auto;
   margin-bottom: 4px;
@@ -1905,7 +1904,7 @@ h2 {
   transform-origin: 50% 50%;
   animation: eggBlink 7s calc(var(--i, 0) * -0.83s) infinite;
 }
-/* eggBlink and .egg__wow are shared with the day's egg kit (ink.ts) */
+/* (eggBlink is the live badge's blink too) */
 @keyframes eggBlink {
   0%,
   94%,
@@ -1915,9 +1914,6 @@ h2 {
   96.5% {
     transform: scaleY(0.12);
   }
-}
-.egg__wow {
-  opacity: 0;
 }
 /* the empty seat: its dots march while you look at it */
 .bird--you .egg__dash {
@@ -2349,16 +2345,14 @@ h2 {
   color: var(--tomato);
 }
 /* the rules are read in as you scroll (see initRules); on a page that may open at them,
-   faint from the first paint (.dim-ahead: the inline script in index.html) */
-.js.dim-ahead .rules .tok,
-.js.dim-ahead .rules .rule__num,
-.js.dim-ahead .rules .rule__n {
-  opacity: 0.14;
-}
-.rules.is-read .tok,
-.rules.is-read .rule__num,
-.rules.is-read .rule__n {
-  opacity: 1;
+   faint from the first paint (.dim-ahead: the inline script in index.html), sentence and all, so
+   none of it shows inked and then dims when the script arrives. Reduced motion reads them at once. */
+@media (prefers-reduced-motion: no-preference) {
+  .js.dim-ahead .rules .rule__num,
+  .js.dim-ahead .rules .rule__n,
+  .js.dim-ahead .rules .rule p {
+    opacity: 0.14;
+  }
 }
 @media (max-width: 860px) {
   .rule {
@@ -2673,7 +2667,8 @@ html:not(.js) .rule__fix,
     transition-duration: 0.001ms !important;
     transition-delay: 0s !important;
   }
-  .reveal {
+  /* (html.js: so it outranks `.js .reveal` further down, which hides them for the fade-up) */
+  html.js .reveal {
     opacity: 1;
     transform: none;
   }
@@ -2682,10 +2677,15 @@ html:not(.js) .rule__fix,
 /* ── late additions ──────────────────────────────────────────── */
 
 /* Tomato type on pink and lavender sits just under 3:1; a hair deeper red
-   clears the large-text bar there and looks the same. */
+   clears the large-text bar there and looks the same. (The sections on butter
+   too: the page takes the next section's pink or lavender while their last
+   lines are still on screen.) */
 .flock,
 .rules,
-.day {
+.day,
+.what,
+.why,
+.built-on {
   --tomato: #d63c24;
 }
 
@@ -3358,7 +3358,8 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
 }
 /* phones either way up (a phone on its side is short, not narrow) */
 @media (max-width: 700px), (max-height: 500px) and (orientation: landscape) and (hover: none) {
-  .live-badge {
+  /* (the badge's aside with it: left in, a screen reader lists an empty "Site status" landmark) */
+  .site-status {
     display: none;
   }
   .foot__live {

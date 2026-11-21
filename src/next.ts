@@ -61,7 +61,10 @@ async function fillNextSunday(heroNext: HTMLElement | null) {
   // The first date format in a time zone is slow (it loads the zone data): do it while the app answers.
   void nextTask().then(formats)
   try {
-    const res = await fetch(API, { signal: AbortSignal.timeout(4000) })
+    // (not AbortSignal.timeout: before Safari 16 it doesn't exist, and the throw left the date out)
+    const slow = new AbortController()
+    setTimeout(() => slow.abort(), 4000)
+    const res = await fetch(API, { signal: slow.signal })
     if (!res.ok) return
     event = await res.json()
   } catch {

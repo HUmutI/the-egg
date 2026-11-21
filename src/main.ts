@@ -28,7 +28,14 @@ initDock()
 const fonts = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))])
 Promise.all([scroll, fonts])
   .then(([{ start }]) => start())
-  .then(backToPlace)
+  // Without the scroll layer (its chunk never arrived, or a scene threw), what waits for it (the
+  // fade-ups, a phone's day strip walking in, the house rules dimmed ahead) would wait for ever:
+  // the page falls back to how it reads without script, where all of it simply stands there.
+  .catch((err) => {
+    document.documentElement.classList.remove('js')
+    console.error(err)
+  })
+  .finally(backToPlace)
 
 // iOS only shows :active (the press on buttons) once something listens for touches.
 document.addEventListener('touchstart', () => {}, { passive: true })

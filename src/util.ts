@@ -9,10 +9,6 @@ export const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNod
 export const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-/** The egg silhouette (the day walker's), in a 200×260 box; ink.ts draws the rest of the family. */
-export const EGG_PATH = 'M100 6C149.9 6 196 66 196 156C196 212 153.8 256 100 256C46.2 256 4 212 4 156C4 66 50.1 6 100 6Z'
-export const CRACK_POINTS = '0,100 22,86 40,106 62,82 84,108 104,84 126,110 146,86 166,106 186,88 200,98'
-
 export const PALETTE = {
   butter: '#fdf3d7',
   cream: '#fdf8ef',
@@ -105,6 +101,10 @@ export const put = (el: Element, name: string, value: string) => {
  * told to leave the scroll alone (`scrollRestoration`), the place is kept here (on pagehide), and
  * the function this returns, once everything is measured, goes back to it (unless the reader has
  * moved the page meanwhile) and hands scrolling back to the browser (a #link and back again, say).
+ *
+ * A first visit by a #link has the same trouble: the browser lands on the target while the page
+ * is still short, and one that doesn't hold the place as the drawings arrive above it (Safari has
+ * no scroll anchoring) ends up short of it. So the target is found again at the same moment.
  */
 export const keepPlace = (): (() => void) => {
   const KEY = 'eggclub:y'
@@ -116,19 +116,24 @@ export const keepPlace = (): (() => void) => {
     } catch {}
   })
   let y = 0
+  let target: HTMLElement | null = null
   try {
     const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
     if (nav?.type === 'reload' || nav?.type === 'back_forward') y = Number(sessionStorage.getItem(KEY)) || 0
+    if (!y && location.hash) target = document.getElementById(decodeURIComponent(location.hash.slice(1)))
   } catch {}
   const INTENT = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const
   let moved = false
   const mark = () => (moved = true)
-  if (y) INTENT.forEach((type) => addEventListener(type, mark, { capture: true, passive: true }))
+  if (y || target) INTENT.forEach((type) => addEventListener(type, mark, { capture: true, passive: true }))
   return () => {
-    if (y) {
+    if (y || target) {
       INTENT.forEach((type) => removeEventListener(type, mark, { capture: true }))
-      if (!moved && Math.abs(scrollY - y) > 1) scrollTo({ top: y, behavior: 'instant' })
+      if (!moved && y && Math.abs(scrollY - y) > 1) scrollTo({ top: y, behavior: 'instant' })
+      else if (!moved && target) target.scrollIntoView({ block: 'start', behavior: 'instant' })
     }
+    // (index.html's first script takes the smooth scroll away while a #link lands)
+    document.documentElement.style.removeProperty('scroll-behavior')
     if (hist) history.scrollRestoration = 'auto'
   }
 }

@@ -23,7 +23,8 @@ export function initHero() {
     const delay = new Promise((r) => setTimeout(r, reducedMotion() ? 0 : 350))
     Promise.all([fonts, delay]).then(() => sheets.forEach((s) => s.classList.add('is-drawn')))
   }
-  if (img.complete && img.naturalWidth) show()
+  // (complete: arrived, or failed, before this ran; either way its event has already gone by)
+  if (img.complete) show()
   else {
     img.addEventListener('load', show, { once: true })
     img.addEventListener('error', show, { once: true })
@@ -76,8 +77,12 @@ function fillStrip() {
   }
   const imgs = originals.map((li) => li.querySelector('img')!).filter(Boolean)
   Promise.all(imgs.map((i) => (i.complete ? Promise.resolve() : new Promise((r) => i.addEventListener('load', r, { once: true }))))).then(build)
+  // (only a change of width changes what fills it: a phone's bars coming and going are resizes too)
   let t = 0
+  let w = innerWidth
   addEventListener('resize', () => {
+    if (innerWidth === w) return
+    w = innerWidth
     clearTimeout(t)
     t = window.setTimeout(build, 200)
   })

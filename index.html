@@ -23,6 +23,9 @@
           var n = performance.getEntriesByType('navigation')[0]
           if (location.hash || (n && n.type !== 'navigate')) d.classList.add('dim-ahead')
         } catch (e) {}
+        // A #link lands at once, not by a smooth scroll the page's growing would cut short halfway;
+        // keepPlace() (src/util.ts) puts the smooth scroll back once the page is measured.
+        if (location.hash) d.style.scrollBehavior = 'auto'
       })()
     </script>
 
@@ -36,7 +39,7 @@
       type="image/avif"
       media="(min-width: 601px)"
       imagesrcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w"
-      imagesizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))"
+      imagesizes="(max-width: 960px) and (max-height: 500px) and (orientation: landscape) min(100vw, calc((100vh - 136px) * 1.76)), (max-width: 860px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))"
       fetchpriority="high"
     />
     <link
@@ -156,15 +159,6 @@
   <body>
     <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
       <defs>
-        <clipPath id="clipTop">
-          <polygon points="-20,-20 220,-20 220,100 200,100 186,90 166,108 146,88 126,112 104,86 84,110 62,84 40,108 22,88 0,102 -20,102" />
-        </clipPath>
-        <clipPath id="eggShape">
-          <path d="M100 6C149.9 6 196 66 196 156C196 212 153.8 256 100 256C46.2 256 4 212 4 156C4 66 50.1 6 100 6Z" />
-        </clipPath>
-        <clipPath id="clipBot">
-          <polygon points="-20,100 0,100 22,86 40,106 62,82 84,108 104,84 126,110 146,86 166,106 186,88 200,98 220,98 220,300 -20,300" />
-        </clipPath>
         <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%">
           <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n" />
           <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
@@ -180,12 +174,13 @@
         <span>the egg club</span>
       </a>
 
+      <!-- the hour the clock says at the top of the page (src/sky.ts), so it doesn't jump once that runs -->
       <div class="nav__clock" aria-hidden="true">
         <svg class="clock__arc" viewBox="0 0 64 26">
           <path d="M3 24a29 29 0 0 1 58 0" />
-          <circle class="clock__sun" r="4" cx="3" cy="24" />
+          <circle class="clock__sun" r="4" cx="14.07" cy="6.71" />
         </svg>
-        <span class="clock__time">09:00</span>
+        <span class="clock__time">10:10</span>
         <span class="clock__label">doors soon</span>
       </div>
 
@@ -215,16 +210,16 @@
             <source media="(max-width: 600px)" type="image/avif" srcset="/hero/the-egg-club-phone-600.avif 600w, /hero/the-egg-club-phone-900.avif 900w, /hero/the-egg-club-phone-1200.avif 1200w" sizes="100vw" width="1200" height="1000" />
             <source media="(max-width: 600px)" type="image/webp" srcset="/hero/the-egg-club-phone-600.webp 600w, /hero/the-egg-club-phone-900.webp 900w, /hero/the-egg-club-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1000" />
             <!-- wider screens: sizes is the frame's width (main.css .hero__frame: the screen's height less
-                 the nav and 270px, times 1.75, or the column), so a laptop takes the 1200 and a tall or
-                 2x screen the 1660; short landscape screens (a phone on its side) size the frame by
-                 another rule, so they say 100vw. -->
-            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))" />
-            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1200.webp 1200w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))" />
+                 the nav and 270px, times 1.75, or the column), so a 790px-tall laptop takes the 830, a
+                 900px one the 1200 and a 2x screen the 1660. A phone on its side (up to 960 wide and
+                 500 tall) sizes the frame by its height less its shorter bar and 80px, so it comes first. -->
+            <source type="image/avif" srcset="/hero/the-egg-club-830.avif 830w, /hero/the-egg-club-1200.avif 1200w, /hero/the-egg-club-1660.avif 1660w" sizes="(max-width: 960px) and (max-height: 500px) and (orientation: landscape) min(100vw, calc((100vh - 136px) * 1.76)), (max-width: 860px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))" />
+            <source type="image/webp" srcset="/hero/the-egg-club-830.webp 830w, /hero/the-egg-club-1200.webp 1200w, /hero/the-egg-club-1660.webp 1660w" sizes="(max-width: 960px) and (max-height: 500px) and (orientation: landscape) min(100vw, calc((100vh - 136px) * 1.76)), (max-width: 860px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))" />
             <img
               id="heroArt"
               src="/hero/the-egg-club.png"
               srcset="/hero/the-egg-club-830.png 830w, /hero/the-egg-club.png 1660w"
-              sizes="(max-width: 860px) 100vw, (max-height: 500px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))"
+              sizes="(max-width: 960px) and (max-height: 500px) and (orientation: landscape) min(100vw, calc((100vh - 136px) * 1.76)), (max-width: 860px) 100vw, min(100vw, calc((100vh - 342px) * 1.76))"
               width="1660"
               height="948"
               fetchpriority="high"
@@ -801,7 +796,7 @@
     </div>
 
     <!-- ───────────── LIVE BADGE: the site rebuilds itself (in an aside so it sits in a landmark; the badge is fixed, the aside has no box of its own) ───────────── -->
-    <aside aria-label="Site status">
+    <aside class="site-status" aria-label="Site status">
     <a
       class="live-badge"
       href="https://github.com/HUmutI/the-egg"

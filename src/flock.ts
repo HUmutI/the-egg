@@ -57,8 +57,11 @@ export async function initFlock() {
   const caption = (name: string, say: string) =>
     `<figcaption class="bird__cap"><span class="bird__name">${name}</span><span class="bird__say">“${say}”</span></figcaption>`
 
+  // A figure is a few thousand halftone dots and bent lines to work out, so each is drawn in a task
+  // of its own: the nine in one went on for some 280ms on a slow phone.
   const cells: HTMLElement[] = []
-  FLOCK.forEach((b, i) => {
+  for (const [i, b] of FLOCK.entries()) {
+    if (i) await nextTask()
     const el = document.createElement('figure')
     el.className = `bird bird--${b.kind}`
     el.style.setProperty('--tilt', `${b.tilt}deg`)
@@ -68,7 +71,7 @@ export async function initFlock() {
       <span class="bird__body">${svg(figure(b.kind, lang))}</span>
       ${caption(b.name, b.say)}`
     cells.push(el)
-  })
+  }
 
   // the empty seat is the way in: the whole cell is the link
   const you = document.createElement('a')
@@ -94,7 +97,7 @@ export async function initFlock() {
   // inked figures laid out at once (by whatever reads the page next) are one long task.
   const parts = [...cells, note]
   for (let i = 0; i < parts.length; i += 4) {
-    if (i) await nextTask()
+    await nextTask()
     field.append(...parts.slice(i, i + 4))
     void field.offsetHeight
   }
@@ -126,7 +129,6 @@ export async function initFlock() {
       sx = lastX = e.clientX
       sy = e.clientY
       el.setPointerCapture(e.pointerId)
-      gsap.killTweensOf(art)
     })
     el.addEventListener('pointermove', (e) => {
       if (!active) return
@@ -136,8 +138,11 @@ export async function initFlock() {
       if (!moved) {
         moved = true
         el.classList.add('is-dragging')
-        // its own layer while it's pulled about: the inked lines are filtered, and
-        // moving them as a picture beats repainting the wobble on every pointer move
+        // (only a pull stops it springing back: a press that doesn't pull would leave it off
+        // its spot, still on its own layer)
+        gsap.killTweensOf(art)
+        // its own layer while it's pulled about: a figure is some thousand dots and bent
+        // lines, and moving it as a picture beats repainting them on every pointer move
         art.style.willChange = 'transform'
       }
       // a rubber band: the further you pull, the harder it resists
