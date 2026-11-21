@@ -8,15 +8,20 @@ import { PALETTE } from './util'
  * Every drawing in the editorial sections (the specimen plate, the day) is
  * made from these: thin wobbly ink, pastel riso fills, halftone, and dry
  * technical annotations, never thick cartoon outlines.
+ *
+ * The specimen plate draws its wobble and its halftone as plain geometry
+ * (src/sketch.ts): the line is bent once, when it is drawn, and the dots
+ * are dots, so nothing on the plate is filtered or masked when it paints.
+ * The day's plates still use the #wobble filter.
  */
 
 const I = PALETTE.ink
 
-/** One-time SVG defs: the wobble filter, halftone dots and the shading mask. */
+/** One-time SVG defs: the wobble filter (the day's plates) and the flat halftone the figures stand on. */
 export function installInkDefs() {
   const defs = document.querySelector('.defs defs')
   if (!defs || defs.querySelector('#halftone')) return
-  // index.html ships the wobble filter; the halftone and the shading mask are added here
+  // index.html ships the wobble filter; the halftone is added here
   const wobble = defs.querySelector('#wobble')
     ? ''
     : `<filter id="wobble" x="-10%" y="-10%" width="120%" height="120%">
@@ -28,14 +33,7 @@ export function installInkDefs() {
     `${wobble}
      <pattern id="halftone" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
        <circle cx="3" cy="3" r="1.15" fill="${I}"/>
-     </pattern>
-     <linearGradient id="shadeGrad" x1="0.15" y1="0.1" x2="0.95" y2="0.95">
-       <stop offset="0.45" stop-color="#000"/>
-       <stop offset="1" stop-color="#fff"/>
-     </linearGradient>
-     <mask id="shadeMask" maskContentUnits="objectBoundingBox">
-       <rect width="1" height="1" fill="url(#shadeGrad)"/>
-     </mask>`,
+     </pattern>`,
   )
 }
 
@@ -95,23 +93,4 @@ export function handEgg(seed: number, o: EggShape = {}) {
     d += `C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${pb[0].toFixed(1)} ${pb[1].toFixed(1)}`
   }
   return d + 'Z'
-}
-
-let uid = 0
-
-/**
- * Riso egg: colour printed a few px off-register, halftone shade, wobbly
- * outline with a small gap where the pen lifted.
- */
-export function inkEgg(d: string, fill: string, o: { off?: [number, number]; gap?: number; shade?: boolean; stroke?: number } = {}) {
-  const id = `ie${++uid}`
-  const [ox, oy] = o.off ?? [6, 5]
-  const gap = o.gap ?? 0.18
-  const sw = o.stroke ?? 3.6
-  return `
-    <clipPath id="${id}"><path d="${d}" transform="translate(${ox} ${oy})"/></clipPath>
-    <path d="${d}" fill="${fill}" transform="translate(${ox} ${oy})"/>
-    ${o.shade === false ? '' : `<g clip-path="url(#${id})" opacity=".28"><rect x="-40" y="-40" width="300" height="340" fill="url(#halftone)" mask="url(#shadeMask)"/></g>`}
-    <path d="${d}" fill="none" stroke="${I}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"
-      pathLength="100" stroke-dasharray="${100 - gap * 30} ${gap * 30}" stroke-dashoffset="${(uid * 37) % 100}" filter="url(#wobble)"/>`
 }

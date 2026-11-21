@@ -1,5 +1,6 @@
 import { PALETTE } from './util'
-import { handEgg, inkEgg, type EggShape } from './riso'
+import { handEgg, type EggShape } from './riso'
+import { inkEgg, sketch } from './sketch'
 
 /**
  * The regulars, drawn in the house riso style (riso.ts): a hand-drawn egg,
@@ -27,11 +28,11 @@ const MONO = `font-family="DM Mono, ui-monospace, monospace"`
 const SERIF = `font-family="Fraunces, Georgia, serif"`
 const HAND = `font-family="'Reenie Beanie', cursive"`
 
-/** A pen line: thin, round-capped, slightly wobbly. */
+/** A pen line: thin, round-capped, slightly wobbly (the wobble is in the line itself: sketch.ts). */
 const pen = (d: string, w = 3, c: string = I, extra = '') =>
-  `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" filter="url(#wobble)" ${extra}/>`
+  `<path d="${sketch(d)}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`
 
-/** A ruled line: construction, dimensions, staves. Straight, so no wobble (it would clip a flat line). */
+/** A ruled line: construction, dimensions, staves. Straight, so no wobble. */
 const rule = (d: string, w = 1.4, c: string = T, extra = '') =>
   `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${extra}/>`
 
@@ -255,12 +256,12 @@ function pizza() {
   const yolk = `<circle cx="104" cy="153" r="30" fill="${P.yolk}"/><circle cx="100" cy="150" r="30" fill="none" stroke="${I}" stroke-width="2.4"/>`
   return `
     <defs>
-      <mask id="${id}m"><rect x="-60" y="-60" width="340" height="420" fill="#fff"/><polygon points="${wedge}" fill="#000"/></mask>
+      <clipPath id="${id}m"><path clip-rule="evenodd" d="M-60 -60h340v420h-340zM100 150L240 90V210z"/></clipPath>
       <clipPath id="${id}w"><polygon points="${wedge}"/></clipPath>
       <clipPath id="${id}e"><path d="${d}"/></clipPath>
     </defs>
     ${ground(104, 270, 66)}
-    <g mask="url(#${id}m)">
+    <g clip-path="url(#${id}m)">
       ${inkEgg(d, CAST.pizza.fill)}
       <g clip-path="url(#${id}e)">${rule('M100 150L42 10M100 150L158 10M100 150L42 290M100 150L158 290M100 150L-40 92M100 150L-40 208', 1.6, I, 'stroke-dasharray="5 7" opacity=".45"')}</g>
       ${pep(62, 92, 11)}${pep(124, 62, 10)}${pep(52, 196, 12)}${pep(132, 224, 11)}
@@ -307,4 +308,23 @@ export const emptyEgg = (lang: Lang) => `
   <path class="egg__dash" d="${handEgg(99, { w: 0.95, lean: -5 })}" fill="${P.cream}" fill-opacity="0" stroke="${I}" stroke-width="2.6" stroke-dasharray="2 8" stroke-linecap="round"/>
   <text x="100" y="160" text-anchor="middle" ${SERIF} font-style="italic" font-size="52" fill="${I}">${lang === 'tr' ? 'sen?' : 'you?'}</text>
   ${pen('M62 186q38 10 76 0', 2.2, T)}`
+
+/** The carton's eggs sit in a 212×276 box: one egg, upright, with room for its off-register colour. */
+const MINI_VIEWBOX = '-6 2 218 276'
+
+/** A regular as a small egg for the carton: the same hand-drawn silhouette and colour, and two dot eyes. */
+export const miniEgg = (kind: Kind) => {
+  const { seed, fill, shape } = CAST[kind]
+  // (stood up and centred: the carton is a row, not a pose)
+  const d = handEgg(seed, { ...shape, lean: (shape.lean ?? 0) / 2, cx: 100, cy: 140 })
+  return `<svg viewBox="${MINI_VIEWBOX}" aria-hidden="true" focusable="false">
+    <path d="${d}" fill="${fill}" transform="translate(9 8)"/>
+    <path d="${d}" fill="none" stroke="${I}" stroke-width="11" stroke-linejoin="round"/>
+    <circle cx="80" cy="130" r="10" fill="${I}"/><circle cx="120" cy="130" r="10" fill="${I}"/></svg>`
+}
+
+/** The carton's empty cup: the dotted egg. */
+export const miniYou = () =>
+  `<svg viewBox="${MINI_VIEWBOX}" aria-hidden="true" focusable="false">
+    <path d="${handEgg(99, { w: 0.95 })}" fill="none" stroke="${I}" stroke-width="11" stroke-dasharray="4 24" stroke-linecap="round"/></svg>`
 

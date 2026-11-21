@@ -15,7 +15,7 @@ const scroll = import('./scroll')
 // A reload or a step back lands where the reader was, once the scroll layer has measured the page.
 const backToPlace = keepPlace()
 
-// The house ink (wobble, halftone, the shading mask) before anything draws with it.
+// The house ink (wobble, halftone) before anything draws with it.
 installInkDefs()
 initNextSunday()
 initShare()
