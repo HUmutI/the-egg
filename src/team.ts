@@ -136,15 +136,15 @@ function candles() {
     <text x="214" y="-18" text-anchor="end" ${MONO} font-size="23" fill="${P.mintDeep}">+3.2%</text>`
 }
 
-/** Mert K.: founded a startup and exited it. Cleanly. */
+/** Mert K.: makes pando, an open-source dev tool. This is how a day with it starts. */
 function terminal() {
   return `
     <g transform="rotate(-4 30 0)">
-      <rect x="-30" y="-34" width="138" height="66" rx="6" fill="${P.lavDeep}" transform="translate(4 4)" opacity=".8"/>
-      <rect x="-30" y="-34" width="138" height="66" rx="6" fill="${I}"/>
+      <rect x="-30" y="-34" width="180" height="66" rx="6" fill="${P.lavDeep}" transform="translate(4 4)" opacity=".8"/>
+      <rect x="-30" y="-34" width="180" height="66" rx="6" fill="${I}"/>
       <circle cx="-19" cy="-23" r="3" fill="${T}"/><circle cx="-9" cy="-23" r="3" fill="${P.yolk}"/><circle cx="1" cy="-23" r="3" fill="${P.mint}"/>
-      <text x="-19" y="12" ${MONO} font-size="22" fill="${P.cream}"><tspan fill="${P.yolk}">$</tspan> exit 0</text>
-      <g class="fx-cursor"><rect class="fx__bit" x="88" y="-4" width="10" height="20" fill="${P.cream}"/></g>
+      <text x="-19" y="12" ${MONO} font-size="19" fill="${P.cream}"><tspan fill="${P.yolk}">$</tspan> pando start</text>
+      <g class="fx-cursor"><rect class="fx__bit" x="130" y="-3" width="9" height="18" fill="${P.cream}"/></g>
     </g>`
 }
 

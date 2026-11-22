@@ -2549,7 +2549,9 @@ html:not(.js) .rule__fix,
 /* the links sit on the cell's foot, level from cell to cell, each a finger tall */
 .mate__links {
   display: flex;
-  flex-wrap: wrap;
+  /* (a host with more links than fit wraps the last ones upwards, so every first link stays on
+     the row's shared line) */
+  flex-wrap: wrap-reverse;
   gap: 0 18px;
   margin-top: auto;
   padding-top: 6px;
