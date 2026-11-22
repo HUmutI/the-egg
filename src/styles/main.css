@@ -2454,6 +2454,9 @@ html:not(.js) .rule__fix,
   display: flex;
   flex-direction: column;
   padding: 16px 16px 10px;
+  /* (the names size to their column: the words' own box on a phone, the cell where the words are
+     laid out in the cell's rows) */
+  container-type: inline-size;
   box-shadow:
     1px 0 0 var(--ink-3),
     0 1px 0 var(--ink-3);
@@ -2528,16 +2531,19 @@ html:not(.js) .rule__fix,
   display: flex;
   flex-direction: column;
   min-width: 0;
+  container-type: inline-size;
 }
 .mate__name {
   font-family: var(--f-display);
   font-variation-settings: 'SOFT' 50, 'WONK' 1;
   font-style: italic;
   font-weight: 440;
-  font-size: clamp(19px, 1.55vw, 24px);
+  /* every name on one line: the longest, Mehmet Alp Özaydın, is some 9em, so the size gives way to
+     the column before the name does (all cells are as wide, so every name keeps the same size) */
+  font-size: min(clamp(19px, 1.55vw, 24px), 10.6cqi);
   line-height: 1.1;
   letter-spacing: -0.015em;
-  text-wrap: balance;
+  white-space: nowrap;
 }
 .mate__bio {
   margin-top: 6px;
@@ -2941,7 +2947,7 @@ html:not(.js) .rule__fix,
     margin: 0 0 10px -8px;
   }
   .mate__name {
-    font-size: 21px;
+    font-size: min(21px, 10.6cqi);
   }
   .mate__bio {
     font-size: 14.5px;
