@@ -33,8 +33,8 @@ interface Mate {
   blush?: boolean
   /** the face's height on the egg */
   fy?: number
-  /** its idea, drawn over the egg and in its margins */
-  prop: () => string
+  /** its idea, drawn over the egg and in its margins (given the shell's outline) */
+  prop: (shell: string) => string
 }
 
 // ── the faces: as the regulars' are, two dots and a line, never a cartoon ──
@@ -84,16 +84,59 @@ function face(m: Mate) {
 
 // ── the ideas, one a host ──
 
-/** Umut: computer vision, medical AI. The model has found an egg, and is nearly sure of it. */
-function detected() {
+/** Umut: computer vision, medical AI. The model has found an egg, and is nearly sure of it; and a
+ *  scan goes down it, top to floor, and shows what's inside as an X-ray would: a chick, curled up. */
+function detected(shell: string) {
   const c = (x: number, y: number, dx: number, dy: number) => `M${x} ${y + dy * 22}V${y}H${x + dx * 22}`
+  const BONE = '#e4f7ff'
+  const GLOW = '#6fcbef'
+  // the chick, in bone: a skull with its socket and beak, a curled spine, ribs, a wing, a folded leg, the yolk
+  const spine = 'M116 86C150 92 162 128 158 160C154 192 140 210 118 222'
+  const bones = [
+    'M88 82C112 78 124 98 120 118C116 138 94 144 76 134C58 124 60 90 88 82Z',
+    'M64 112L44 122L64 130',
+    spine,
+    'M154 128C138 132 126 138 118 148M158 146C140 150 128 156 120 166M156 164C140 168 128 174 122 184M150 182C136 186 126 192 120 200',
+    'M134 150L108 170L88 162M108 170L96 186',
+    'M128 210L102 222L84 208M84 208L72 214M84 208L76 200M84 208L80 218',
+  ].join('')
+  const vert = [0.08, 0.2, 0.32, 0.44, 0.56, 0.68, 0.8, 0.92]
+    .map((t) => {
+      // points along the spine, by its cubic segments
+      const seg = t < 0.5 ? [116, 86, 150, 92, 162, 128, 158, 160] : [158, 160, 154, 192, 140, 210, 118, 222]
+      const u = t < 0.5 ? t * 2 : (t - 0.5) * 2
+      const b = (a: number, b1: number, b2: number, d: number) =>
+        (1 - u) ** 3 * a + 3 * (1 - u) ** 2 * u * b1 + 3 * (1 - u) * u * u * b2 + u ** 3 * d
+      const x = b(seg[0], seg[2], seg[4], seg[6])
+      const y = b(seg[1], seg[3], seg[5], seg[7])
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="${BONE}"/>`
+    })
+    .join('')
+  const film = Array.from({ length: 22 }, (_, k) => `M0 ${18 + k * 12}H200`).join('')
   return `
+    <defs><clipPath id="mateShell"><path d="${shell}"/></clipPath></defs>
+    <g clip-path="url(#mateShell)">
+      <g class="fx-xray"><g class="fx__bit">
+        <rect x="-10" y="14" width="220" height="258" fill="#0d1b24" opacity=".93"/>
+        <path d="${film}" stroke="${GLOW}" stroke-width="1" opacity=".09"/>
+        <ellipse cx="108" cy="160" rx="66" ry="84" fill="${GLOW}" opacity=".1"/>
+        <circle cx="80" cy="226" r="24" fill="${GLOW}" opacity=".16" stroke="${GLOW}" stroke-width="1.6" stroke-dasharray="4 4"/>
+        <path d="${bones}" fill="none" stroke="${GLOW}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".28"/>
+        <path d="${bones}" fill="none" stroke="${BONE}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="80" cy="106" r="9" fill="#0d1b24" stroke="${BONE}" stroke-width="2.2"/>
+        <circle cx="82" cy="104" r="2.6" fill="${BONE}"/>
+        ${vert}
+      </g></g>
+    </g>
     ${rule('M4 6H196V280H4Z', 1.3, T, 'opacity=".55"')}
     ${rule(c(4, 6, 1, 1) + c(196, 6, -1, 1) + c(4, 280, 1, -1) + c(196, 280, -1, -1), 3.2, T, 'stroke-linejoin="round"')}
     <rect x="3" y="-22" width="44" height="28" fill="${T}"/>
     <text x="25" y="-2" text-anchor="middle" ${MONO} font-size="17" fill="${P.cream}">egg</text>
     <text x="56" y="-1" ${MONO} font-size="23" fill="${T}">p = 0.97</text>
-    <g class="fx-scan">${rule('M10 14H190', 1.6, T, 'class="fx__bit" opacity="0"')}</g>`
+    <g class="fx-scan"><g class="fx__bit">
+      <rect x="6" y="2" width="188" height="12" fill="${T}" opacity=".18"/>
+      ${rule('M6 14H194', 2.2, T)}
+    </g></g>`
 }
 
 /** Mehmet: depth estimation for a lunar rover. The rover has taken the egg's measure. */
@@ -199,7 +242,7 @@ export function mateSvg(m: Mate) {
     ${ground(x + 4, 270, 64)}
     ${inkEgg(d, m.fill)}
     ${face(m)}
-    ${m.prop()}
+    ${m.prop(d)}
   </svg>`
 }
 

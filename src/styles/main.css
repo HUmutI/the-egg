@@ -2599,14 +2599,17 @@ html:not(.js) .rule__fix,
 }
 .mate .fx-scan .fx__bit {
   opacity: 0;
+  animation: mateScan 6s linear infinite;
+}
+/* (what the scan has passed over shows through the shell: the X-ray, kept to the box above the line) */
+.mate .fx-xray .fx__bit {
+  clip-path: inset(0 0 100% 0);
+  animation: mateXray 6s linear infinite;
 }
 /* (the compass turns on the centre of its arc, the centre mark at 100, 70 in the drawing) */
 .mate .fx-arc .fx__bit {
   transform-box: view-box;
   transform-origin: 100px 70px;
-}
-.mate:is(:hover, :focus-within) .fx-scan .fx__bit {
-  animation: mateScan 2.8s ease-in-out infinite;
 }
 .mate:is(:hover, :focus-within) .fx-ray .fx__bit {
   animation: mateRay 0.9s linear infinite;
@@ -2626,19 +2629,43 @@ html:not(.js) .rule__fix,
 .mate:is(:hover, :focus-within) .fx-arc .fx__bit {
   animation: mateArc 3.4s ease-in-out infinite;
 }
-/* a scan line goes down the box, top to floor */
+/* a scan line goes down the box, top to floor, and the chick inside shows behind it; it stays a
+   moment, fades, and the egg is an egg again */
 @keyframes mateScan {
   0% {
     opacity: 0;
     translate: 0 0;
   }
-  12%,
-  88% {
-    opacity: 0.8;
+  3%,
+  47% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+    translate: 0 258px;
   }
   100% {
     opacity: 0;
     translate: 0 258px;
+  }
+}
+@keyframes mateXray {
+  0% {
+    clip-path: inset(0 0 100% 0);
+    opacity: 1;
+  }
+  50% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  78% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  92%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 0;
   }
 }
 /* the rover's ray runs from its camera to the egg */
