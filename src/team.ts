@@ -176,8 +176,8 @@ function rover(shell: string) {
     ${[186, 211, 236].map((x) => `<circle cx="${x}" cy="260" r="8.5" fill="${P.cream}" stroke="${I}" stroke-width="2.2"/><circle cx="${x}" cy="260" r="2.2" fill="${I}"/>`).join('')}`
 }
 
-/** Mert Ç.: finance and AI products. The candles print one by one, then the price line climbs
- *  straight through the egg and off the top of the chart. */
+/** Mert Ç.: finance and AI products, and a crypto guy about it: shades, lasers, a gold chain.
+ *  The candles print one by one, then the price line climbs through the egg and off the chart. */
 function candles() {
   const C = [
     { x: 160, o: 78, c: 62, h: 54, l: 86 },
@@ -192,7 +192,32 @@ function candles() {
     return `${rule(`M${x} ${h}V${l}`, 1.8, I)}<rect x="${x - 7}" y="${top}" width="14" height="${bot - top}" fill="${fill}" transform="translate(3 2)" opacity=".85"/><rect x="${x - 7}" y="${top}" width="14" height="${bot - top}" fill="none" stroke="${I}" stroke-width="2"/>`
   }
   const line = 'M-24 246L14 204L40 220L74 160L98 178L130 112L148 124L174 52L196 66L232 -32'
+  // dressed for the bull run: pixel shades (with lasers, now and then), a gold chain and its coin
+  const px = (x: number, y: number) =>
+    `M${x} ${y}h30v11h-4v4h-10v-4h-4v4h-8v-4h-4z`
+  const shades = `<g transform="rotate(-5 80 137)">
+      <path d="M44 112h76v6H44z" fill="${I}"/>
+      <path d="${px(48, 116)}${px(86, 116)}" fill="${I}"/>
+      <path d="M53 119h5v4h-5zM91 119h5v4h-5z" fill="${P.cream}"/>
+      <g class="fx-laser">
+        <g class="fx__bit">
+          ${rule('M63 123L150 110M101 123L152 117', 7, T, 'opacity=".28"')}
+          ${rule('M63 123L150 110M101 123L152 117', 2.4, '#ff5a3c')}
+          <circle cx="63" cy="123" r="5.5" fill="#ff5a3c"/><circle cx="101" cy="123" r="5.5" fill="#ff5a3c"/>
+        </g>
+      </g>
+    </g>`
+  const chain = 'M44 168C52 196 66 206 80 206C94 206 108 196 116 168'
+  const coin = `<g class="fx-coin"><g class="fx__bit">
+      <circle cx="80" cy="216" r="14" fill="${P.yolk}" stroke="${I}" stroke-width="2.2"/>
+      <circle cx="80" cy="216" r="9.5" fill="none" stroke="${I}" stroke-width="1.2" opacity=".5"/>
+      <text x="80" y="222.5" text-anchor="middle" ${MONO} font-size="17" font-weight="700" fill="${I}">₿</text>
+    </g></g>`
   return `
+    ${rule(chain, 5.6, I)}
+    ${rule(chain, 3.4, P.yolk, 'stroke-dasharray="4 3"')}
+    ${coin}
+    ${shades}
     ${rule('M148 98H244', 1.4, I, 'opacity=".45"')}
     <g class="fx-print">${C.map((k, i) => `<g class="fx__bit" style="--k:${i}">${candle(k)}</g>`).join('')}</g>
     <g class="fx-climb">
@@ -201,15 +226,39 @@ function candles() {
     </g>
     <g class="fx-quote"><g class="fx__bit">
       <path d="M232 -32l-12 4l9 9z" fill="${P.mintDeep}"/>
-      <text x="214" y="-18" text-anchor="end" ${MONO} font-size="23" fill="${P.mintDeep}">+3.2%</text>
+      <text x="214" y="-18" text-anchor="end" ${MONO} font-size="23" fill="${P.mintDeep}">+420%</text>
     </g></g>`
 }
 
-/** Mert K.: makes pando, an open-source dev tool. This is how a day with it starts: the command
- *  types itself, and the egg it was run on cracks open. */
+/** Mert K.: makes pando, an open-source dev tool; a builder, a vibe coder: headphones on, laptop
+ *  open, coffee going. The command types itself, and the egg it was run on cracks open. */
 function terminal(shell: string) {
   const crack = 'M22 92l16 -12l12 14l15 -16l13 15l15 -14l12 13l15 -15l13 12l16 -10'
+  // the builder's kit: headphones on (the notes are the vibe), a laptop covered in stickers, a coffee
+  const band = 'M10 116C6 30 194 30 190 116'
+  const cup = (x: number) =>
+    `<rect x="${x}" y="100" width="24" height="44" rx="10" fill="${T}" stroke="${I}" stroke-width="2.4"/><rect x="${x + 6}" y="108" width="12" height="28" rx="5" fill="${I}" opacity=".25"/>`
+  const note = (x: number, y: number, k: number) =>
+    `<g class="fx__bit" style="--k:${k}"><path d="M${x} ${y}v-16l10 -3v16" fill="none" stroke="${I}" stroke-width="2"/><ellipse cx="${x - 3}" cy="${y}" rx="4" ry="3" fill="${I}"/><ellipse cx="${x + 7}" cy="${y - 3}" rx="4" ry="3" fill="${I}"/></g>`
+  const laptop = `
+    <path d="M46 196h108l-4 64H50z" fill="${P.lavDeep}" transform="translate(4 3)" opacity=".5"/>
+    <path d="M46 196h108l-4 64H50z" fill="#cfd2da" stroke="${I}" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M38 260h124l-6 8H44z" fill="#b6bac4" stroke="${I}" stroke-width="2.4" stroke-linejoin="round"/>
+    <g transform="rotate(-8 74 216)"><rect x="60" y="206" width="30" height="16" rx="3" fill="${I}"/><text x="75" y="218" text-anchor="middle" ${MONO} font-size="11" fill="${P.mint}">&lt;/&gt;</text></g>
+    <circle cx="124" cy="216" r="10" fill="${P.yolk}" stroke="${I}" stroke-width="1.6"/>
+    <path d="M124 209c-4 0 -6 5 -6 8s3 5 6 5s6 -2 6 -5s-2 -8 -6 -8z" fill="${P.cream}" stroke="${I}" stroke-width="1.2"/>
+    <g transform="rotate(6 100 244)"><rect x="70" y="236" width="60" height="15" rx="7.5" fill="${T}"/><text x="100" y="247.5" text-anchor="middle" ${MONO} font-size="10.5" fill="${P.cream}">ship it</text></g>`
+  const mug = `
+    <g class="fx-steam">${rule('M206 222q-5 -7 0 -14M216 222q-5 -7 0 -14', 2, I, 'class="fx__bit" opacity=".55"')}</g>
+    <path d="M198 228h26v28q0 8 -8 8h-10q-8 0 -8 -8z" fill="${P.cream}" stroke="${I}" stroke-width="2.4"/>
+    <path d="M224 236q10 0 10 9t-10 9" fill="none" stroke="${I}" stroke-width="2.4"/>`
   return `
+    ${rule(band, 7, I)}
+    ${rule(band, 3.4, P.lav)}
+    ${cup(-2)}${cup(178)}
+    <g class="fx-vibe">${note(-20, 92, 0)}${note(214, 86, 1)}</g>
+    ${laptop}
+    ${mug}
     <defs><clipPath id="mateShellK"><path d="${shell}"/></clipPath></defs>
     <g clip-path="url(#mateShellK)" class="fx-crack">
       <path class="fx__bit" d="${crack}" pathLength="1" fill="none" stroke="${I}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
