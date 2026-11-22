@@ -5,6 +5,7 @@ import { initReveals, initRules, initStatement } from './story'
 import { initDay } from './day'
 import { renderDay } from './dayplates'
 import { initFlock } from './flock'
+import { initTeam } from './team'
 import { initPhone } from './phone'
 import { nextTask } from './util'
 
@@ -30,6 +31,9 @@ export async function start() {
   initDay()
   await nextTask()
   await initFlock()
+  await nextTask()
+  // the hosts' eggs, one a task (their boxes are already their size: main.css)
+  await initTeam()
   await nextTask()
   initRules()
   initPhone()

@@ -188,6 +188,7 @@
         <a href="#day">The day</a>
         <a href="#who">Who comes</a>
         <a href="#faq">FAQ</a>
+        <a href="#team">Team</a>
         <a href="https://app.the-egg.club/projects" class="btn btn--cream btn--sm nav__app" target="_blank" rel="noopener"><span class="nav__app-long">Projects ↗</span><span class="nav__app-short">Projects</span></a>
         <a href="https://luma.com/r5khs24x" class="btn btn--ink btn--sm" target="_blank" rel="noopener"><span>Apply</span></a>
       </nav>
@@ -347,7 +348,7 @@
         </div>
       </section>
 
-      <!-- The numbered sections (01 to 06) are set the same way: an ink hairline with the numbered name
+      <!-- The numbered sections (01 to 07) are set the same way: an ink hairline with the numbered name
            under it (.label--rule), and everything ranged left on the column's edge. Between them stand
            two interludes (the 2am line, the hand-off to the app): a couplet, centred like the hero.
            (main.css, "THE SPREAD") -->
@@ -593,9 +594,74 @@
         </div>
       </section>
 
+      <!-- ───────────── 19:20 · THE TEAM: the hosts, a sheet like 02's (src/team.ts draws their eggs) ─────────────
+           One cell a host: their egg (a data-i into MATES in src/team.ts), their name, one short sentence, and
+           their links. Add a host with one more <li> and one more entry in MATES: the sheet makes room. -->
+      <section class="team" id="team" data-bg="mint" aria-labelledby="teamTitle">
+        <p class="label label--rule mono"><span>06</span> <span class="label__txt">The team</span></p>
+        <div class="team__head">
+          <h2 id="teamTitle" class="reveal">The people <em>behind the egg.</em></h2>
+          <p class="team__deck reveal">We host the Sundays, read every application and order the pizza.</p>
+        </div>
+        <ul class="team__sheet">
+          <li class="mate" style="--tilt: -5deg">
+            <span class="mate__egg" data-i="0" aria-hidden="true"></span>
+            <div class="mate__text">
+              <h3 class="mate__name">Hüseyin Umut Işık</h3>
+              <p class="mate__bio">Studies CS at METU and researches medical AI at Harvard Med.</p>
+              <p class="mate__links mono">
+                <a href="https://www.linkedin.com/in/huseyin-umut-isik/" target="_blank" rel="noopener" aria-label="Hüseyin Umut Işık on LinkedIn">LinkedIn <span aria-hidden="true">↗</span></a>
+              </p>
+            </div>
+          </li>
+          <li class="mate" style="--tilt: 6deg">
+            <span class="mate__egg" data-i="1" aria-hidden="true"></span>
+            <div class="mate__text">
+              <h3 class="mate__name">Mehmet Alp Özaydın</h3>
+              <p class="mate__bio">Studies CS at METU and is a visiting researcher at Cambridge.</p>
+              <p class="mate__links mono">
+                <a href="https://www.linkedin.com/in/mehmet-alp-ozaydin-8455bb246/" target="_blank" rel="noopener" aria-label="Mehmet Alp Özaydın on LinkedIn">LinkedIn <span aria-hidden="true">↗</span></a>
+              </p>
+            </div>
+          </li>
+          <li class="mate" style="--tilt: -4deg">
+            <span class="mate__egg" data-i="2" aria-hidden="true"></span>
+            <div class="mate__text">
+              <h3 class="mate__name">Mert Çiçekçi</h3>
+              <p class="mate__bio">Co-founded Noether and builds finance and AI products.</p>
+              <p class="mate__links mono">
+                <a href="https://www.linkedin.com/in/cicekci-mert/" target="_blank" rel="noopener" aria-label="Mert Çiçekçi on LinkedIn">LinkedIn <span aria-hidden="true">↗</span></a>
+                <a href="https://x.com/merthxyz" target="_blank" rel="noopener" aria-label="Mert Çiçekçi on X">X <span aria-hidden="true">↗</span></a>
+              </p>
+            </div>
+          </li>
+          <li class="mate" style="--tilt: 5deg">
+            <span class="mate__egg" data-i="3" aria-hidden="true"></span>
+            <div class="mate__text">
+              <h3 class="mate__name">Mert Karadayı</h3>
+              <p class="mate__bio">Full-stack engineer who founded and exited a startup and wins hackathons.</p>
+              <p class="mate__links mono">
+                <a href="https://www.linkedin.com/in/imertkaradayi/" target="_blank" rel="noopener" aria-label="Mert Karadayı on LinkedIn">LinkedIn <span aria-hidden="true">↗</span></a>
+                <a href="https://x.com/imertkaradayi" target="_blank" rel="noopener" aria-label="Mert Karadayı on X">X <span aria-hidden="true">↗</span></a>
+              </p>
+            </div>
+          </li>
+          <li class="mate" style="--tilt: -3deg">
+            <span class="mate__egg" data-i="4" aria-hidden="true"></span>
+            <div class="mate__text">
+              <h3 class="mate__name">Cansu Kaya</h3>
+              <p class="mate__bio">Studies philosophy at METU.</p>
+              <p class="mate__links mono">
+                <a href="https://www.linkedin.com/in/cansukayaa/" target="_blank" rel="noopener" aria-label="Cansu Kaya on LinkedIn">LinkedIn <span aria-hidden="true">↗</span></a>
+              </p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
       <!-- ───────────── 19:30 · JOIN ───────────── -->
       <section class="join" id="join" data-bg="yolk" aria-labelledby="joinTitle">
-        <p class="label label--rule mono"><span>06</span> <span class="label__txt">Get in the carton</span></p>
+        <p class="label label--rule mono"><span>07</span> <span class="label__txt">Get in the carton</span></p>
         <div class="join__grid">
           <div class="join__main">
             <h2 id="joinTitle" class="join__title">Bring a laptop.<br /><em>Leave with a thing.</em></h2>
