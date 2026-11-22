@@ -225,7 +225,59 @@ function terminal(shell: string) {
     </g>`
 }
 
-/** Cansu: philosophy. Thought about it, one bubble at a time; concluded. */
+/** Cansu: philosophy, and dressed for it: a laurel wreath, a beard to stroke, a toga with a key
+ *  border. Thought about it, one bubble at a time; concluded. */
+function philosopher(shell: string) {
+  // the wreath: leaves along a band over the crown, in pairs, tips towards the front
+  const [x0, y0, cx, cy, x1, y1] = [28, 74, 100, 16, 172, 74]
+  const leaves: string[] = []
+  for (let k = 0; k <= 12; k++) {
+    if (k === 6) continue
+    const t = k / 12
+    const x = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t * t * x1
+    const y = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t * t * y1
+    const dx = 2 * (1 - t) * (cx - x0) + 2 * t * (x1 - cx)
+    const dy = 2 * (1 - t) * (cy - y0) + 2 * t * (y1 - cy)
+    const a = (Math.atan2(dy, dx) * 180) / Math.PI + (t < 0.5 ? 0 : 180)
+    for (const side of [-1, 1]) {
+      leaves.push(
+        `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="9" ry="3.6" transform="rotate(${(a + side * 32).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}) translate(${t < 0.5 ? 6 : -6} 0)" fill="${P.mintDeep}" stroke="${I}" stroke-width="1.2"/>`,
+      )
+    }
+  }
+  const band = `M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}`
+  // the beard: curls from cheek to cheek, down to a point
+  const beard =
+    'M66 150C58 162 62 176 70 182C66 194 76 206 86 206C88 218 100 226 108 216C120 220 130 208 128 198C140 194 144 178 136 168C142 160 138 150 132 148C122 158 112 160 100 160C88 160 76 158 66 150Z'
+  const curls = 'M76 172q6 4 12 0M90 186q6 4 12 0M108 180q6 4 12 0M96 200q5 4 10 0M118 166q5 4 10 0M82 160q5 3 10 0'
+  // the toga: over one shoulder, a key border along its edge
+  const edge = 'M-10 200L210 152'
+  let key = ''
+  for (let k = 0; k < 15; k++) {
+    const x = -6 + k * 15
+    const y = 200 - (x + 10) * (48 / 220) + 5
+    key += `M${x} ${y.toFixed(1)}h7v-4h-4v-2h6v7`
+  }
+  return `
+    <defs><clipPath id="mateShellC"><path d="${shell}"/></clipPath></defs>
+    <g clip-path="url(#mateShellC)">
+      <path d="M-10 200L210 152V300H-10Z" fill="${P.cream}"/>
+      ${rule('M30 230q30 -2 52 -20M60 262q34 -6 66 -40M120 270q30 -14 60 -64', 1.6, I, 'opacity=".4"')}
+      <path d="M-10 196L210 148L210 160L-10 208Z" fill="${P.pinkDeep}" opacity=".85"/>
+      ${rule(key, 1.3, P.cream, 'stroke-linejoin="miter" stroke-linecap="butt"')}
+      ${rule(edge, 2.2, I)}
+      <path d="${shell}" fill="none" stroke="${I}" stroke-width="3.6"/>
+    </g>
+    <g class="fx-beard"><g class="fx__bit">
+      <path d="${beard}" fill="#efe9e1" stroke="${I}" stroke-width="2.4" stroke-linejoin="round"/>
+      ${rule(curls, 1.6, I, 'opacity=".55"')}
+    </g></g>
+    ${pen('M88 152q6 -5 12 -1q6 -4 12 1', 2.4)}
+    ${rule(band, 2.4, P.mintDeep)}
+    ${leaves.join('')}
+    ${thought()}`
+}
+
 function thought() {
   const cloud =
     'M118 0C98 -4 98 -32 122 -32C124 -50 152 -54 164 -40C176 -56 206 -52 210 -34C232 -40 250 -18 240 -2C254 8 244 34 222 30C218 46 190 48 180 36C168 50 136 48 134 32C112 36 102 10 118 0Z'
@@ -284,7 +336,7 @@ const MATES: Mate[] = [
   { seed: 87, fill: P.mint, shape: { w: 0.96, h: 0.98, lean: 4, taper: 0.1, cx: 74, cy: 146 }, eyes: 'happy', mouth: 'grin', blush: true, prop: rover },
   { seed: 93, fill: P.peach, shape: { w: 0.88, h: 1.04, lean: -5, taper: 0.16, cx: 80, cy: 137 }, eyes: 'dots', mouth: 'smirk', prop: candles },
   { seed: 99, fill: P.lav, shape: { w: 0.94, h: 1, lean: 3, cy: 143 }, eyes: 'wink', mouth: 'smile', blush: true, prop: terminal },
-  { seed: 105, fill: P.pink, shape: { w: 0.92, h: 1.01, lean: -2, taper: 0.12, cy: 143 }, eyes: 'closed', mouth: 'small', prop: thought },
+  { seed: 105, fill: P.pink, shape: { w: 0.92, h: 1.01, lean: -2, taper: 0.12, cy: 143 }, eyes: 'closed', mouth: 'small', prop: philosopher },
   { seed: 111, fill: SHELL, shape: { w: 0.95, h: 0.99, lean: 2, taper: 0.1, cy: 145 }, eyes: 'side', mouth: 'flat', fy: 136, prop: drafted },
 ]
 

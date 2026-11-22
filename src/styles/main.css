@@ -2665,6 +2665,18 @@ html:not(.js) .rule__fix,
   transform-origin: 50% 50%;
   animation: matePonder 7s calc(var(--k, 0) * 0.45s - 0.6s) ease-out infinite backwards;
 }
+/* (and the philosopher's beard, stroked now and then while it thinks) */
+.mate .fx-beard .fx__bit {
+  transform-origin: 50% 0%;
+  animation: mateBeard 7s -0.6s ease-in-out infinite;
+}
+@keyframes mateBeard {
+  0%, 40%, 100% { rotate: 0deg; }
+  46% { rotate: -4deg; }
+  52% { rotate: 3deg; }
+  58% { rotate: -2deg; }
+  64% { rotate: 0deg; }
+}
 /* Vahip: a sweep left to right turns the shell into its wireframe on blueprint */
 .mate .fx-blue .fx__bit {
   clip-path: inset(0 100% 0 0);
