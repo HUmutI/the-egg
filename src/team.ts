@@ -13,9 +13,11 @@ import { inkEgg, sketch } from './sketch'
 
 const I = PALETTE.ink
 const T = PALETTE.tomato
+/** The shell of the day's eggs (main.css --shell): no regular wears it. */
+const SHELL = '#e7b896'
 
-type Eyes = 'dots' | 'happy' | 'closed' | 'wink'
-type Mouth = 'smile' | 'grin' | 'smirk' | 'small'
+type Eyes = 'dots' | 'happy' | 'closed' | 'wink' | 'side'
+type Mouth = 'smile' | 'grin' | 'smirk' | 'small' | 'flat'
 
 interface Mate {
   seed: number
@@ -26,13 +28,14 @@ interface Mate {
   blush?: boolean
 }
 
-/** In the order of the cells: Umut, Mehmet, Mert Ç., Mert K., Cansu. */
+/** In the order of the cells: Umut, Mehmet, Mert Ç., Mert K., Cansu, Vahip. */
 const MATES: Mate[] = [
   { seed: 81, fill: PALETTE.sky, shape: { w: 0.9, h: 1.02, lean: -3 }, eyes: 'dots', mouth: 'smile' },
   { seed: 87, fill: PALETTE.mint, shape: { w: 0.96, h: 0.98, lean: 4, taper: 0.1 }, eyes: 'happy', mouth: 'grin', blush: true },
   { seed: 93, fill: PALETTE.peach, shape: { w: 0.88, h: 1.04, lean: -5, taper: 0.16 }, eyes: 'dots', mouth: 'smirk' },
   { seed: 99, fill: PALETTE.lav, shape: { w: 0.94, h: 1, lean: 3 }, eyes: 'wink', mouth: 'smile', blush: true },
   { seed: 105, fill: PALETTE.pink, shape: { w: 0.92, h: 1.01, lean: -2, taper: 0.12 }, eyes: 'closed', mouth: 'small' },
+  { seed: 111, fill: SHELL, shape: { w: 0.95, h: 0.99, lean: 2, taper: 0.1 }, eyes: 'side', mouth: 'flat' },
 ]
 
 /** Every egg is drawn around a 200×260 egg at (100, 140), standing on y ≈ 272. */
@@ -51,6 +54,9 @@ function eyes(kind: Eyes, x1: number, x2: number, y: number) {
       return pen(arc(x1, false) + arc(x2, false), 3.4)
     case 'wink':
       return `<g class="egg__eyes">${dot(x1)}</g>${pen(arc(x2, true), 3.6)}`
+    case 'side':
+      // sizing something up, off to one side
+      return `<g class="egg__eyes"><ellipse cx="${x1 + 4}" cy="${y - 1}" rx="4.2" ry="5.4" fill="${I}"/><ellipse cx="${x2 + 4}" cy="${y - 1}" rx="4.2" ry="5.4" fill="${I}"/></g>`
     default:
       return `<g class="egg__eyes">${dot(x1)}${dot(x2)}</g>`
   }
@@ -64,6 +70,8 @@ function mouth(kind: Mouth, x: number, y: number) {
       return pen(`M${x - 9} ${y + 1}q10 4 17 -5`, 3.2)
     case 'small':
       return pen(`M${x - 5} ${y}q5 4 10 0`, 3)
+    case 'flat':
+      return pen(`M${x - 6} ${y + 1}h13`, 3)
     default:
       return pen(`M${x - 9} ${y - 2}q9 9 18 0`, 3.2)
   }

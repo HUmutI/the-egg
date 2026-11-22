@@ -2425,16 +2425,21 @@ html:not(.js) .rule__fix,
 
 /* Set as 02's plate: one sheet of cream paper with an ink edge, a host to a cell, hairlines
    between. A cell reads top to bottom: their egg (src/team.ts), their name, one sentence, their
-   links. The sheet takes as many cells to a row as fit (at least 136px each: five on a tablet),
-   so a host added later makes room by themselves; a row left short shows its empty paper. A phone lists them, the
-   egg beside the words, so everyone reads at a glance with no swiping. */
+   links. No host stands alone on a row: everyone on one row where each cell gets some 170px of
+   the sheet, else two even rows (three and three; four and three, four and four for a seventh or
+   eighth host, counted from the cells, so a new host is still one <li> and one MATES entry). A
+   browser without :has() or container queries keeps three to a row. A phone lists them, the egg
+   beside the words, so everyone reads at a glance with no swiping. */
+.team {
+  container: team / inline-size;
+}
 .team__head h2 em {
   display: block;
   color: var(--mint-deep);
 }
 .team__sheet {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 136px), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: clamp(28px, 3.6vw, 56px) 0 0;
   padding: 0;
   list-style: none;
@@ -2452,6 +2457,33 @@ html:not(.js) .rule__fix,
     1px 0 0 var(--ink-3),
     0 1px 0 var(--ink-3);
   transition: background-color 0.35s var(--ease-out);
+}
+@media (min-width: 761px) {
+  .team__sheet:has(> .mate:nth-child(7)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  /* one row: six from 1020px of sheet, seven from 1190, eight from 1360 */
+  @container team (min-width: 1020px) {
+    .team__sheet:not(:has(> .mate:nth-child(7))) {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
+  @container team (min-width: 1190px) {
+    .team__sheet:has(> .mate:nth-child(7)):not(:has(> .mate:nth-child(8))) {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
+  @container team (min-width: 1360px) {
+    .team__sheet:has(> .mate:nth-child(8)):not(:has(> .mate:nth-child(9))) {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
 }
 /* (its box has the egg's shape before the egg is drawn, so nothing moves when it arrives) */
 .mate__egg {
@@ -2472,19 +2504,22 @@ html:not(.js) .rule__fix,
 .mate .egg__eyes {
   transform-box: fill-box;
   transform-origin: 50% 50%;
-  animation: eggBlink 7s calc(var(--i, 0) * -1.3s) infinite;
+  animation: eggBlink 7s calc(var(--i, 0) * -1.17s) infinite;
 }
-.mate:nth-child(5n + 2) {
+.mate:nth-child(6n + 2) {
   --i: 1;
 }
-.mate:nth-child(5n + 3) {
+.mate:nth-child(6n + 3) {
   --i: 2;
 }
-.mate:nth-child(5n + 4) {
+.mate:nth-child(6n + 4) {
   --i: 3;
 }
-.mate:nth-child(5n + 5) {
+.mate:nth-child(6n + 5) {
   --i: 4;
+}
+.mate:nth-child(6n + 6) {
+  --i: 5;
 }
 .mate__text {
   flex: 1;
@@ -2548,15 +2583,6 @@ html:not(.js) .rule__fix,
   }
   .mate:hover .mate__egg svg {
     transform: none;
-  }
-}
-/* tablets: five to a row is narrow, so the names may take two lines and the eggs are smaller */
-@media (min-width: 761px) and (max-width: 979px) {
-  .mate {
-    padding: 14px 12px 8px;
-  }
-  .mate__egg {
-    width: min(74%, 120px);
   }
 }
 /* phones: a list, the egg beside the words */
