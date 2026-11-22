@@ -3857,25 +3857,13 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   max-width: 100%;
 }
 
-/* the nav's projects pill: a short word on narrow bars, gone where the dock carries it */
-.nav__app-short {
-  display: none;
-}
+/* the nav's APP pill: straight to sign-in on app.the-egg.club, on every width */
 @media (max-width: 860px) {
-  .nav__app-long {
-    display: none;
-  }
-  .nav__app-short {
-    display: inline;
-  }
   .nav__links .nav__app {
     padding: 0 12px;
   }
 }
 @media (max-width: 700px) {
-  .nav__links .nav__app {
-    display: none;
-  }
   /* the clock keeps its time; the word beside it only when there's room */
   .clock__label {
     display: none;
