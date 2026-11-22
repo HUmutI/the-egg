@@ -2424,8 +2424,9 @@ html:not(.js) .rule__fix,
 /* ── TEAM: the hosts ──────────────────────────────────────────── */
 
 /* Set as 02's plate: one sheet of cream paper with an ink edge, a host to a cell, hairlines
-   between. A cell reads top to bottom: their egg (src/team.ts), their name, one sentence, their
-   links. No host stands alone on a row: everyone on one row where each cell gets some 170px of
+   between. A cell reads top to bottom: their egg with its idea (src/team.ts), their name, one
+   sentence, their links; on a wide screen each of the four keeps to a line common to the whole row
+   (a subgrid), so the names, the sentences and the links run across the sheet. No host stands alone on a row: everyone on one row where each cell gets some 170px of
    the sheet, else two even rows (three and three; four and three, four and four for a seventh or
    eighth host, counted from the cells, so a new host is still one <li> and one MATES entry). A
    browser without :has() or container queries keeps three to a row. A phone lists them, the egg
@@ -2485,13 +2486,14 @@ html:not(.js) .rule__fix,
     }
   }
 }
-/* (its box has the egg's shape before the egg is drawn, so nothing moves when it arrives) */
+/* (its box has the egg's shape before the egg is drawn, so nothing moves when it arrives; on a
+   short screen, a phone on its side, it keeps to some third of the height, so a whole cell fits) */
 .mate__egg {
   flex: none;
   align-self: center;
   display: block;
-  width: min(66%, 150px);
-  aspect-ratio: 212 / 282;
+  width: min(92%, 212px, 36vh);
+  aspect-ratio: 282 / 336;
   margin: 2px 0 14px;
 }
 .mate__egg svg {
@@ -2565,6 +2567,129 @@ html:not(.js) .rule__fix,
 .mate__links a:active {
   color: var(--ink);
 }
+/* wide screens: the egg, the name, the sentence and the links keep to four rows shared by every
+   cell of a row, so a name over two lines moves its whole row's sentences down together (each
+   name sits on its sentence; the room left over goes under the eggs, which share one floor) */
+@media (min-width: 761px) {
+  @supports (grid-template-rows: subgrid) {
+    .mate {
+      display: grid;
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+    }
+    .mate__text {
+      display: contents;
+    }
+    .mate__egg {
+      justify-self: center;
+    }
+    .mate__name {
+      margin-top: auto;
+    }
+  }
+}
+/* Each host's small moving part (src/team.ts makes its moving pieces fx__bits, which a section
+   going to sleep pauses) wakes while a mouse is over the cell or one of its links has the focus;
+   at rest each drawing is already whole, so nothing waits on it. */
+.mate .fx__bit {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.mate .fx-scan .fx__bit {
+  opacity: 0;
+}
+/* (the compass turns on the centre of its arc, the centre mark at 100, 70 in the drawing) */
+.mate .fx-arc .fx__bit {
+  transform-box: view-box;
+  transform-origin: 100px 70px;
+}
+.mate:is(:hover, :focus-within) .fx-scan .fx__bit {
+  animation: mateScan 2.8s ease-in-out infinite;
+}
+.mate:is(:hover, :focus-within) .fx-ray .fx__bit {
+  animation: mateRay 0.9s linear infinite;
+}
+.mate:is(:hover, :focus-within) .fx-mast .fx__bit {
+  animation: mateLook 3.2s ease-in-out infinite;
+}
+.mate:is(:hover, :focus-within) .fx-candle .fx__bit {
+  animation: mateTick 2.2s ease-in-out infinite;
+}
+.mate:is(:hover, :focus-within) .fx-cursor .fx__bit {
+  animation: mateCursor 1.1s steps(1) infinite;
+}
+.mate:is(:hover, :focus-within) .fx-think .fx__bit {
+  animation: mateThink 2.6s calc(var(--k, 0) * -0.6s) ease-in-out infinite;
+}
+.mate:is(:hover, :focus-within) .fx-arc .fx__bit {
+  animation: mateArc 3.4s ease-in-out infinite;
+}
+/* a scan line goes down the box, top to floor */
+@keyframes mateScan {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  12%,
+  88% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 258px;
+  }
+}
+/* the rover's ray runs from its camera to the egg */
+@keyframes mateRay {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+@keyframes mateLook {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  35% {
+    rotate: -8deg;
+  }
+  65% {
+    rotate: 3deg;
+  }
+}
+/* the last candle is still trading */
+@keyframes mateTick {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  50% {
+    scale: 1 1.14;
+  }
+}
+@keyframes mateCursor {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes mateThink {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}
+@keyframes mateArc {
+  0%,
+  100% {
+    rotate: -9deg;
+  }
+  50% {
+    rotate: 9deg;
+  }
+}
 @media (hover: hover) {
   .mate:hover {
     background-color: #fff6df;
@@ -2578,8 +2703,9 @@ html:not(.js) .rule__fix,
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mate .egg__eyes {
-    animation: none;
+  .mate .egg__eyes,
+  .mate .fx__bit {
+    animation: none !important;
   }
   .mate:hover .mate__egg svg {
     transform: none;
@@ -2594,12 +2720,14 @@ html:not(.js) .rule__fix,
   .mate {
     flex-direction: row;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     padding: 14px 16px 4px;
   }
+  /* (a third of the row and a little more: the idea is drawn in the egg's margins, so the box
+     reaches into the cell's padding, where those margins are mostly paper) */
   .mate__egg {
-    width: 64px;
-    margin: 0 0 10px;
+    width: min(38%, 150px);
+    margin: 0 0 10px -8px;
   }
   .mate__name {
     font-size: 21px;

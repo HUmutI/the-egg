@@ -6,8 +6,8 @@ import { PALETTE } from './util'
  * `sketch` bends a pen line a little along its way, once, so it comes out as an ordinary crisp
  * stroke; `halftone` shades a shape with real dots; `inkEgg` puts a riso egg together from
  * both. Kept apart from riso.ts, which the first screen's script loads: only the regulars
- * (src/figures.ts) and the day's scenes (src/dayplates.ts), both in the scroll layer, draw
- * with these.
+ * (src/figures.ts), the hosts (src/team.ts) and the day's scenes (src/dayplates.ts), all in
+ * the scroll layer, draw with these.
  */
 
 const I = PALETTE.ink

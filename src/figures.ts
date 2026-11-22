@@ -24,16 +24,16 @@ const T = P.tomato
 /** Every figure is drawn around a 200×260 egg at (100, 140); notes spill into the margins. */
 export const FIG_VIEWBOX = '-40 -50 290 370'
 
-const MONO = `font-family="DM Mono, ui-monospace, monospace"`
-const SERIF = `font-family="Fraunces, Georgia, serif"`
-const HAND = `font-family="'Reenie Beanie', cursive"`
+export const MONO = `font-family="DM Mono, ui-monospace, monospace"`
+export const SERIF = `font-family="Fraunces, Georgia, serif"`
+export const HAND = `font-family="'Reenie Beanie', cursive"`
 
 /** A pen line: thin, round-capped, slightly wobbly (the wobble is in the line itself: sketch.ts). */
-const pen = (d: string, w = 3, c: string = I, extra = '') =>
+export const pen = (d: string, w = 3, c: string = I, extra = '') =>
   `<path d="${sketch(d)}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`
 
 /** A ruled line: construction, dimensions, staves. Straight, so no wobble. */
-const rule = (d: string, w = 1.4, c: string = T, extra = '') =>
+export const rule = (d: string, w = 1.4, c: string = T, extra = '') =>
   `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${extra}/>`
 
 const CAST: Record<Kind, { seed: number; fill: string; shape: EggShape }> = {
@@ -52,12 +52,12 @@ const eggOf = (k: Kind) => handEgg(CAST[k].seed, CAST[k].shape)
 let uid = 0
 
 /** A halftone shadow for an egg to stand on, printed off-register like the fills. */
-const ground = (cx = 106, cy = 271, rx = 66) =>
+export const ground = (cx = 106, cy = 271, rx = 66) =>
   `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${(rx * 0.14).toFixed(1)}" fill="url(#halftone)" opacity=".55"/>
    ${rule(`M${cx - rx * 0.78} ${cy + 1}Q${cx} ${cy + 4} ${cx + rx * 0.62} ${cy}`, 1.6, I, 'opacity=".55"')}`
 
 /** Two ink dots that blink (the .egg__eyes animation in main.css). */
-const dots = (x1: number, x2: number, y: number, r = 3.2) =>
+export const dots = (x1: number, x2: number, y: number, r = 3.2) =>
   `<g class="egg__eyes"><circle cx="${x1}" cy="${y}" r="${r}" fill="${I}"/><circle cx="${x2}" cy="${y}" r="${r}" fill="${I}"/></g>`
 
 /** Rising steam: three wisps, drawn upward. */
