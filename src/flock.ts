@@ -111,8 +111,8 @@ export async function initFlock() {
 
   initCarton(field, cells)
 
-  // ── pull and let go: the figure springs back into its cell ──
-  if (reducedMotion()) return
+  // ── pull and let go: the figure springs back into its cell (kept under reduced motion too:
+  // it only moves when someone drags it) ──
   cells.forEach((el) => {
     const body = el.querySelector('.bird__body') as HTMLElement
     const art = body.firstElementChild as SVGElement

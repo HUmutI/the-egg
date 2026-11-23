@@ -839,11 +839,6 @@ body.is-night .nav::before {
     stroke-width: 7;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .doodles.is-drawn .spark {
-    animation: none;
-  }
-}
 /* the phone poster's notes: drawn for its own layout, about a finger's
    width of handwriting on the screen */
 .doodles--tall {
@@ -2094,21 +2089,6 @@ h2 {
     translate: 3px 22px;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .bird :is(.fx-steam, .fx-lamp, .fx-swatch, .fx-bars, .fx-spark, .fx-human, .fx-glint, .fx-notes, .fx-sweat),
-  .bird :is(.fx-steam, .fx-lamp, .fx-swatch, .fx-bars, .fx-spark, .fx-human, .fx-glint, .fx-notes, .fx-sweat) > *,
-  .bird .egg__eyes,
-  .bird--you .egg__dash {
-    animation: none !important;
-  }
-  .bird:hover .bird__body svg {
-    transform: none;
-  }
-  /* the notes stay printed where they'd float from */
-  .bird .fx-notes > * {
-    opacity: 1;
-  }
-}
 /* under the drawing: who it is, in the title's italic, and what they say */
 .bird__cap {
   display: grid;
@@ -3154,11 +3134,6 @@ html:not(.js) .rule__fix,
     justify-self: start;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .foot__arrow {
-    animation: none;
-  }
-}
 
 /* phones: the rooftop painted for an upright screen (see the <picture>), the
    full width of the phone: the moon and the stars on top, the castle,
@@ -3205,9 +3180,11 @@ html:not(.js) .rule__fix,
   html {
     scroll-behavior: auto;
   }
-  *:not(.mate *),
-  *:not(.mate *)::before,
-  *:not(.mate *)::after {
+  /* the small loops that live in place (team and flock eggs, the logo's wink, the live badge,
+     the doodles' sparks, the CRT, the footer arrow) keep moving; scrolling and big moves still rest */
+  *:not(.mate *, .bird, .bird *, .nav__logo *, .doodles .spark, .dd--f *, .chip--sun *, .crt--scan, .screen, .gd__more, .live-badge *, .foot__arrow),
+  *:not(.mate *, .bird, .bird *, .nav__logo *, .doodles .spark, .dd--f *, .chip--sun *, .crt--scan, .screen, .gd__more, .live-badge *, .foot__arrow)::before,
+  *:not(.mate *, .bird, .bird *, .nav__logo *, .doodles .spark, .dd--f *, .chip--sun *, .crt--scan, .screen, .gd__more, .live-badge *, .foot__arrow)::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -3729,11 +3706,6 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .crt--scan {
-    animation: none;
-  }
-}
 
 /* CRT power-on: a bright line that opens into the picture */
 .screen::after {
@@ -3762,11 +3734,6 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
     opacity: 0;
     transform: scaleY(1);
     background: rgba(255, 251, 241, 0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .screen.is-on::after {
-    animation: none;
   }
 }
 
@@ -3884,12 +3851,6 @@ body.is-arcade .nav > :is(.nav__logo, .nav__clock, .nav__links) {
   50% {
     opacity: 1;
     transform: scale(1.2);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .live-badge__egg .mark__eyes,
-  .live-badge__dot {
-    animation: none;
   }
 }
 
