@@ -2919,15 +2919,8 @@ html:not(.js) .rule__fix,
     text-decoration-color: currentColor;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .mate .egg__eyes,
-  .mate .fx__bit {
-    animation: none !important;
-  }
-  .mate:hover .mate__egg svg {
-    transform: none;
-  }
-}
+/* The team's eggs keep their small loops even under reduced motion (the brief: every host's
+   egg shows what they do); the global reduced-motion rule below skips .mate for that reason. */
 /* phones: a list, the egg beside the words */
 @media (max-width: 760px) {
   .team__sheet {
@@ -3212,9 +3205,9 @@ html:not(.js) .rule__fix,
   html {
     scroll-behavior: auto;
   }
-  *,
-  *::before,
-  *::after {
+  *:not(.mate *),
+  *:not(.mate *)::before,
+  *:not(.mate *)::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
