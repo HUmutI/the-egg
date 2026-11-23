@@ -43,7 +43,8 @@ const escape = (s: string) =>
  * The next Sunday, from the app: the hero's date line and the ticket in the
  * join section. The page ships with a complete, date-free version of both, so
  * if the app is slow or down nothing breaks — it just stays general.
- * (Applying happens on Luma, so no link is rewritten here.)
+ * (Applying happens on Luma, one page a Sunday. Until the next Sunday's page is up, its
+ * applications aren't open yet ('soon'), and the Apply buttons take you to its page on the app instead.)
  */
 export async function initNextSunday() {
   const heroNext = document.getElementById('heroNext')
@@ -101,6 +102,11 @@ async function fillNextSunday(heroNext: HTMLElement | null) {
     const no = document.getElementById('ticketNo')
     if (no) no.hidden = false
     fill(document.getElementById('ticketStatus'), state, vars)
+  }
+
+  // apply: the Luma page on the buttons is the last Sunday's until the next one's is up
+  if (state === 'soon' && event.url) {
+    for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href*="luma.com/"]')) a.href = event.url
   }
 
   // the ticket's lines can change its height: let the scroll triggers re-measure
