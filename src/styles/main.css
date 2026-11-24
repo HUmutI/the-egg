@@ -476,7 +476,26 @@ body.is-night .nav::before {
   gap: 4px;
   padding: 4px 4px 4px 14px;
 }
-.nav__links a:not(.btn) {
+/* the club's Instagram: a small round glyph between the section links and the buttons */
+.nav__links .nav__ig {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+.nav__ig svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.nav__ig .nav__ig-dot {
+  fill: currentColor;
+  stroke: none;
+}
+.nav__links a:not(.btn, .nav__ig) {
   padding: 8px 10px;
   font-size: 14px;
   font-weight: 500;
@@ -543,8 +562,12 @@ body.is-night .nav::before {
   .clock__arc {
     width: 28px;
   }
-  .nav__links a:not(.btn) {
+  .nav__links a:not(.btn, .nav__ig) {
     display: none;
+  }
+  .nav__links .nav__ig {
+    width: 40px;
+    height: 44px;
   }
   .nav__links {
     gap: 6px;
