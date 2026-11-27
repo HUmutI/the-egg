@@ -147,8 +147,10 @@ motion), so contrast checks never find faint text waiting on the page.
 ### The next Sunday
 
 `src/next.ts` reads the app's `/api/next-event` (4 s timeout) and fills in the
-hero's next-Sunday line and the Join ticket. Applying happens on Luma, so no
-link is rewritten. Each element ships with complete, date-free copy, so if the
+hero's next-Sunday line and the Join ticket. Applying happens on Luma: every
+Apply link in `index.html` carries the last known page, and when the app sends
+this Sunday's own (`applyUrl`, set on the Sunday's admin page there) the links
+are pointed at it, so a new Sunday needs no change here. Each element ships with complete, date-free copy, so if the
 app is slow, down, or has nothing scheduled (or answers with a Sunday that is
 over: more than 8.5 hours past its doors) the page just stays general; the
 hero's line keeps its place, out of sight, until the app has answered or the

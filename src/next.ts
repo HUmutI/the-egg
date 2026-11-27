@@ -8,6 +8,8 @@ type NextEvent = {
   url: string
   location?: string | null
   applicationsOpen?: boolean
+  /** This Sunday's Luma page, when the app's admin has set one. */
+  applyUrl?: string | null
 }
 
 /** Where the next Sunday stands: on today, taking applications, or not yet. */
@@ -44,7 +46,8 @@ const escape = (s: string) =>
  * join section. The page ships with a complete, date-free version of both, so
  * if the app is slow or down nothing breaks — it just stays general.
  * (Applying happens on Luma, one page a Sunday. Until the next Sunday's page is up, its
- * applications aren't open yet ('soon'), and the Apply buttons take you to its page on the app instead.)
+ * applications aren't open yet ('soon'), and the Apply buttons take you to its page on the app instead;
+ * after that they go to the Luma page the app gives for it, or stay on the one written in index.html.)
  */
 export async function initNextSunday() {
   const heroNext = document.getElementById('heroNext')
@@ -104,9 +107,13 @@ async function fillNextSunday(heroNext: HTMLElement | null) {
     fill(document.getElementById('ticketStatus'), state, vars)
   }
 
-  // apply: the Luma page on the buttons is the last Sunday's until the next one's is up
-  if (state === 'soon' && event.url) {
-    for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href*="luma.com/"]')) a.href = event.url
+  // apply: the Luma page on the buttons is the last Sunday's until the next one's is up.
+  // Once the app has this Sunday's own page (set in its admin), the buttons go there, so a
+  // new Sunday needs no change here. Only an https link is taken from the app.
+  const apply =
+    state === 'soon' ? event.url : event.applyUrl && /^https:\/\//i.test(event.applyUrl) ? event.applyUrl : null
+  if (apply) {
+    for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href*="luma.com/"]')) a.href = apply
   }
 
   // the ticket's lines can change its height: let the scroll triggers re-measure
